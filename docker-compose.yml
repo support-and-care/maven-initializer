@@ -21,7 +21,7 @@ services:
     ports:
       - "3006:3000"
     environment:
-      - BACKEND_URL=http://backend:8086
+      - BACKEND_URL=https://api.open-elements.cloud
     depends_on:
       backend:
         condition: service_healthy
