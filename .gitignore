@@ -1,7 +1,5 @@
 # Maven
 backend/target/
-backend/.mvn/wrapper/maven-wrapper.jar
-backend/.mvn/wrapper/maven-wrapper.properties
 
 # Node.js
 frontend/node_modules/
