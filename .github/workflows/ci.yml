@@ -37,21 +37,3 @@ jobs:
       - run: |
           pnpm install --no-frozen-lockfile
           pnpm run build
-
-  artifacts:
-    runs-on: ubuntu-latest
-    needs: [backend, frontend]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          chmod +x build.sh
-          ./build.sh
-      - uses: actions/upload-artifact@v3
-        with:
-          name: backend-jar
-          path: backend/target/*.jar
-      - uses: actions/upload-artifact@v3
-        with:
-          name: frontend-build
-          path: frontend/.next/
