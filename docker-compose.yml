@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8086:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     healthcheck:
@@ -19,9 +19,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3006:3000"
     environment:
-      - BACKEND_URL=http://backend:8080
+      - BACKEND_URL=http://backend:8086
     depends_on:
       backend:
         condition: service_healthy
