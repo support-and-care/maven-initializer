@@ -4,16 +4,25 @@ A full-stack application with Spring Boot backend and Next.js frontend.
 
 ## Prerequisites
 
+### For Manual Setup
 - Java 25
 - Node.js 18+
 - pnpm
 
+### For Docker Setup
+- Docker
+- Docker Compose
+
 ## How to Start the Project
 
-### Quick Start
+### Docker Setup (Recommended)
 
 ```bash
-./start-dev.sh
+# Build and start both services
+docker compose up --build
+
+# Or run in detached mode
+docker compose up --build -d
 ```
 
 ### Manual Setup
@@ -37,8 +46,3 @@ A full-stack application with Spring Boot backend and Next.js frontend.
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8080/api/hello
 
-## Build the Project
-
-```bash
-./build.sh
-```
