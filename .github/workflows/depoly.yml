@@ -1,0 +1,14 @@
+name: Deploy to Coolify
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Coolify
+        run: |
+          curl -X POST "${{ secrets.COOLIFY_WEBHOOK_URL }}"
