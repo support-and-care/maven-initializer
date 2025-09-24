@@ -1,38 +1,23 @@
-# Use Amazon Corretto 25 as base image to match local development
-FROM amazoncorretto:25-alpine
+# Build stage
+FROM eclipse-temurin:21.0.5_11-jre as builder
+WORKDIR /application
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Copy prebuilt JAR
+COPY target/*.jar backend-1.0.0-SNAPSHOT.jar
 
-# Set working directory
-WORKDIR /app
+# Extract the Spring Boot layers
+RUN java -Djarmode=layertools -jar backend-1.0.0-SNAPSHOT.jar extract
 
-# Copy Maven wrapper and pom.xml
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-
-# Make mvnw executable
-RUN chmod +x ./mvnw
-
-# Download dependencies (this layer will be cached if pom.xml doesn't change)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source code
-COPY src src
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
-
-# Create a non-root user
-RUN addgroup --system spring && adduser --system --shell /bin/false --ingroup spring spring
-
-# Change ownership of the app directory
-RUN chown -R spring:spring /app
-USER spring:spring
-
-# Expose port
+# Production stage (use minimal distroless runtime)
+FROM gcr.io/distroless/java21-debian12
+WORKDIR /application
 EXPOSE 8080
 
-# Run the application
-CMD ["java", "-jar", "target/backend-1.0.0.jar"]
+# Copy extracted layers from the builder stage
+COPY --from=builder /application/dependencies/ ./
+COPY --from=builder /application/spring-boot-loader/ ./
+COPY --from=builder /application/snapshot-dependencies/ ./
+COPY --from=builder /application/application/ ./
+
+# Run with Spring Boot's JarLauncher
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
