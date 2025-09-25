@@ -1,5 +1,5 @@
 # Build stage
-FROM eclipse-temurin:25-alpine as builder
+FROM eclipse-temurin:21 as builder
 WORKDIR /application
 
 # Copy prebuilt JAR
@@ -8,8 +8,7 @@ COPY target/*.jar application.jar
 # Extract the Spring Boot layers
 RUN java -Djarmode=layertools -jar application.jar extract
 
-# Production stage (use minimal distroless runtime)
-FROM eclipse-temurin:25-alpine
+FROM eclipse-temurin:21-alpine
 WORKDIR /application
 EXPOSE 8080
 
