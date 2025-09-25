@@ -1,5 +1,5 @@
 # Build stage
-FROM amazoncorretto:25-alpine as builder
+FROM eclipse-temurin:25-alpine as builder
 WORKDIR /application
 
 # Copy prebuilt JAR
@@ -9,7 +9,7 @@ COPY target/*.jar application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
 # Production stage (use minimal distroless runtime)
-FROM amazoncorretto:25-alpine
+FROM eclipse-temurin:25-alpine
 WORKDIR /application
 EXPOSE 8080
 
