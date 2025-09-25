@@ -1,9 +1,9 @@
 [variables]
-NIXPACKS_JDK_VERSION = '21'
+JAVA_VERSION = "21"
 
 [phases.build]
-cmds = ['./mvnw -DoutputFile=target/mvn-dependency-list.log -B -DskipTests clean verify']
-cacheDirectories = ['.m2/repository']
+cmds = ["./mvnw -B -DskipTests clean package"]
+cacheDirectories = [".m2"]
 
 [start]
-cmd = './mvnw -B -DskipTests spring-boot:run'
+cmd = "java -jar target/*.jar"
