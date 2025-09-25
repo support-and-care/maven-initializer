@@ -1,9 +1,19 @@
-# Build stage
-FROM eclipse-temurin:21 as builder
+# Maven Build stage - only needed for coolify docker compose deployment - temporary solution -> possible replacement pushing container to container registry after build job
+
+FROM eclipse-temurin:21 AS maven-build
+
+WORKDIR /mavenbuild
+
+COPY . /mavenbuild
+
+RUN ./mvnw package -DskipTests
+
+# Preparation stage
+FROM eclipse-temurin:21 AS builder
 WORKDIR /application
 
 # Copy prebuilt JAR
-COPY target/*.jar application.jar
+COPY --from=maven-build /mavenbuild/target/*.jar application.jar
 
 # Extract the Spring Boot layers
 RUN java -Djarmode=layertools -jar application.jar extract
