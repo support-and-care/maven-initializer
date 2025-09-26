@@ -53,4 +53,4 @@ jobs:
           docker build -t maven-initializer-frontend ./frontend
       - name: Test Docker Compose
         run: |
-          docker-compose build
+          docker compose build
