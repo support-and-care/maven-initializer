@@ -7,7 +7,7 @@ dependencies, and best practices, without the need to manually set up complex pr
 
 ## Prerequisites
 
-- Java 25
+- Java 21
 - Node.js 22+
 - pnpm
 
@@ -19,13 +19,22 @@ dependencies, and best practices, without the need to manually set up complex pr
 
 ### Docker Setup (Recommended)
 
-```bash
-# Build and start both services
-docker compose up --build
+1. **Create environment file**:
+   ```bash
+   # Create .env file in the root directory
+   cat > .env << EOF
+   NEXT_PUBLIC_BACKEND_URL=http://backend:8080
+   EOF
+   ```
 
-# Or run in detached mode
-docker compose up --build -d
-```
+2. **Build and start both services**:
+   ```bash
+   # Build and start both services
+   docker compose up --build
+
+   # Or run in detached mode
+   docker compose up --build -d
+   ```
 
 ### Manual Setup
 
@@ -45,6 +54,6 @@ docker compose up --build -d
 
 ### Access the Application
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8080/api/hello
+- Frontend: http://localhost:4001
+- Backend API: http://localhost:9081/api/hello
 
