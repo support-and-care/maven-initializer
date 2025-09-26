@@ -1,15 +1,24 @@
-# Build stage
-FROM eclipse-temurin:25-alpine as builder
+# Maven Build stage
+
+FROM eclipse-temurin:21 AS maven-build
+
+WORKDIR /mavenbuild
+
+COPY . /mavenbuild
+
+RUN ./mvnw package -DskipTests
+
+# Preparation stage
+FROM eclipse-temurin:21 AS builder
 WORKDIR /application
 
 # Copy prebuilt JAR
-COPY target/*.jar application.jar
+COPY --from=maven-build /mavenbuild/target/*.jar application.jar
 
 # Extract the Spring Boot layers
 RUN java -Djarmode=layertools -jar application.jar extract
 
-# Production stage (use minimal distroless runtime)
-FROM eclipse-temurin:25-alpine
+FROM eclipse-temurin:21-alpine
 WORKDIR /application
 EXPOSE 8080
 
