@@ -1,25 +1,41 @@
-FROM node:18-alpine
+FROM node:22-alpine AS base
 
-# Set working directory
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install dependencies using pnpm
+COPY package.json pnpm-lock.yaml* .npmrc* ./
+RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
-# Copy package files
-COPY package.json ./
-
-# Install dependencies (without frozen lockfile since we don't have pnpm-lock.yaml)
-RUN pnpm install
-
-# Copy source code
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the application
-RUN pnpm build
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Expose port
+RUN corepack enable pnpm && pnpm run build
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Set the correct permission for precompiled app
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
 EXPOSE 3000
 
-# Start the application
-CMD ["pnpm", "start"]
+# server.js is created by next build from the standalone output
+CMD ["node", "server.js"]

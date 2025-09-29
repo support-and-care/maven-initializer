@@ -1,9 +1,0 @@
-[variables]
-JAVA_VERSION = "21"
-
-[phases.build]
-cmds = ["./mvnw -B -DskipTests clean package"]
-cacheDirectories = [".m2"]
-
-[start]
-cmd = "java -jar target/*.jar"

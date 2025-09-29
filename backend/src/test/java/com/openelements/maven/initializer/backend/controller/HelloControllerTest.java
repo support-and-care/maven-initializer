@@ -16,7 +16,7 @@ class HelloControllerTest {
 
     @Test
     void hello_shouldReturnHelloMessage() throws Exception {
-        mockMvc.perform(get("/api/hello"))
+        mockMvc.perform(get("/hello"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.message").value("Hello from Maven Initializer Backend!"));
