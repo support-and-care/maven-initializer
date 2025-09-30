@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property name="app.name" value="maven-initializer-backend"/>
+
+  <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+    <http>
+      <url>https://loki.open-elements.cloud/loki/api/v1/push</url>
+    </http>
+    <format>
+      <label>
+        <pattern>app=${app.name},host=${HOSTNAME},level=%level, class=%logger{36}, thread=%thread</pattern>
+        <readMarkers>true</readMarkers>
+      </label>
+      <message>
+        <pattern>%message</pattern>
+      </message>
+    </format>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="LOKI"/>
+  </root>
+</configuration>
