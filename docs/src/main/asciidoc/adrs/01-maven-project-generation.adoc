@@ -1,0 +1,54 @@
+= 001 - Maven Project Generation
+
+* Status: proposed
+* Decision makers: Support and Care Dev Team
+* Date: 2025-09-30
+
+
+
+=== Context and Problem Description
+The Maven Initializer should help to generate a ready-to use Maven project structure.
+
+
+
+
+
+=== Considered Options
+
+* Reuse Maven Archetype Components
+* Mavenizerve Toolbox
+
+=== Decision
+
+Chosen option: """, because [justification. e.g., only option, which meets k.o. criterion decision driver | which resolves force force | … | comes out best (see below)].
+
+==== Positive Consequences
+
+* [e.g., improvement of quality attribute satisfaction, follow-up decisions required, …]
+* …
+
+==== Negative Consequences
+
+* [e.g., compromising quality attribute, follow-up decisions required, …]
+* …
+
+=== Pros and Cons of the Options
+
+==== Reuse Maven Archetype Components
+
+[example | description | pointer to more information | …] <!-- optional -->
+
+* *Good*: because [argument a]
+* *Good*: because [argument b]
+* *Bad*: because [argument c]
+* … <!-- numbers of pros and cons can vary -->
+
+==== Mavenizerve Toolbox
+
+[example | description | pointer to more information | …] <!-- optional -->
+
+* *Good*: because [argument a]
+* *Good*: because [argument b]
+* *Bad*: because [argument c]
+* … <!-- numbers of pros and cons can vary -->
+
