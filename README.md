@@ -48,3 +48,14 @@ docker compose up --build -d
 
 - Frontend: http://localhost:4001
 - Backend API: http://localhost:9081/api/hello
+
+## Monitoring
+
+### Prometheus
+- Metrics endpoint: `/api/actuator/prometheus`
+- Exposes application metrics for monitoring
+
+### Loki
+- Logs are automatically sent to: `https://loki.open-elements.cloud`
+- App name: `maven-initializer-backend`
+- Query in Grafana: `{app="maven-initializer-backend"}`
