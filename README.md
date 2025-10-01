@@ -7,7 +7,7 @@ dependencies, and best practices, without the need to manually set up complex pr
 
 ## Prerequisites
 
-- Java 21
+- Java 25
 - Node.js 22+
 - pnpm
 
