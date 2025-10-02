@@ -50,7 +50,7 @@ Nevertheless, we have to add some custom implementation for matching our require
 
 ==== Mavenizerve Toolbox
 
-Started as show case for [MIMA Resolver], but has a ready-to-use Java DSL for POM generation.
+Toolbox has started as show case for [MIMA Resolver], but has a ready-to-use Java DSL for POM generation.
 This Java DSL is demonstrated in own Maven plugin / CLI tool, but it can be used as library.
 
 * *Good*: DSL-based
@@ -59,7 +59,7 @@ This Java DSL is demonstrated in own Maven plugin / CLI tool, but it can be used
 
 ==== Custom solution based on a template engine
 
-New CLI
+We can start from scratch based on a known template engine that is good integrated with Spring Boot.
 
 * *Good*: We would have the full control.
 * *Bad*: We have to implement everything from scratch
@@ -70,3 +70,4 @@ New CLI
 === Links
 - https://github.com/sparsick/embedded-maven-shared-toolbox[PoC with shared Mavenizerve Toolbox]
 - https://github.com/sparsick/embedded-maven-archetype[PoC with Maven Archetype]
+- List of template engine that have good integration in Spring[https://www.baeldung.com/spring-template-engines]
