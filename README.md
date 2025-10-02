@@ -16,6 +16,13 @@ dependencies, and best practices, without the need to manually set up complex pr
 - Docker
 - Docker Compose
 
+## Version Management Tools
+
+This project includes configuration files for version management:
+
+- **`.sdkmanrc`**: Java 25 (use `sdk env install` to install & activate)
+- **`frontend/.nvmrc`**: Node.js v22.19.0 (use `nvm install` to install & activate)
+
 ## How to Start the Project
 
 ### Docker Setup (Recommended)
@@ -52,10 +59,12 @@ docker compose up --build -d
 ## Monitoring
 
 ### Prometheus
+
 - Metrics endpoint: `/api/actuator/prometheus`
 - Exposes application metrics for monitoring
 
 ### Loki
+
 - Logs are automatically sent to: `https://loki.open-elements.cloud`
 - App name: `maven-initializer-backend`
 - Query in Grafana: `{app="maven-initializer-backend"}`
