@@ -2,21 +2,22 @@
 
 * Status: proposed
 * Decision makers: Support and Care Dev Team
-* Date: 2025-09-30
-
+* Date: 2025-10-02
+* Related issues: https://github.com/support-and-care/maven-initializer/issues/14[GitHub #14], https://github.com/support-and-care/maven-initializer/issues/6[GitHub #6]
 
 
 === Context and Problem Description
-The Maven Initializer should help to generate a ready-to use Maven project structure.
-
-
-
+The Maven Initializer should help to generate a ready-to-use Maven project structure.
+The core of the application is to generate the necessary project files.
+In the past, others already solved this problem.
+Therefore, there is a chance to reuse their solution.
 
 
 === Considered Options
 
 * Reuse Maven Archetype Components
 * Mavenizerve Toolbox
+* Custom solution based on a template engine
 
 === Decision
 
@@ -36,19 +37,36 @@ Chosen option: """, because [justification. e.g., only option, which meets k.o. 
 
 ==== Reuse Maven Archetype Components
 
-[example | description | pointer to more information | …] <!-- optional -->
+Apache Maven has an own mechansim for new project generation that realize as a Maven Plugin.
+This plugin has common components that are responseable for the generation part.
+The integration of the common components is tricky, because they depend on Maven Core infrastructure.
+Nevertheless, we have to add some custom implementation for matching our requirements (for example, add dependencies)
 
-* *Good*: because [argument a]
-* *Good*: because [argument b]
-* *Bad*: because [argument c]
-* … <!-- numbers of pros and cons can vary -->
+* *Good*: Many ready-to-use templates exist.
+* *Good*: Generator implementation exists.
+* *Bad*: Custom adjustment for matching our requirements is high.
+* *Bad*: Dependency Hell
+* *Bad*: Integration to other components is not so easy (field-injection)
 
 ==== Mavenizerve Toolbox
 
-[example | description | pointer to more information | …] <!-- optional -->
+Started as show case for [MIMA Resolver], but has a ready-to-use Java DSL for POM generation.
+This Java DSL is demonstrated in own Maven plugin / CLI tool, but it can be used as library.
 
-* *Good*: because [argument a]
-* *Good*: because [argument b]
-* *Bad*: because [argument c]
-* … <!-- numbers of pros and cons can vary -->
+* *Good*: DSL-based
+* *Good*: Good integration
+* *Good*: Good abstraction of the Maven infrastructure
 
+==== Custom solution based on a template engine
+
+New CLI
+
+* *Good*: We would have the full control.
+* *Bad*: We have to implement everything from scratch
+* *Bad*: Increase maintenance
+
+
+
+=== Links
+- https://github.com/sparsick/embedded-maven-shared-toolbox[PoC with shared Mavenizerve Toolbox]
+- https://github.com/sparsick/embedded-maven-archetype[PoC with Maven Archetype]
