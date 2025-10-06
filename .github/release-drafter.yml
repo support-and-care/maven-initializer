@@ -1,25 +1,21 @@
 name-template: "v$RESOLVED_VERSION 🌟"
 tag-template: "v$RESOLVED_VERSION"
+
 categories:
-  - title: "🚀 Features"
-    labels:
-      - "feature"
-      - "enhancement"
-  - title: "🐛 Fixes"
-    labels:
-      - "bug"
-      - "fix"
-  - title: "📚 Documentation"
-    labels:
-      - "documentation"
-      - "docs"
-  - title: "🧰 Maintenance"
-    labels:
-      - "chore"
-      - "dependencies"
-  - title: "⚡ Performance"
-    labels:
-      - "performance"
+  - title: 'Breaking'
+    label: 'type: breaking'
+  - title: 'New'
+    label: 'type: feature'
+  - title: 'Bug Fixes'
+    label: 'type: bug'
+  - title: 'Maintenance'
+    label: 'type: maintenance'
+  - title: 'Documentation'
+    label: 'type: docs'
+  - title: 'Other changes'
+  - title: 'Dependency Updates'
+    label: 'type: dependencies'
+
 change-template: "- $TITLE (#$NUMBER) by @$AUTHOR"
 change-title-escapes: '\<*_&'
 version-resolver:
