@@ -20,7 +20,7 @@ dependencies, and best practices, without the need to manually set up complex pr
 
 This project includes configuration files for version management:
 
-- **`.sdkmanrc`**: Java 25 (use `sdk env install` to install & activate)
+- **`backend/.sdkmanrc`**: Java 25 (use `sdk env install` to install & activate)
 - **`frontend/.nvmrc`**: Node.js v22.19.0 (use `nvm install` to install & activate)
 
 ## How to Start the Project

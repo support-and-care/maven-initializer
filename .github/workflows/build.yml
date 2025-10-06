@@ -39,6 +39,7 @@ jobs:
           cache-dependency-path: "frontend/pnpm-lock.yaml"
       - run: |
           pnpm install --no-frozen-lockfile
+          pnpm run format:check
           pnpm run build
 
   docker:
