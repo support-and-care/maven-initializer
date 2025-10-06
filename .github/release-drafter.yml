@@ -2,17 +2,14 @@ name-template: "v$RESOLVED_VERSION 🌟"
 tag-template: "v$RESOLVED_VERSION"
 
 categories:
-  - title: 'Breaking'
-    label: 'type: breaking'
   - title: 'New'
     label: 'type: feature'
   - title: 'Bug Fixes'
     label: 'type: bug'
-  - title: 'Maintenance'
-    label: 'type: maintenance'
+  - title: 'Chores'
+    label: 'type: chore'
   - title: 'Documentation'
     label: 'type: docs'
-  - title: 'Other changes'
   - title: 'Dependency Updates'
     label: 'type: dependencies'
 
@@ -21,17 +18,15 @@ change-title-escapes: '\<*_&'
 version-resolver:
   major:
     labels:
-      - 'type: breaking'
+      - 'type: bug'
   minor:
     labels:
       - 'type: feature'
   patch:
     labels:
-      - 'type: bug'
-      - 'type: maintenance'
       - 'type: docs'
       - 'type: dependencies'
-      - 'type: security'
+      - 'type: chore'
 
 exclude-labels:
   - 'skip-changelog'
