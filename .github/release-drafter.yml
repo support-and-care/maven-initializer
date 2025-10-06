@@ -2,34 +2,34 @@ name-template: "v$RESOLVED_VERSION 🌟"
 tag-template: "v$RESOLVED_VERSION"
 
 categories:
-  - title: 'New'
-    label: 'type: feature'
-  - title: 'Bug Fixes'
-    label: 'type: bug'
-  - title: 'Chores'
-    label: 'type: chore'
-  - title: 'Documentation'
-    label: 'type: docs'
-  - title: 'Dependency Updates'
-    label: 'type: dependencies'
+  - title: "New"
+    label: "type: feature"
+  - title: "Bug Fixes"
+    label: "type: bug"
+  - title: "Chores"
+    label: "type: chore"
+  - title: "Documentation"
+    label: "type: docs"
+  - title: "Dependency Updates"
+    label: "type: dependencies"
 
 change-template: "- $TITLE (#$NUMBER) by @$AUTHOR"
 change-title-escapes: '\<*_&'
 version-resolver:
   major:
     labels:
-      - 'type: bug'
+      - "type: bug"
   minor:
     labels:
-      - 'type: feature'
+      - "type: feature"
   patch:
     labels:
-      - 'type: docs'
-      - 'type: dependencies'
-      - 'type: chore'
+      - "type: docs"
+      - "type: dependencies"
+      - "type: chore"
 
 exclude-labels:
-  - 'skip-changelog'
+  - "skip-changelog"
 
 template: |
   ## Changes since last release
