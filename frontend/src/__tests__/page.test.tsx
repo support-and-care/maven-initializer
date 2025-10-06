@@ -34,7 +34,7 @@ describe("Home Page", () => {
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith("http://localhost:8080/api/hello");
       expect(
-        screen.getByText("Hello from Maven Initializer Backend!")
+        screen.getByText("Hello from Maven Initializer Backend!"),
       ).toBeInTheDocument();
     });
   });
@@ -49,7 +49,7 @@ describe("Home Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Error: Could not connect to backend")
+        screen.getByText("Error: Could not connect to backend"),
       ).toBeInTheDocument();
     });
   });
