@@ -11,6 +11,7 @@ The Maven Initializer should help to generate a ready-to-use Maven project struc
 The core of the application is to generate the necessary project files.
 In the past, others already solved this problem.
 Therefore, there is a chance to reuse their solution.
+We want to take a look at an existing solution and compare them with a custom solution based on a template engine.
 
 
 === Considered Options
@@ -21,36 +22,36 @@ Therefore, there is a chance to reuse their solution.
 
 === Decision
 
-Chosen option: """, because [justification. e.g., only option, which meets k.o. criterion decision driver | which resolves force force | … | comes out best (see below)].
+TBD
 
 ==== Positive Consequences
 
-* [e.g., improvement of quality attribute satisfaction, follow-up decisions required, …]
+* TBD
 * …
 
 ==== Negative Consequences
 
-* [e.g., compromising quality attribute, follow-up decisions required, …]
+* TBD
 * …
 
 === Pros and Cons of the Options
 
 ==== Reuse Maven Archetype Components
 
-Apache Maven has an own mechansim for new project generation that realize as a Maven Plugin.
-This plugin has common components that are responseable for the generation part.
-The integration of the common components is tricky, because they depend on Maven Core infrastructure.
-Nevertheless, we have to add some custom implementation for matching our requirements (for example, add dependencies)
+Apache Maven has its own mechanism for new project generation that realize as a Maven Plugin.
+This plugin has common components that are responsible for the generation part.
+The integration of the common components is tricky because they depend on Maven Core infrastructure.
+Nevertheless, we have to add some custom implementation for matching our requirements, (for example, add dependencies)
 
 * *Good*: Many ready-to-use templates exist.
 * *Good*: Generator implementation exists.
 * *Bad*: Custom adjustment for matching our requirements is high.
-* *Bad*: Dependency Hell
-* *Bad*: Integration to other components is not so easy (field-injection)
+* *Bad*: Dependency Hell.
+* *Bad*: Integration to other components is not such an easy (field-injection).
 
 ==== Mavenizerve Toolbox
 
-Toolbox has started as show case for [MIMA Resolver], but has a ready-to-use Java DSL for POM generation.
+Toolbox has started as a showcase for https://github.com/maveniverse/mima[MIMA Resolver], but has a ready-to-use Java DSL for POM generation.
 This Java DSL is demonstrated in own Maven plugin / CLI tool, but it can be used as library.
 
 * *Good*: DSL-based
@@ -70,4 +71,4 @@ We can start from scratch based on a known template engine that is good integrat
 === Links
 - https://github.com/sparsick/embedded-maven-shared-toolbox[PoC with shared Mavenizerve Toolbox]
 - https://github.com/sparsick/embedded-maven-archetype[PoC with Maven Archetype]
-- List of template engine that have good integration in Spring[https://www.baeldung.com/spring-template-engines]
+- https://www.baeldung.com/spring-template-engines[List of template engine] that have good integration in Spring
