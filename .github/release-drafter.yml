@@ -21,14 +21,21 @@ change-title-escapes: '\<*_&'
 version-resolver:
   major:
     labels:
-      - 'major'
+      - 'type: breaking'
   minor:
     labels:
-      - 'minor'
+      - 'type: feature'
   patch:
     labels:
-      - 'patch'
-  default: patch
+      - 'type: bug'
+      - 'type: maintenance'
+      - 'type: docs'
+      - 'type: dependencies'
+      - 'type: security'
+
+exclude-labels:
+  - 'skip-changelog'
+
 template: |
   ## Changes since last release
 
