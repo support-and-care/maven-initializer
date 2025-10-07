@@ -1,8 +1,8 @@
 = 001 - Maven Project Generation
 
-* Status: proposed
+* Status: accepted
 * Decision makers: Support and Care Dev Team
-* Date: 2025-10-02
+* Date: 2025-10-07
 * Related issues: https://github.com/support-and-care/maven-initializer/issues/14[GitHub #14], https://github.com/support-and-care/maven-initializer/issues/6[GitHub #6]
 
 
@@ -22,17 +22,18 @@ We want to take a look at an existing solution and compare them with a custom so
 
 === Decision
 
-TBD
+*Mavenizerve Toolbox*
+
+We like the Java-DSL approach, so that is straightforward to use in a programmatical way.
+It has already methods like `addDependencies` that can help to realize our requirements very easily.
+It also is implemented by Maven maintainer, and it is an active project.
 
 ==== Positive Consequences
 
-* TBD
-* …
+* Toolbox is a library coming from the Maven community.
+* Java DSL approach simplifies the programmatical way of configuration.
+* It is actively maintained.
 
-==== Negative Consequences
-
-* TBD
-* …
 
 === Pros and Cons of the Options
 
@@ -72,3 +73,4 @@ We can start from scratch based on a known template engine that is good integrat
 - https://github.com/sparsick/embedded-maven-shared-toolbox[PoC with shared Mavenizerve Toolbox]
 - https://github.com/sparsick/embedded-maven-archetype[PoC with Maven Archetype]
 - https://www.baeldung.com/spring-template-engines[List of template engine] that have good integration in Spring
+- https://github.com/support-and-care/maven-initializer/issues/3#issuecomment-3324185347[Result of the Kickoff Meeting for Maven initializer]
