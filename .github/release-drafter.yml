@@ -3,33 +3,35 @@ tag-template: "v$RESOLVED_VERSION"
 
 categories:
   - title: "New"
-    label: "type: feature"
+    labels: ["feature"]
   - title: "Bug Fixes"
-    label: "type: bug"
+    labels: ["bug"]
   - title: "Chores"
-    label: "type: chore"
+    labels: ["chore"]
   - title: "Documentation"
-    label: "type: docs"
+    labels: ["documentation"]
   - title: "Dependency Updates"
-    label: "type: dependencies"
+    labels: ["dependencies"]
 
 change-template: "- $TITLE (#$NUMBER) by @$AUTHOR"
 change-title-escapes: '\<*_&'
 version-resolver:
-  major:
-    labels:
-      - "type: bug"
   minor:
     labels:
-      - "type: feature"
+      - "feature"
   patch:
     labels:
-      - "type: docs"
-      - "type: dependencies"
-      - "type: chore"
+      - "bug"
+      - "documentation"
+      - "dependencies"
+      - "chore"
 
 exclude-labels:
   - "skip-changelog"
+  - "duplicate"
+  - "invalid"
+  - "question"
+  - "wontfix"
 
 template: |
   ## Changes since last release
