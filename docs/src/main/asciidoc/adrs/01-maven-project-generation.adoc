@@ -48,7 +48,7 @@ Nevertheless, we have to add some custom implementation for matching our require
 * *Good*: Generator implementation exists.
 * *Bad*: Custom adjustment for matching our requirements is high.
 * *Bad*: Dependency Hell.
-* *Bad*: Integration to other components is not such an easy (field-injection).
+* *Bad*: Integration in other components is not that easy (field-injection)
 
 ==== Mavenizerve Toolbox
 
