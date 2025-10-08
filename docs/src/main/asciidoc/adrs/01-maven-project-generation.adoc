@@ -11,7 +11,7 @@ The Maven Initializer should help to generate a ready-to-use Maven project struc
 The core of the application is to generate the necessary project files.
 In the past, others already solved this problem.
 Therefore, there is a chance to reuse their solution.
-We want to take a look at an existing solution and compare them with a custom solution based on a template engine.
+We want to take a look at an existing solution and compare it with a custom solution based on a template engine.
 
 
 === Considered Options
