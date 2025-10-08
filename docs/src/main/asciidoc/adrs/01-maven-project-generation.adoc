@@ -63,7 +63,7 @@ This Java DSL is demonstrated in own Maven plugin / CLI tool, but it can be used
 
 We can start from scratch based on a known template engine that is well-integrated with Spring Boot.
 
-* *Good*: We would have the full control.
+* *Good*: We would have full control.
 * *Bad*: We have to implement everything from scratch
 * *Bad*: Increased maintenance
 
