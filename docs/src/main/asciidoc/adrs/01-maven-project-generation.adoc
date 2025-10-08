@@ -65,7 +65,7 @@ We can start from scratch based on a known template engine that is well-integrat
 
 * *Good*: We would have the full control.
 * *Bad*: We have to implement everything from scratch
-* *Bad*: Increase maintenance
+* *Bad*: Increased maintenance
 
 
 
