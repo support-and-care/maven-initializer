@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MavenInitializerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(MavenInitializerApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(MavenInitializerApplication.class, args);
+  }
 }

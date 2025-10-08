@@ -1,0 +1,38 @@
+name-template: "v$RESOLVED_VERSION 🌟"
+tag-template: "v$RESOLVED_VERSION"
+
+categories:
+  - title: "Features"
+    labels: ["feature"]
+  - title: "Bug Fixes"
+    labels: ["bug"]
+  - title: "Maintenance"
+    labels: ["chore"]
+  - title: "Documentation"
+    labels: ["documentation"]
+  - title: "Dependency Updates"
+    labels: ["dependencies"]
+
+change-template: "- $TITLE (#$NUMBER) by @$AUTHOR"
+change-title-escapes: '\<*_&'
+version-resolver:
+  minor:
+    labels:
+      - "feature"
+  patch:
+    labels:
+      - "bug"
+      - "documentation"
+      - "dependencies"
+      - "chore"
+
+exclude-labels:
+  - "skip-changelog"
+
+template: |
+  ## Changes since last release
+
+  $CHANGES
+
+  _Thanks to all contributors!_
+  $CONTRIBUTORS

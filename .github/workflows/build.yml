@@ -19,6 +19,7 @@ jobs:
           java-version: "25"
           distribution: "temurin"
       - run: |
+          ./mvnw spotless:check
           ./mvnw clean verify
 
   frontend:
@@ -38,6 +39,7 @@ jobs:
           cache-dependency-path: "frontend/pnpm-lock.yaml"
       - run: |
           pnpm install --no-frozen-lockfile
+          pnpm run format:check
           pnpm run build
 
   docker:

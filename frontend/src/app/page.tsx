@@ -19,7 +19,7 @@ export default function Home() {
     } catch (error) {
       console.error("Error fetching data:", error);
       setMessage(
-        "Error: Could not connect to backend. Make sure both frontend and backend servers are running."
+        "Error: Could not connect to backend. Make sure both frontend and backend servers are running.",
       );
     } finally {
       setLoading(false);
