@@ -26,7 +26,7 @@ We want to take a look at an existing solution and compare it with a custom solu
 
 We like the Java-DSL approach, making it straightforward to use programmatically.
 It has already methods like `addDependencies` that can help to realize our requirements very easily.
-It also is implemented by Maven maintainer, and it is an active project.
+It is also implemented by a Maven maintainer, and it is an active project.
 
 ==== Positive Consequences
 
