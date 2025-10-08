@@ -42,7 +42,7 @@ It also is implemented by Maven maintainer, and it is an active project.
 Apache Maven has its own mechanism for generating new projects, which is realized as a Maven Plugin.
 This plugin has common components that are responsible for the generation part.
 The integration of the common components is tricky because they depend on Maven Core infrastructure.
-Nevertheless, we have to add some custom implementation for matching our requirements, (for example, add dependencies)
+Nevertheless, we have to add some custom implementation for matching our requirements (for example, add dependencies)
 
 * *Good*: Many ready-to-use templates exist.
 * *Good*: Generator implementation exists.
