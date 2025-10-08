@@ -6,7 +6,7 @@ categories:
     labels: ["feature"]
   - title: "Bug Fixes"
     labels: ["bug"]
-  - title: "Chores"
+  - title: "Maintenance"
     labels: ["chore"]
   - title: "Documentation"
     labels: ["documentation"]
@@ -28,10 +28,6 @@ version-resolver:
 
 exclude-labels:
   - "skip-changelog"
-  - "duplicate"
-  - "invalid"
-  - "question"
-  - "wontfix"
 
 template: |
   ## Changes since last release
