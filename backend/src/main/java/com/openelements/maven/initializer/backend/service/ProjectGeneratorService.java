@@ -66,7 +66,8 @@ public class ProjectGeneratorService {
     }
   }
 
-  public byte[] zipProject(String projectPath) {
+  public byte[] generateProjectZip(ProjectRequestDTO request) {
+    String projectPath = generateProject(request);
     try {
       return zipperService.createProjectZip(projectPath);
     } catch (Exception e) {
