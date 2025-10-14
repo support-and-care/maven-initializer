@@ -71,8 +71,8 @@ export const ProjectConfigurationForm: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-700">
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50 shadow-lg">
         <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           {/* Brand */}
           <div>
