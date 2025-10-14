@@ -23,7 +23,8 @@ public class ProjectController {
   public ResponseEntity<byte[]> generateProject(@Valid @RequestBody ProjectRequestDTO request) {
     byte[] zipBytes = projectGeneratorService.generateProjectZip(request);
     return ResponseEntity.ok()
-        .header("Content-Disposition", "attachment; filename=\"" + request.getArtifactId() + ".zip\"")
+        .header(
+            "Content-Disposition", "attachment; filename=\"" + request.getArtifactId() + ".zip\"")
         .body(zipBytes);
   }
 }
