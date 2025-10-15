@@ -19,9 +19,14 @@
 package com.openelements.maven.initializer.backend.service;
 
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
+import eu.maveniverse.maven.toolbox.shared.ToolboxCommando;
+import eu.maveniverse.maven.toolbox.shared.internal.PomSuppliers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,53 +35,61 @@ import org.springframework.stereotype.Service;
 public class ProjectGeneratorService {
 
   private static final Logger logger = LoggerFactory.getLogger(ProjectGeneratorService.class);
-  private final CommandExecutorService commandExecutor;
-  private final ProjectStructureService structureService;
+  private final ToolboxCommando toolboxCommando;
   private final ProjectZipperService zipperService;
-  private final FileUtilsService fileUtils;
+  private final ProjectStructureService structureService;
+
+  private static final List<String> DEFAULT_DEPENDENCIES = List.of("commons-io:commons-io:2.15.1");
+
+  private static final List<String> DEFAULT_PLUGINS =
+      List.of(
+          "org.apache.maven.plugins:maven-compiler-plugin:3.14.0",
+          "org.apache.maven.plugins:maven-resources-plugin:3.3.1",
+          "org.apache.maven.plugins:maven-surefire-plugin:3.5.4",
+          "org.apache.maven.plugins:maven-jar-plugin:3.4.2",
+          "org.apache.maven.plugins:maven-install-plugin:3.1.4",
+          "org.apache.maven.plugins:maven-deploy-plugin:3.1.4");
 
   public ProjectGeneratorService(
-      CommandExecutorService commandExecutor,
-      ProjectStructureService structureService,
+      ToolboxCommando toolboxCommando,
       ProjectZipperService zipperService,
-      FileUtilsService fileUtils) {
-    this.commandExecutor = commandExecutor;
-    this.structureService = structureService;
+      ProjectStructureService structureService) {
+    this.toolboxCommando = toolboxCommando;
     this.zipperService = zipperService;
-    this.fileUtils = fileUtils;
+    this.structureService = structureService;
   }
 
   public String generateProject(ProjectRequestDTO request) {
     logger.info("Starting project generation for: {}", request);
 
-    String projectDirName = request.getArtifactId();
-    Path targetDir = Paths.get("target").toAbsolutePath().resolve(projectDirName);
-
     try {
-      // Step 1: Create directories
-      Files.createDirectories(targetDir.getParent());
-      Path tempDir = targetDir.getParent().resolve("temp_" + projectDirName);
-      fileUtils.recreateDirectory(tempDir);
+      Path projectDir = Paths.get("target", request.getArtifactId());
+      Files.createDirectories(projectDir);
 
-      // Step 2: Run NewProject
-      commandExecutor.runNewProject(
-          tempDir, request.getGroupId(), request.getArtifactId(), request.getVersion());
+      Path pomFile = projectDir.resolve("pom.xml");
+      String pomContent =
+          PomSuppliers.empty400(
+              request.getGroupId(), request.getArtifactId(), request.getVersion());
+      Files.writeString(pomFile, pomContent);
 
-      // Step 3: Locate generated project
-      Path projectRoot = fileUtils.locateGeneratedProject(tempDir, request.getArtifactId());
+      try (ToolboxCommando.EditSession editSession = toolboxCommando.createEditSession(pomFile)) {
+        toolboxCommando.editPom(
+            editSession,
+            Collections.singletonList(
+                s -> {
+                  s.setPackaging("jar");
+                  DEFAULT_DEPENDENCIES.forEach(
+                      dep -> s.updateDependency(true, new DefaultArtifact(dep)));
+                  DEFAULT_PLUGINS.forEach(
+                      plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
+                }));
+      }
 
-      // Step 4: Move to final destination
-      fileUtils.moveDirectory(projectRoot, targetDir);
+      // Create project structure (directories, main class, .gitignore)
+      structureService.createStructure(projectDir, request);
 
-      // Step 5: Add managed dependencies and plugins
-      commandExecutor.addManagedDependency(targetDir, "commons-io:commons-io:2.15.1");
-      commandExecutor.addManagedPlugins(targetDir);
-
-      // Step 6: Create project structure
-      structureService.createStructure(targetDir, request);
-
-      logger.info("✅ Project generated successfully at: {}", targetDir);
-      return targetDir.toString();
+      logger.info("✅ Project generated successfully at: {}", projectDir);
+      return projectDir.toString();
 
     } catch (Exception e) {
       logger.error("❌ Project generation failed", e);

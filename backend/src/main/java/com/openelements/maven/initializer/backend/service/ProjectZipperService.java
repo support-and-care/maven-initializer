@@ -47,7 +47,7 @@ public class ProjectZipperService {
           .forEach(
               path -> {
                 try {
-                  Path rel = projectDir.getParent().relativize(path);
+                  Path rel = projectDir.relativize(path);
                   zos.putNextEntry(new ZipEntry(rel.toString()));
                   Files.copy(path, zos);
                   zos.closeEntry();
