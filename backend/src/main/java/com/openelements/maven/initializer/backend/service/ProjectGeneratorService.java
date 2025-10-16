@@ -39,8 +39,6 @@ public class ProjectGeneratorService {
   private final ProjectZipperService zipperService;
   private final ProjectStructureService structureService;
 
-  private static final List<String> DEFAULT_DEPENDENCIES = List.of("commons-io:commons-io:2.15.1");
-
   private static final List<String> DEFAULT_PLUGINS =
       List.of(
           "org.apache.maven.plugins:maven-compiler-plugin:3.14.0",
@@ -78,8 +76,8 @@ public class ProjectGeneratorService {
             Collections.singletonList(
                 s -> {
                   s.setPackaging("jar");
-                  DEFAULT_DEPENDENCIES.forEach(
-                      dep -> s.updateDependency(true, new DefaultArtifact(dep)));
+                  s.updateProperty(true, "maven.compiler.release", request.getJavaVersion());
+                  s.updateProperty(true, "project.build.sourceEncoding", "UTF-8");
                   DEFAULT_PLUGINS.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
                 }));

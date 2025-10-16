@@ -37,7 +37,6 @@ public class ProjectStructureService {
     createDirectories(projectRoot, request.getGroupId(), request.getArtifactId());
     createGitignoreFile(projectRoot);
     createMainClass(projectRoot, request);
-    updatePomFile(projectRoot, request);
 
     logger.info("✅ Project structure created successfully");
   }
@@ -102,73 +101,5 @@ public class ProjectStructureService {
 
     Files.writeString(mainClassFile, content);
     logger.debug("Created main class: {}", className);
-  }
-
-  private void updatePomFile(Path root, ProjectRequestDTO request) throws IOException {
-    Path pomPath = root.resolve("pom.xml");
-    if (!Files.exists(pomPath)) {
-      logger.warn("POM file not found at: {}", pomPath);
-      return;
-    }
-
-    String content = Files.readString(pomPath);
-
-    // Add or update the name element
-    String description =
-        request.getDescription() != null && !request.getDescription().trim().isEmpty()
-            ? request.getDescription()
-            : "Generated Maven Project";
-
-    if (!content.contains("<name>")) {
-      content =
-          content.replace(
-              "<version>" + request.getVersion() + "</version>",
-              "<version>"
-                  + request.getVersion()
-                  + "</version>\n    <name>"
-                  + description
-                  + "</name>");
-    } else {
-      content = content.replaceAll("<name>.*?</name>", "<name>" + description + "</name>");
-    }
-
-    // Add or update properties section
-    if (!content.contains("<properties>")) {
-      content =
-          content.replace(
-              "<packaging>jar</packaging>",
-              "<packaging>jar</packaging>\n\n    <properties>\n        <maven.compiler.release>"
-                  + request.getJavaVersion()
-                  + "</maven.compiler.release>\n        "
-                  + "<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n    </properties>");
-    } else {
-      content =
-          content.replaceAll(
-              "<maven\\.compiler\\.release>\\d+</maven\\.compiler\\.release>",
-              "<maven.compiler.release>" + request.getJavaVersion() + "</maven.compiler.release>");
-    }
-
-    // Clean up formatting
-    content =
-        content.replace(
-            "</dependencies>\n\n    </dependencyManagement>",
-            "</dependencies>\n    </dependencyManagement>");
-    content =
-        content.replace("</pluginManagement>\n\n    </build>", "</pluginManagement>\n    </build>");
-    content = content.replace("</build></project>", "</build>\n</project>");
-    content = content.replace("?><project", "?>\n<project");
-
-    // Remove empty line after </plugins>
-    content = content.replace("</plugins>\n\n    </build>", "</plugins>\n    </build>");
-
-    // Add empty line after </properties> if it doesn't exist
-    if (!content.contains("</properties>\n\n    <dependencies>")) {
-      content =
-          content.replace(
-              "</properties>\n    <dependencies>", "</properties>\n\n    <dependencies>");
-    }
-
-    Files.writeString(pomPath, content);
-    logger.debug("Updated POM file with project metadata");
   }
 }
