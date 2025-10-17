@@ -48,7 +48,7 @@ class ProjectStructureServiceTest {
     projectStructureService.createStructure(tempDir, request);
 
     // Then
-    Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/testproject.java");
+    Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/Testproject.java");
     assertTrue(Files.exists(mainClassFile));
 
     Path gitignoreFile = tempDir.resolve(".gitignore");
@@ -64,12 +64,12 @@ class ProjectStructureServiceTest {
     projectStructureService.createStructure(tempDir, request);
 
     // Then
-    Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/testproject.java");
+    Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/Testproject.java");
     String content = Files.readString(mainClassFile);
 
     assertTrue(content.contains("package com.example;"));
-    assertTrue(content.contains("public class testproject"));
-    assertTrue(content.contains("Hello, testproject!"));
+    assertTrue(content.contains("public class Testproject"));
+    assertTrue(content.contains("Hello, Testproject!"));
     assertTrue(content.contains("Test project description"));
   }
 
