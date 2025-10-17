@@ -107,7 +107,8 @@ class ProjectGeneratorServiceTest {
     request.setGroupId("com.example");
     request.setArtifactId("test-project");
     request.setVersion("1.0.0-SNAPSHOT");
-    request.setDescription("Test project");
+    request.setName("Test Project");
+    request.setDescription("Test project description");
     request.setJavaVersion("17");
     return request;
   }

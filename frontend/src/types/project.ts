@@ -2,6 +2,7 @@ export interface ProjectConfig {
   groupId: string;
   artifactId: string;
   version: string;
+  name?: string;
   description?: string;
   javaVersion: string;
 }

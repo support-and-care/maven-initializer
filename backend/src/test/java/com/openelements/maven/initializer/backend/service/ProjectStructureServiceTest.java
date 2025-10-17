@@ -100,6 +100,7 @@ class ProjectStructureServiceTest {
     request.setGroupId("com.example");
     request.setArtifactId("testproject");
     request.setVersion("1.0.0-SNAPSHOT");
+    request.setName("Test Project");
     request.setDescription("Test project description");
     request.setJavaVersion("17");
     return request;

@@ -75,9 +75,10 @@ public class ProjectStructureService {
 
   private void createMainClass(Path root, ProjectRequestDTO request) throws IOException {
     String pkg = request.getGroupId();
-    String className = request.getArtifactId();
+    String artifactId = request.getArtifactId();
+    String className = convertToJavaClassName(artifactId);
     String packagePath = pkg.replace(".", "/");
-    Path javaDir = root.resolve("src/main/java/" + packagePath + "/" + className.toLowerCase());
+    Path javaDir = root.resolve("src/main/java/" + packagePath + "/" + artifactId.toLowerCase());
     Path mainClassFile = javaDir.resolve(className + ".java");
 
     String content =
@@ -101,5 +102,27 @@ public class ProjectStructureService {
 
     Files.writeString(mainClassFile, content);
     logger.debug("Created main class: {}", className);
+  }
+
+  private String convertToJavaClassName(String artifactId) {
+    String[] parts = artifactId.split("-");
+    StringBuilder className = new StringBuilder();
+
+    for (String part : parts) {
+      if (!part.isEmpty()) {
+        // Capitalize first letter of each part
+        className.append(Character.toUpperCase(part.charAt(0)));
+        if (part.length() > 1) {
+          className.append(part.substring(1));
+        }
+      }
+    }
+
+    // Ensure the class name starts with a letter
+    if (className.isEmpty() || !Character.isLetter(className.charAt(0))) {
+      className.insert(0, "Project");
+    }
+
+    return className.toString();
   }
 }

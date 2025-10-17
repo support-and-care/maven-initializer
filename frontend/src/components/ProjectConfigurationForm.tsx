@@ -2,8 +2,18 @@
 
 import React, { useState } from "react";
 import { CheckCircle, AlertCircle } from "lucide-react";
-import * as Form from "@radix-ui/react-form";
 import { ProjectConfig, ValidationErrors } from "@/types/project";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 export const ProjectConfigurationForm: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -22,6 +32,7 @@ export const ProjectConfigurationForm: React.FC = () => {
         groupId: formData.get("groupId") as string,
         artifactId: formData.get("artifactId") as string,
         version: (formData.get("version") as string) || "1.0.0-SNAPSHOT",
+        name: (formData.get("name") as string) || "",
         description: (formData.get("description") as string) || "",
         javaVersion: (formData.get("javaVersion") as string) || "25",
       };
@@ -212,197 +223,162 @@ export const ProjectConfigurationForm: React.FC = () => {
       {/* Form Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Main Form Card */}
-        <div className="bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+        <Card className="bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
           {/* Card Header */}
-          <div className="bg-slate-700 border-b border-slate-600 px-8 py-6">
-            <h2 className="text-2xl font-semibold text-white mb-2">
+          <CardHeader className="bg-slate-700 border-b border-slate-600 px-8 py-6">
+            <CardTitle className="text-2xl font-semibold text-white mb-2">
               Project Metadata
-            </h2>
-            <p className="text-slate-300">
+            </CardTitle>
+            <CardDescription className="text-slate-300">
               Configure your Maven project settings
-            </p>
-          </div>
+            </CardDescription>
+          </CardHeader>
 
           {/* Form Content */}
-          <div className="p-8">
-            <Form.Root
-              onSubmit={handleSubmit}
-              onClearServerErrors={clearServerErrors}
-              className="space-y-8"
-            >
+          <CardContent className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* Form Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Group ID */}
-                <Form.Field
-                  name="groupId"
-                  serverInvalid={!!serverErrors.groupId}
-                  className="space-y-2"
-                >
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Form.Label className="text-sm font-medium text-slate-200 flex items-center gap-1">
+                    <label className="text-sm font-medium text-slate-200 flex items-center gap-1">
                       Group ID
                       <span className="text-red-500">*</span>
-                    </Form.Label>
-                    <Form.Message
-                      className="text-red-500 text-xs flex items-center gap-1"
-                      match="valueMissing"
-                    >
-                      <AlertCircle className="w-3 h-3" />
-                      Required
-                    </Form.Message>
+                    </label>
                     {serverErrors.groupId && (
-                      <Form.Message
-                        className="text-red-500 text-xs flex items-center gap-1"
-                        forceMatch
-                      >
+                      <div className="text-red-500 text-xs flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
                         {serverErrors.groupId}
-                      </Form.Message>
+                      </div>
                     )}
                   </div>
-                  <Form.Control asChild>
-                    <input
-                      type="text"
-                      name="groupId"
-                      placeholder="com.example"
-                      required
-                      className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    />
-                  </Form.Control>
+                  <Input
+                    type="text"
+                    name="groupId"
+                    placeholder="com.example"
+                    required
+                    className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
                   <p className="text-xs text-slate-400">
                     Usually a domain name in reverse order (e.g., com.example)
                   </p>
-                </Form.Field>
+                </div>
 
                 {/* Artifact ID */}
-                <Form.Field
-                  name="artifactId"
-                  serverInvalid={!!serverErrors.artifactId}
-                  className="space-y-2"
-                >
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Form.Label className="text-sm font-medium text-slate-200 flex items-center gap-1">
+                    <label className="text-sm font-medium text-slate-200 flex items-center gap-1">
                       Artifact ID
                       <span className="text-red-500">*</span>
-                    </Form.Label>
-                    <Form.Message
-                      className="text-red-500 text-xs flex items-center gap-1"
-                      match="valueMissing"
-                    >
-                      <AlertCircle className="w-3 h-3" />
-                      Required
-                    </Form.Message>
-                    <Form.Message
-                      className="text-red-500 text-xs flex items-center gap-1"
-                      match="patternMismatch"
-                    >
-                      <AlertCircle className="w-3 h-3" />
-                      Invalid format
-                    </Form.Message>
+                    </label>
                     {serverErrors.artifactId && (
-                      <Form.Message
-                        className="text-red-500 text-xs flex items-center gap-1"
-                        forceMatch
-                      >
+                      <div className="text-red-500 text-xs flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
                         {serverErrors.artifactId}
-                      </Form.Message>
+                      </div>
                     )}
                   </div>
-                  <Form.Control asChild>
-                    <input
-                      type="text"
-                      name="artifactId"
-                      placeholder="my-awesome-project"
-                      required
-                      pattern="^[a-z][a-z0-9-]*[a-z0-9]$"
-                      className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    />
-                  </Form.Control>
+                  <Input
+                    type="text"
+                    name="artifactId"
+                    placeholder="my-awesome-project"
+                    required
+                    pattern="^[a-z][a-z0-9-]*[a-z0-9]$"
+                    className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
                   <p className="text-xs text-slate-400">
                     The name of your project (lowercase, hyphens allowed)
                   </p>
-                </Form.Field>
+                </div>
 
                 {/* Version */}
-                <Form.Field name="version" className="space-y-2">
-                  <Form.Label className="text-sm font-medium text-slate-200">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-200">
                     Version
-                  </Form.Label>
-                  <Form.Control asChild>
-                    <input
-                      type="text"
-                      name="version"
-                      placeholder="1.0.0-SNAPSHOT"
-                      defaultValue="1.0.0-SNAPSHOT"
-                      className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    />
-                  </Form.Control>
+                  </label>
+                  <Input
+                    type="text"
+                    name="version"
+                    placeholder="1.0.0-SNAPSHOT"
+                    defaultValue="1.0.0-SNAPSHOT"
+                    className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
                   <p className="text-xs text-slate-400">
                     The version of your project
                   </p>
-                </Form.Field>
+                </div>
+
+                {/* Project Name */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-200">
+                    Project Name
+                  </label>
+                  <Input
+                    type="text"
+                    name="name"
+                    placeholder="My Awesome Project"
+                    className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                  <p className="text-xs text-slate-400">
+                    A friendly name for your project
+                  </p>
+                </div>
 
                 {/* Java Version */}
-                <Form.Field name="javaVersion" className="space-y-2">
-                  <Form.Label className="text-sm font-medium text-slate-200">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-200">
                     Java Version
-                  </Form.Label>
-                  <Form.Control asChild>
-                    <select
-                      name="javaVersion"
-                      defaultValue="25"
-                      className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
-                    >
-                      <option value="8">Java 8 (LTS)</option>
-                      <option value="11">Java 11 (LTS)</option>
-                      <option value="17">Java 17 (LTS)</option>
-                      <option value="21">Java 21 (LTS)</option>
-                      <option value="25">Java 25 (Latest)</option>
-                    </select>
-                  </Form.Control>
+                  </label>
+                  <Select
+                    name="javaVersion"
+                    defaultValue="25"
+                    className="w-full px-4 py-3.5 border border-slate-600 rounded-lg bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors h-12 leading-relaxed"
+                  >
+                    <option value="8">Java 8 (LTS)</option>
+                    <option value="11">Java 11 (LTS)</option>
+                    <option value="17">Java 17 (LTS)</option>
+                    <option value="21">Java 21 (LTS)</option>
+                    <option value="25">Java 25 (Latest)</option>
+                  </Select>
                   <p className="text-xs text-slate-400">
                     The Java version to use for your project
                   </p>
-                </Form.Field>
+                </div>
               </div>
 
               {/* Description */}
-              <Form.Field name="description" className="space-y-2">
-                <Form.Label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-200">
                   Project Description
-                </Form.Label>
-                <Form.Control asChild>
-                  <textarea
-                    name="description"
-                    placeholder="Describe your project's purpose and functionality..."
-                    rows={3}
-                    className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
-                  />
-                </Form.Control>
+                </label>
+                <Textarea
+                  name="description"
+                  placeholder="Describe your project's purpose and functionality..."
+                  rows={3}
+                  className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                />
                 <p className="text-xs text-slate-400">
                   A brief description of what your project does
                 </p>
-              </Form.Field>
+              </div>
 
               {/* Generate Button */}
               <div className="flex justify-center pt-6">
-                <Form.Submit asChild>
-                  <button
-                    type="submit"
-                    disabled={isGenerating}
-                    className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 min-w-[200px] justify-center"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      "Generate Project"
-                    )}
-                  </button>
-                </Form.Submit>
+                <Button
+                  type="submit"
+                  disabled={isGenerating}
+                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 min-w-[200px] justify-center"
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate Project"
+                  )}
+                </Button>
               </div>
 
               {/* Status Message */}
@@ -424,9 +400,9 @@ export const ProjectConfigurationForm: React.FC = () => {
                   </span>
                 </div>
               )}
-            </Form.Root>
-          </div>
-        </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

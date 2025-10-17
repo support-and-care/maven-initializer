@@ -21,11 +21,18 @@ package com.openelements.maven.initializer.backend.service;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import eu.maveniverse.maven.toolbox.shared.ToolboxCommando;
 import eu.maveniverse.maven.toolbox.shared.internal.PomSuppliers;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,10 +85,18 @@ public class ProjectGeneratorService {
                   s.setPackaging("jar");
                   s.updateProperty(true, "maven.compiler.release", request.getJavaVersion());
                   s.updateProperty(true, "project.build.sourceEncoding", "UTF-8");
+                  s.editor()
+                      .insertMavenElement(
+                          s.editor().root(), "description", request.getDescription());
+                  s.editor().insertMavenElement(s.editor().root(), "name", request.getName());
                   DEFAULT_PLUGINS.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
                 }));
       }
+
+      // Format the XML properly
+      String formattedXml = formatXml(Files.readString(pomFile));
+      Files.writeString(pomFile, formattedXml);
 
       // Create project structure (directories, main class, .gitignore)
       structureService.createStructure(projectDir, request);
@@ -102,5 +117,47 @@ public class ProjectGeneratorService {
     } catch (Exception e) {
       throw new RuntimeException("Failed to create ZIP: " + e.getMessage(), e);
     }
+  }
+
+  private String formatXml(String xml) throws Exception {
+    // Create XSLT to strip whitespace and format properly
+    String xslt =
+        """
+                <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                    <xsl:strip-space elements="*"/>
+                    <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
+                    <xsl:template match="@*|node()">
+                        <xsl:copy>
+                            <xsl:apply-templates select="@*|node()"/>
+                        </xsl:copy>
+                    </xsl:template>
+                </xsl:stylesheet>
+                """;
+
+    TransformerFactory factory = TransformerFactory.newInstance();
+    Transformer transformer = factory.newTransformer(new StreamSource(new StringReader(xslt)));
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+    StringWriter writer = new StringWriter();
+    transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(writer));
+
+    // Apply custom formatting rules
+    String formatted = writer.toString();
+    return applyCustomFormatting(formatted);
+  }
+
+  private String applyCustomFormatting(String xml) {
+    // Ensure <project> tag is on its own line
+    xml = xml.replaceFirst("(<project[^>]*>)", "\n$1");
+
+    // Add empty lines after some specific elements
+    xml = xml.replace("</modelVersion>", "</modelVersion>\n");
+    xml = xml.replace("</description>", "</description>\n");
+    xml = xml.replace("</properties>", "</properties>\n");
+
+    return xml;
   }
 }

@@ -39,17 +39,25 @@ public class ProjectRequestDTO {
 
   private String javaVersion = "25";
 
+  private String name;
+
   // Default constructor
   public ProjectRequestDTO() {}
 
   // Constructor with all fields
   public ProjectRequestDTO(
-      String groupId, String artifactId, String version, String description, String javaVersion) {
+      String groupId,
+      String artifactId,
+      String version,
+      String description,
+      String javaVersion,
+      String name) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
     this.description = description;
     this.javaVersion = javaVersion;
+    this.name = name;
   }
 
   // Getters and Setters
@@ -93,6 +101,14 @@ public class ProjectRequestDTO {
     this.javaVersion = javaVersion;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
   @Override
   public String toString() {
     return "ProjectRequestDTO{"
@@ -110,6 +126,9 @@ public class ProjectRequestDTO {
         + '\''
         + ", javaVersion='"
         + javaVersion
+        + '\''
+        + ", name='"
+        + name
         + '\''
         + '}';
   }
