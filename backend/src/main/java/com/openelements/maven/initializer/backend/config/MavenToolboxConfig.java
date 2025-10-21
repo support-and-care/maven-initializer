@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 public class MavenToolboxConfig {
 
   @Bean
-  ToolboxCommando toolboxCommando(Context context) {
+  public ToolboxCommando toolboxCommando(Context context) {
     return ToolboxCommando.create(
         new LoggerOutput(
             LoggerFactory.getLogger(MavenToolboxConfig.class), true, Output.Verbosity.NORMAL),
@@ -40,7 +40,7 @@ public class MavenToolboxConfig {
   }
 
   @Bean
-  Context mavenContext() {
+  public Context mavenContext() {
     ContextOverrides contextOverrides = ContextOverrides.create().withUserSettings(true).build();
     return Runtimes.INSTANCE.getRuntime().create(contextOverrides);
   }

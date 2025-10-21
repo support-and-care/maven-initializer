@@ -18,26 +18,37 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.openelements.maven.initializer.backend.config.MavenToolboxConfig;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 class ProjectGeneratorServiceTest {
 
-  @Autowired private ProjectGeneratorService projectGeneratorService;
+  private ProjectGeneratorService projectGeneratorServiceUnderTest;
+  @Mock private ProjectStructureService projectStructureServiceMock;
+
+  @BeforeEach
+  void setUp() {
+    MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
+
+    var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
+    projectGeneratorServiceUnderTest =
+        new ProjectGeneratorService(toolbox, projectStructureServiceMock);
+  }
 
   @Test
   void testProjectGeneration() {
@@ -45,52 +56,43 @@ class ProjectGeneratorServiceTest {
     final ProjectRequestDTO validRequest = createValidRequest();
 
     // When
-    assertDoesNotThrow(
-        () -> {
-          final String result = projectGeneratorService.generateProject(validRequest);
-          assertNotNull(result);
-          assertTrue(result.contains(validRequest.getArtifactId()));
-          assertTrue(java.nio.file.Files.exists(java.nio.file.Paths.get(result)));
-        });
+    final String result = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    assertNotNull(result);
+    assertTrue(result.contains(validRequest.getArtifactId()));
+    assertTrue(java.nio.file.Files.exists(java.nio.file.Paths.get(result)));
 
-    assertThrows(RuntimeException.class, () -> projectGeneratorService.generateProject(null));
+    assertThrows(
+        RuntimeException.class, () -> projectGeneratorServiceUnderTest.generateProject(null));
+  }
+
+  @Test
+  void testProjectGenerationFailing() {
+
+    assertThrows(
+        RuntimeException.class, () -> projectGeneratorServiceUnderTest.generateProject(null));
   }
 
   @Test
   void testProjectZipCreation() {
-    // Given
-    final ProjectRequestDTO validRequest = createValidRequest();
-    final String validProjectPath = projectGeneratorService.generateProject(validRequest);
-    final String invalidProjectPath = "/non/existent/path";
-
     // When
-    assertDoesNotThrow(
-        () -> {
-          final byte[] zipBytes = projectGeneratorService.createProjectZip(validProjectPath);
-          assertNotNull(zipBytes);
-          assertTrue(zipBytes.length > 0);
-        });
+    String validProjectPath = new File("src/test/resources/validTestProject").getAbsolutePath();
+    final byte[] zipBytes = projectGeneratorServiceUnderTest.createProjectZip(validProjectPath);
 
-    // When
-    assertThrows(RuntimeException.class, () -> projectGeneratorService.createProjectZip(null));
-    assertThrows(
-        RuntimeException.class, () -> projectGeneratorService.createProjectZip(invalidProjectPath));
+    assertNotNull(zipBytes);
+    assertTrue(zipBytes.length > 0);
   }
 
   @Test
-  void testProjectZipGeneration() {
+  void testProjectZipCreationFailing() {
     // Given
-    final ProjectRequestDTO validRequest = createValidRequest();
+    final String invalidProjectPath = "/non/existent/path";
 
     // When
-    assertDoesNotThrow(
-        () -> {
-          final byte[] result = projectGeneratorService.generateProjectZip(validRequest);
-          assertNotNull(result);
-          assertTrue(result.length > 0);
-        });
-
-    assertThrows(RuntimeException.class, () -> projectGeneratorService.generateProjectZip(null));
+    assertThrows(
+        RuntimeException.class, () -> projectGeneratorServiceUnderTest.createProjectZip(null));
+    assertThrows(
+        RuntimeException.class,
+        () -> projectGeneratorServiceUnderTest.createProjectZip(invalidProjectPath));
   }
 
   @Test
@@ -100,7 +102,7 @@ class ProjectGeneratorServiceTest {
     ProjectRequestDTO validRequest = createValidRequest();
 
     // When
-    String projectPath = projectGeneratorService.generateProject(validRequest);
+    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
 
     Path pomFile = Path.of(projectPath, "pom.xml");
     assertTrue(Files.exists(pomFile));
@@ -127,7 +129,7 @@ class ProjectGeneratorServiceTest {
     ProjectRequestDTO validRequest = createValidRequest();
 
     // When
-    String projectPath = projectGeneratorService.generateProject(validRequest);
+    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
     Path pomFile = Path.of(projectPath, "pom.xml");
 
     // Then

@@ -140,11 +140,6 @@ public class ProjectGeneratorService {
     }
   }
 
-  public byte[] generateProjectZip(ProjectRequestDTO request) {
-    String projectPath = generateProject(request);
-    return createProjectZip(projectPath);
-  }
-
   private String formatXml(String xml) throws Exception {
     // Create XSLT to strip whitespace and format properly
     String xslt =
