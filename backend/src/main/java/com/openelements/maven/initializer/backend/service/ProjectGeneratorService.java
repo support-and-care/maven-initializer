@@ -21,6 +21,8 @@ package com.openelements.maven.initializer.backend.service;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import eu.maveniverse.maven.toolbox.shared.ToolboxCommando;
 import eu.maveniverse.maven.toolbox.shared.internal.PomSuppliers;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -28,6 +30,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -43,7 +47,6 @@ public class ProjectGeneratorService {
 
   private static final Logger logger = LoggerFactory.getLogger(ProjectGeneratorService.class);
   private final ToolboxCommando toolboxCommando;
-  private final ProjectZipperService zipperService;
   private final ProjectStructureService structureService;
 
   private static final List<String> DEFAULT_PLUGINS =
@@ -56,11 +59,8 @@ public class ProjectGeneratorService {
           "org.apache.maven.plugins:maven-deploy-plugin:3.1.4");
 
   public ProjectGeneratorService(
-      ToolboxCommando toolboxCommando,
-      ProjectZipperService zipperService,
-      ProjectStructureService structureService) {
+      ToolboxCommando toolboxCommando, ProjectStructureService structureService) {
     this.toolboxCommando = toolboxCommando;
-    this.zipperService = zipperService;
     this.structureService = structureService;
   }
 
@@ -68,8 +68,8 @@ public class ProjectGeneratorService {
     logger.info("Starting project generation for: {}", request);
 
     try {
-      Path projectDir = Paths.get("target", request.getArtifactId());
-      Files.createDirectories(projectDir);
+      Path projectDir = Files.createTempDirectory("project-" + request.getArtifactId() + "-");
+      logger.debug("Created temporary project directory at: {}", projectDir);
 
       Path pomFile = projectDir.resolve("pom.xml");
       String pomContent =
@@ -98,25 +98,51 @@ public class ProjectGeneratorService {
       String formattedXml = formatXml(Files.readString(pomFile));
       Files.writeString(pomFile, formattedXml);
 
-      // Create project structure (directories, main class, .gitignore)
       structureService.createStructure(projectDir, request);
 
-      logger.info("✅ Project generated successfully at: {}", projectDir);
+      logger.info("Project generated successfully at: {}", projectDir);
       return projectDir.toString();
 
     } catch (Exception e) {
-      logger.error("❌ Project generation failed", e);
+      logger.error("Project generation failed", e);
       throw new RuntimeException("Failed to generate project: " + e.getMessage(), e);
+    }
+  }
+
+  public byte[] createProjectZip(String projectPath) {
+    try {
+      Path projectDir = Paths.get(projectPath);
+      if (!Files.exists(projectDir)) {
+        throw new IOException("Project directory does not exist: " + projectPath);
+      }
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+        Files.walk(projectDir)
+            .filter(Files::isRegularFile)
+            .forEach(
+                path -> {
+                  try {
+                    Path rel = projectDir.relativize(path);
+                    zos.putNextEntry(new ZipEntry(rel.toString()));
+                    Files.copy(path, zos);
+                    zos.closeEntry();
+                  } catch (IOException e) {
+                    logger.error("Failed to add file to ZIP: {}", path, e);
+                  }
+                });
+      }
+
+      logger.info("Created ZIP for project: {} ({} bytes)", projectPath, baos.size());
+      return baos.toByteArray();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to create ZIP: " + e.getMessage(), e);
     }
   }
 
   public byte[] generateProjectZip(ProjectRequestDTO request) {
     String projectPath = generateProject(request);
-    try {
-      return zipperService.createProjectZip(projectPath);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to create ZIP: " + e.getMessage(), e);
-    }
+    return createProjectZip(projectPath);
   }
 
   private String formatXml(String xml) throws Exception {

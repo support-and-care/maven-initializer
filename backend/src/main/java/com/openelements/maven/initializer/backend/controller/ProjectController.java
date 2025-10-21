@@ -39,7 +39,8 @@ public class ProjectController {
 
   @PostMapping("/generate")
   public ResponseEntity<byte[]> generateProject(@Valid @RequestBody ProjectRequestDTO request) {
-    byte[] zipBytes = projectGeneratorService.generateProjectZip(request);
+    String result = projectGeneratorService.generateProject(request);
+    byte[] zipBytes = projectGeneratorService.createProjectZip(result);
     return ResponseEntity.ok()
         .header(
             "Content-Disposition", "attachment; filename=\"" + request.getArtifactId() + ".zip\"")

@@ -18,92 +18,139 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
-import eu.maveniverse.maven.toolbox.shared.ToolboxCommando;
-import org.junit.jupiter.api.BeforeEach;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
 class ProjectGeneratorServiceTest {
 
-  @Mock private ToolboxCommando toolboxCommando;
-  @Mock private ProjectZipperService zipperService;
-  @Mock private ProjectStructureService structureService;
-  @Mock private ToolboxCommando.EditSession editSession;
-
-  private ProjectGeneratorService projectGeneratorService;
-
-  @BeforeEach
-  void setUp() {
-    projectGeneratorService =
-        new ProjectGeneratorService(toolboxCommando, zipperService, structureService);
-  }
+  @Autowired private ProjectGeneratorService projectGeneratorService;
 
   @Test
-  void shouldGenerateProject() throws Exception {
+  void testProjectGeneration() {
     // Given
-    ProjectRequestDTO request = createTestRequest();
-    when(toolboxCommando.createEditSession(any())).thenReturn(editSession);
+    final ProjectRequestDTO validRequest = createValidRequest();
 
     // When
-    String result = projectGeneratorService.generateProject(request);
+    assertDoesNotThrow(
+        () -> {
+          final String result = projectGeneratorService.generateProject(validRequest);
+          assertNotNull(result);
+          assertTrue(result.contains(validRequest.getArtifactId()));
+          assertTrue(java.nio.file.Files.exists(java.nio.file.Paths.get(result)));
+        });
 
-    // Then
-    assertNotNull(result);
-    assertTrue(result.contains(request.getArtifactId()));
-    verify(toolboxCommando).createEditSession(any());
-    verify(toolboxCommando).editPom(eq(editSession), any());
-    verify(structureService).createStructure(any(), eq(request));
+    assertThrows(RuntimeException.class, () -> projectGeneratorService.generateProject(null));
   }
 
   @Test
-  void shouldGenerateZip() throws Exception {
+  void testProjectZipCreation() {
     // Given
-    ProjectRequestDTO request = createTestRequest();
-    byte[] expectedZip = "test-zip-content".getBytes();
-    when(toolboxCommando.createEditSession(any())).thenReturn(editSession);
-    when(zipperService.createProjectZip(any())).thenReturn(expectedZip);
+    final ProjectRequestDTO validRequest = createValidRequest();
+    final String validProjectPath = projectGeneratorService.generateProject(validRequest);
+    final String invalidProjectPath = "/non/existent/path";
 
     // When
-    byte[] result = projectGeneratorService.generateProjectZip(request);
+    assertDoesNotThrow(
+        () -> {
+          final byte[] zipBytes = projectGeneratorService.createProjectZip(validProjectPath);
+          assertNotNull(zipBytes);
+          assertTrue(zipBytes.length > 0);
+        });
 
-    // Then
-    assertNotNull(result);
-    assertArrayEquals(expectedZip, result);
-    verify(zipperService).createProjectZip(any());
+    // When
+    assertThrows(RuntimeException.class, () -> projectGeneratorService.createProjectZip(null));
+    assertThrows(
+        RuntimeException.class, () -> projectGeneratorService.createProjectZip(invalidProjectPath));
   }
 
   @Test
-  void shouldFailWhenToolboxErrors() throws Exception {
+  void testProjectZipGeneration() {
     // Given
-    ProjectRequestDTO request = createTestRequest();
-    when(toolboxCommando.createEditSession(any())).thenThrow(new RuntimeException("Toolbox error"));
+    final ProjectRequestDTO validRequest = createValidRequest();
 
-    // When & Then
-    RuntimeException exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              projectGeneratorService.generateProject(request);
-            });
+    // When
+    assertDoesNotThrow(
+        () -> {
+          final byte[] result = projectGeneratorService.generateProjectZip(validRequest);
+          assertNotNull(result);
+          assertTrue(result.length > 0);
+        });
 
-    assertTrue(exception.getMessage().contains("Failed to generate project"));
+    assertThrows(RuntimeException.class, () -> projectGeneratorService.generateProjectZip(null));
   }
 
-  private ProjectRequestDTO createTestRequest() {
-    ProjectRequestDTO request = new ProjectRequestDTO();
+  @Test
+  void testPomFileContainsExpectedElements() throws IOException {
+
+    // Given
+    ProjectRequestDTO validRequest = createValidRequest();
+
+    // When
+    String projectPath = projectGeneratorService.generateProject(validRequest);
+
+    Path pomFile = Path.of(projectPath, "pom.xml");
+    assertTrue(Files.exists(pomFile));
+
+    String pomContent = Files.readString(pomFile);
+    assertTrue(pomContent.contains("<groupId>" + validRequest.getGroupId() + "</groupId>"));
+    assertTrue(
+        pomContent.contains("<artifactId>" + validRequest.getArtifactId() + "</artifactId>"));
+    assertTrue(pomContent.contains("<version>" + validRequest.getVersion() + "</version>"));
+    assertTrue(pomContent.contains("<name>" + validRequest.getName() + "</name>"));
+    assertTrue(
+        pomContent.contains("<description>" + validRequest.getDescription() + "</description>"));
+    assertTrue(
+        pomContent.contains(
+            "<maven.compiler.release>"
+                + validRequest.getJavaVersion()
+                + "</maven.compiler.release>"));
+  }
+
+  @Test
+  void testPomContainsAllDefaultPlugins() throws Exception {
+
+    // Given
+    ProjectRequestDTO validRequest = createValidRequest();
+
+    // When
+    String projectPath = projectGeneratorService.generateProject(validRequest);
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+
+    String pomContent = Files.readString(pomFile);
+    List<String> defaultPlugins =
+        List.of(
+            "maven-compiler-plugin",
+            "maven-resources-plugin",
+            "maven-surefire-plugin",
+            "maven-jar-plugin",
+            "maven-install-plugin",
+            "maven-deploy-plugin");
+
+    List<String> missingPlugins =
+        defaultPlugins.stream().filter(plugin -> !pomContent.contains(plugin)).toList();
+
+    assertTrue(missingPlugins.isEmpty(), "Missing plugins in pom.xml: " + missingPlugins);
+  }
+
+  private ProjectRequestDTO createValidRequest() {
+    final ProjectRequestDTO request = new ProjectRequestDTO();
     request.setGroupId("com.example");
     request.setArtifactId("test-project");
     request.setVersion("1.0.0-SNAPSHOT");

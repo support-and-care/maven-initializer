@@ -18,6 +18,9 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
@@ -27,75 +30,106 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class ProjectStructureServiceTest {
 
   @TempDir Path tempDir;
 
   private ProjectStructureService projectStructureService;
+  private ProjectRequestDTO validRequest;
 
   @BeforeEach
   void setUp() {
     projectStructureService = new ProjectStructureService();
+    validRequest = createValidRequest();
   }
 
   @Test
-  void shouldCreateRequiredFiles() throws IOException {
-    // Given
-    ProjectRequestDTO request = createTestRequest();
-
+  void testProjectStructureCreation() {
     // When
-    projectStructureService.createStructure(tempDir, request);
+    assertDoesNotThrow(() -> projectStructureService.createStructure(tempDir, validRequest));
 
-    // Then
     Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/Testproject.java");
-    assertTrue(Files.exists(mainClassFile));
-
     Path gitignoreFile = tempDir.resolve(".gitignore");
-    assertTrue(Files.exists(gitignoreFile));
+
+    // Then
+    assertAll(
+        () -> assertTrue(Files.exists(mainClassFile), "Main class file should exist"),
+        () -> assertTrue(Files.exists(gitignoreFile), ".gitignore file should exist"));
+
+    assertThrows(
+        RuntimeException.class,
+        () -> projectStructureService.createStructure(tempDir, null),
+        "Expected exception for null ProjectRequestDTO");
   }
 
   @Test
-  void shouldWriteMainClassContent() throws IOException {
-    // Given
-    ProjectRequestDTO request = createTestRequest();
-
+  void testMainClassContent() throws IOException {
     // When
-    projectStructureService.createStructure(tempDir, request);
+    projectStructureService.createStructure(tempDir, validRequest);
 
-    // Then
     Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/Testproject.java");
+    assertTrue(Files.exists(mainClassFile), "Main class file should exist");
+
     String content = Files.readString(mainClassFile);
 
-    assertTrue(content.contains("package com.example;"));
-    assertTrue(content.contains("public class Testproject"));
-    assertTrue(content.contains("Hello, Testproject!"));
-    assertTrue(content.contains("Test project description"));
+    assertAll(
+        () ->
+            assertTrue(
+                content.contains("package com.example;"),
+                "Package should match group and artifact ID"),
+        () ->
+            assertTrue(
+                content.contains("public class Testproject"),
+                "Class declaration should match artifact name"),
+        () ->
+            assertTrue(content.contains("Hello, Testproject!"), "Should include greeting message"),
+        () ->
+            assertTrue(
+                content.contains("Test project description"),
+                "JavaDoc should include project description"));
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "target/",
+        "pom.xml.tag",
+        "dependency-reduced-pom.xml",
+        "release.properties",
+        "pom.xml.releaseBackup",
+        "pom.xml.next",
+        "buildNumber.properties",
+        "pom.xml.versionsBackup"
+      })
+  void testGitignoreContainsExpectedEntries(String entry) throws IOException {
+    // When
+    projectStructureService.createStructure(tempDir, validRequest);
+
+    Path gitignoreFile = tempDir.resolve(".gitignore");
+    assertTrue(Files.exists(gitignoreFile), ".gitignore file should exist");
+
+    // Then
+    String content = Files.readString(gitignoreFile);
+    assertTrue(content.contains(entry), "Missing .gitignore entry: " + entry);
   }
 
   @Test
-  void shouldWriteGitignoreContent() throws IOException {
-    // Given
-    ProjectRequestDTO request = createTestRequest();
-
+  void testDirectoryStructureCreation() throws IOException {
     // When
-    projectStructureService.createStructure(tempDir, request);
+    projectStructureService.createStructure(tempDir, validRequest);
 
-    // Then
-    Path gitignoreFile = tempDir.resolve(".gitignore");
-    String content = Files.readString(gitignoreFile);
+    Path mainJavaDir = tempDir.resolve("src/main/java/com/example/testproject");
 
-    assertTrue(content.contains("target/"));
-    assertTrue(content.contains("pom.xml.tag"));
-    assertTrue(content.contains("dependency-reduced-pom.xml"));
-    assertTrue(content.contains("release.properties"));
-    assertTrue(content.contains("pom.xml.releaseBackup"));
-    assertTrue(content.contains("pom.xml.next"));
-    assertTrue(content.contains("buildNumber.properties"));
-    assertTrue(content.contains("pom.xml.versionsBackup"));
+    assertAll(() -> assertTrue(Files.isDirectory(mainJavaDir), "Main Java directory should exist"));
+
+    Path mainClassFile = mainJavaDir.resolve("Testproject.java");
+    assertTrue(Files.exists(mainClassFile), "Main class should be correctly placed");
   }
 
-  private ProjectRequestDTO createTestRequest() {
+  private ProjectRequestDTO createValidRequest() {
     ProjectRequestDTO request = new ProjectRequestDTO();
     request.setGroupId("com.example");
     request.setArtifactId("testproject");
