@@ -44,15 +44,8 @@ public class ProjectStructureService {
   private void createDirectories(Path root, String groupId, String artifactId) throws IOException {
     String packagePath = groupId.replace(".", "/");
     Path javaDir = root.resolve("src/main/java/" + packagePath + "/" + artifactId.toLowerCase());
-    //    Path resourcesDir = root.resolve("src/main/resources");
-    //    Path testDir = root.resolve("src/test/java/" + packagePath + "/" +
-    // artifactId.toLowerCase());
-    //    Path testResourcesDir = root.resolve("src/test/resources");
 
     Files.createDirectories(javaDir);
-    //    Files.createDirectories(resourcesDir);
-    //    Files.createDirectories(testDir);
-    //    Files.createDirectories(testResourcesDir);
 
     logger.debug("Created directory structure for package: {}", packagePath);
   }

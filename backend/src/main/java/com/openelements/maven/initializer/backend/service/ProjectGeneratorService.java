@@ -19,12 +19,11 @@
 package com.openelements.maven.initializer.backend.service;
 
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
+import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
+import com.openelements.maven.initializer.backend.util.XmlFormatter;
 import eu.maveniverse.maven.toolbox.shared.ToolboxCommando;
-import eu.maveniverse.maven.toolbox.shared.internal.PomSuppliers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,12 +31,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.maveniverse.domtrip.maven.MavenPomElements;
+import org.maveniverse.domtrip.maven.PomEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -71,41 +67,20 @@ public class ProjectGeneratorService {
       Path projectDir = Files.createTempDirectory("project-" + request.getArtifactId() + "-");
       logger.debug("Created temporary project directory at: {}", projectDir);
 
-      Path pomFile = projectDir.resolve("pom.xml");
-      String pomContent =
-          PomSuppliers.empty400(
-              request.getGroupId(), request.getArtifactId(), request.getVersion());
-      Files.writeString(pomFile, pomContent);
-
-      try (ToolboxCommando.EditSession editSession = toolboxCommando.createEditSession(pomFile)) {
-        toolboxCommando.editPom(
-            editSession,
-            Collections.singletonList(
-                s -> {
-                  s.setPackaging("jar");
-                  s.updateProperty(true, "maven.compiler.release", request.getJavaVersion());
-                  s.updateProperty(true, "project.build.sourceEncoding", "UTF-8");
-                  s.editor()
-                      .insertMavenElement(
-                          s.editor().root(), "description", request.getDescription());
-                  s.editor().insertMavenElement(s.editor().root(), "name", request.getName());
-                  DEFAULT_PLUGINS.forEach(
-                      plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
-                }));
-      }
-
-      // Format the XML properly
-      String formattedXml = formatXml(Files.readString(pomFile));
-      Files.writeString(pomFile, formattedXml);
+      generatePomFile(projectDir, request);
 
       structureService.createStructure(projectDir, request);
 
       logger.info("Project generated successfully at: {}", projectDir);
       return projectDir.toString();
 
+    } catch (IOException e) {
+      handleProjectGenerationError("Failed to create project directory or write files", e);
+      return null;
+
     } catch (Exception e) {
-      logger.error("Project generation failed", e);
-      throw new RuntimeException("Failed to generate project: " + e.getMessage(), e);
+      handleProjectGenerationError("Unexpected error during project generation", e);
+      return null;
     }
   }
 
@@ -135,50 +110,63 @@ public class ProjectGeneratorService {
 
       logger.info("Created ZIP for project: {} ({} bytes)", projectPath, baos.size());
       return baos.toByteArray();
+    } catch (IOException e) {
+      handleProjectGenerationError("Failed to create ZIP due to I/O issues", e);
+      return null;
     } catch (Exception e) {
-      throw new RuntimeException("Failed to create ZIP: " + e.getMessage(), e);
+      handleProjectGenerationError("Unexpected error during ZIP creation", e);
+      return null;
     }
   }
 
-  private String formatXml(String xml) throws Exception {
-    // Create XSLT to strip whitespace and format properly
-    String xslt =
-        """
-                <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-                    <xsl:strip-space elements="*"/>
-                    <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
-                    <xsl:template match="@*|node()">
-                        <xsl:copy>
-                            <xsl:apply-templates select="@*|node()"/>
-                        </xsl:copy>
-                    </xsl:template>
-                </xsl:stylesheet>
-                """;
-
-    TransformerFactory factory = TransformerFactory.newInstance();
-    Transformer transformer = factory.newTransformer(new StreamSource(new StringReader(xslt)));
-    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-
-    StringWriter writer = new StringWriter();
-    transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(writer));
-
-    // Apply custom formatting rules
-    String formatted = writer.toString();
-    return applyCustomFormatting(formatted);
+  private String createEmptyPom(String groupId, String artifactId, String version) {
+    PomEditor pomEditor = new PomEditor();
+    pomEditor.createMavenDocument("project");
+    pomEditor.insertMavenElement(
+        pomEditor.root(),
+        MavenPomElements.Elements.MODEL_VERSION,
+        MavenPomElements.ModelVersions.MODEL_VERSION_4_0_0);
+    pomEditor.insertMavenElement(pomEditor.root(), MavenPomElements.Elements.GROUP_ID, groupId);
+    pomEditor.insertMavenElement(
+        pomEditor.root(), MavenPomElements.Elements.ARTIFACT_ID, artifactId);
+    pomEditor.insertMavenElement(pomEditor.root(), MavenPomElements.Elements.VERSION, version);
+    return pomEditor.toXml();
   }
 
-  private String applyCustomFormatting(String xml) {
-    // Ensure <project> tag is on its own line
-    xml = xml.replaceFirst("(<project[^>]*>)", "\n$1");
+  private void generatePomFile(Path projectDir, ProjectRequestDTO request) {
+    try {
+      Path pomFile = projectDir.resolve("pom.xml");
+      String pomContent =
+          createEmptyPom(request.getGroupId(), request.getArtifactId(), request.getVersion());
+      Files.writeString(pomFile, pomContent);
 
-    // Add empty lines after some specific elements
-    xml = xml.replace("</modelVersion>", "</modelVersion>\n");
-    xml = xml.replace("</description>", "</description>\n");
-    xml = xml.replace("</properties>", "</properties>\n");
+      try (ToolboxCommando.EditSession editSession = toolboxCommando.createEditSession(pomFile)) {
+        toolboxCommando.editPom(
+            editSession,
+            Collections.singletonList(
+                s -> {
+                  s.setPackaging("jar");
+                  s.updateProperty(true, "maven.compiler.release", request.getJavaVersion());
+                  s.updateProperty(true, "project.build.sourceEncoding", "UTF-8");
+                  s.editor()
+                      .insertMavenElement(
+                          s.editor().root(), "description", request.getDescription());
+                  s.editor().insertMavenElement(s.editor().root(), "name", request.getName());
+                  DEFAULT_PLUGINS.forEach(
+                      plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
+                }));
+      }
 
-    return xml;
+      // Format the XML properly
+      String formattedXml = XmlFormatter.formatXml(Files.readString(pomFile));
+      Files.writeString(pomFile, formattedXml);
+    } catch (Exception e) {
+      throw new ProjectServiceException("Failed to generate POM file: " + e.getMessage(), e);
+    }
+  }
+
+  private void handleProjectGenerationError(String message, Exception e) {
+    logger.error("Project generation failed: {}", message, e);
+    throw new ProjectServiceException(message + ": " + e.getMessage(), e);
   }
 }

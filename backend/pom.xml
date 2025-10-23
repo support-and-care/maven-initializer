@@ -70,12 +70,7 @@
         <dependency>
             <groupId>eu.maveniverse.maven.plugins</groupId>
             <artifactId>toolbox</artifactId>
-            <version>0.13.7</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.maveniverse.maven.mima</groupId>
-            <artifactId>context</artifactId>
-            <version>${mima.version}</version>
+            <version>0.14.1</version>
         </dependency>
         <dependency>
             <groupId>eu.maveniverse.maven.mima.runtime</groupId>

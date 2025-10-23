@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.openelements.maven.initializer.backend.config.MavenToolboxConfig;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
+import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,14 +63,16 @@ class ProjectGeneratorServiceTest {
     assertTrue(java.nio.file.Files.exists(java.nio.file.Paths.get(result)));
 
     assertThrows(
-        RuntimeException.class, () -> projectGeneratorServiceUnderTest.generateProject(null));
+        ProjectServiceException.class,
+        () -> projectGeneratorServiceUnderTest.generateProject(null));
   }
 
   @Test
   void testProjectGenerationFailing() {
 
     assertThrows(
-        RuntimeException.class, () -> projectGeneratorServiceUnderTest.generateProject(null));
+        ProjectServiceException.class,
+        () -> projectGeneratorServiceUnderTest.generateProject(null));
   }
 
   @Test
@@ -89,9 +92,10 @@ class ProjectGeneratorServiceTest {
 
     // When
     assertThrows(
-        RuntimeException.class, () -> projectGeneratorServiceUnderTest.createProjectZip(null));
+        ProjectServiceException.class,
+        () -> projectGeneratorServiceUnderTest.createProjectZip(null));
     assertThrows(
-        RuntimeException.class,
+        ProjectServiceException.class,
         () -> projectGeneratorServiceUnderTest.createProjectZip(invalidProjectPath));
   }
 
