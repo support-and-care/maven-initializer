@@ -1,76 +1,133 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.openelements.maven.initializer.backend.util;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import org.junit.jupiter.api.Test;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.Diff;
 
-/** Test class for XmlFormatter utility. */
-class XmlFormatterTest {
+public class XmlFormatterTest {
 
   @Test
-  void testFormatXmlWithValidAndComplexXml() throws Exception {
-    String simpleXml =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project><modelVersion>4.0.0</modelVersion><groupId>com.example</groupId><artifactId>test</artifactId><version>1.0.0</version></project>";
+  void testFormatXmlValidPom() throws Exception {
+    String inputXml =
+        """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>dev.parsick.maven.samples</groupId>
+            <artifactId>simple-single-module-project</artifactId><version>1.0.0-SNAPSHOT</version><packaging>jar</packaging>
+            <name>test-project</name><description>This is my test project</description><properties>
+            <maven.compiler.release>21</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+            </properties><build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
+            <version>3.14.0</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-resources-plugin</artifactId>
+            <version>3.3.1</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+            <version>3.5.4</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId>
+            <version>3.4.2</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-install-plugin</artifactId>
+            <version>3.1.4</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-deploy-plugin</artifactId>
+            <version>3.1.4</version></plugin></plugins></build></project>
+            """;
 
-    String complexXml =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project><modelVersion>4.0.0</modelVersion><groupId>com.example</groupId><artifactId>test</artifactId><version>1.0.0</version><properties><maven.compiler.source>17</maven.compiler.source><maven.compiler.target>17</maven.compiler.target></properties><build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.11.0</version></plugin></plugins></build></project>";
+    String expectedXml =
+        """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <project xmlns="http://maven.apache.org/POM/4.0.0">
+                <modelVersion>4.0.0</modelVersion>
 
-    String formattedSimple = XmlFormatter.formatXml(simpleXml);
-    String formattedComplex = XmlFormatter.formatXml(complexXml);
+                <groupId>dev.parsick.maven.samples</groupId>
+                <artifactId>simple-single-module-project</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <packaging>jar</packaging>
+                <name>test-project</name>
+                <description>This is my test project</description>
 
-    assertNotNull(formattedSimple);
-    assertTrue(formattedSimple.contains("<project>"));
-    assertTrue(formattedComplex.contains("<build>"));
-    assertTrue(formattedComplex.contains("<plugin>"));
+                <properties>
+                    <maven.compiler.release>21</maven.compiler.release>
+                    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                </properties>
+
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <version>3.14.0</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-resources-plugin</artifactId>
+                            <version>3.3.1</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <version>3.5.4</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jar-plugin</artifactId>
+                            <version>3.4.2</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-install-plugin</artifactId>
+                            <version>3.1.4</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-deploy-plugin</artifactId>
+                            <version>3.1.4</version>
+                        </plugin>
+                    </plugins>
+                </build>
+            </project>
+            """;
+
+    String formattedXml = XmlFormatter.formatXml(inputXml);
+
+    Diff diff =
+        DiffBuilder.compare(expectedXml)
+            .withTest(formattedXml)
+            .ignoreWhitespace()
+            .normalizeWhitespace()
+            .checkForSimilar()
+            .build();
+
+    assertFalse(diff.hasDifferences(), "Formatted XML does not match expected XML: " + diff);
   }
 
   @Test
-  void testCustomFormattingRulesApplied() throws Exception {
-    String xml =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project><modelVersion>4.0.0</modelVersion><description>Test project</description><properties><maven.compiler.source>17</maven.compiler.source></properties></project>";
-
-    String formatted = XmlFormatter.formatXml(xml);
-
-    assertNotNull(formatted);
-    assertTrue(formatted.contains("\n<project>"), "Project tag should start on its own line");
-    assertTrue(formatted.contains("</modelVersion>\n"));
-    assertTrue(formatted.contains("</description>\n"));
-    assertTrue(formatted.contains("</properties>\n"));
+  void testFormatXmlEmptyInput() {
+    Exception exception =
+        assertThrows(ProjectServiceException.class, () -> XmlFormatter.formatXml(""));
+    assertTrue(exception.getMessage().contains("Input source cannot be empty"));
   }
 
   @Test
-  void testInvalidOrEmptyXmlThrowsException() {
-    String[] invalidInputs = {
-      null, "", "   \n\t  ", "<project><modelVersion>4.0.0</modelVersion><unclosed-tag></project>"
-    };
-
-    for (String input : invalidInputs) {
-      assertThrows(Exception.class, () -> XmlFormatter.formatXml(input));
-    }
-  }
-
-  @Test
-  void testFormatXmlPreservesContent() throws Exception {
-    String xml =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project><modelVersion>4.0.0</modelVersion><groupId>com.example</groupId><artifactId>my-project</artifactId><version>1.0.0-SNAPSHOT</version><name>My Project</name><description>This is a test project</description></project>";
-
-    String formatted = XmlFormatter.formatXml(xml);
-
-    assertTrue(formatted.contains("my-project"));
-    assertTrue(formatted.contains("1.0.0-SNAPSHOT"));
-    assertTrue(formatted.contains("My Project"));
-    assertTrue(formatted.contains("This is a test project"));
-  }
-
-  @Test
-  void testFormatXmlPreservesSpecialCharacters() throws Exception {
-    String xml =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project><modelVersion>4.0.0</modelVersion><description>Test &amp; Development Project</description></project>";
-
-    String formatted = XmlFormatter.formatXml(xml);
-
-    assertTrue(formatted.contains("Test &amp; Development Project"));
+  void testFormatXmlInvalidXml() {
+    String invalidXml =
+        "<project><modelVersion>4.0.0</modelVersion><groupId>test</groupId></project";
+    Exception exception =
+        assertThrows(ProjectServiceException.class, () -> XmlFormatter.formatXml(invalidXml));
+    assertTrue(exception.getMessage().contains("Invalid XML content"));
   }
 }

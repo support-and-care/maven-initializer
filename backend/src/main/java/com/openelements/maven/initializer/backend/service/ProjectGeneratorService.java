@@ -64,33 +64,27 @@ public class ProjectGeneratorService {
     logger.info("Starting project generation for: {}", request);
 
     try {
-      Path projectDir = Files.createTempDirectory("project-" + request.getArtifactId() + "-");
-      logger.debug("Created temporary project directory at: {}", projectDir);
-
+      Path projectDir = createTempDirectory(request.getArtifactId());
       generatePomFile(projectDir, request);
-
       structureService.createStructure(projectDir, request);
 
       logger.info("Project generated successfully at: {}", projectDir);
       return projectDir.toString();
-
-    } catch (IOException e) {
-      handleProjectGenerationError("Failed to create project directory or write files", e);
-      return null;
-
     } catch (Exception e) {
-      handleProjectGenerationError("Unexpected error during project generation", e);
-      return null;
+      throw new ProjectServiceException("Failed to generate project", e);
     }
   }
 
   public byte[] createProjectZip(String projectPath) {
-    try {
-      Path projectDir = Paths.get(projectPath);
-      if (!Files.exists(projectDir)) {
-        throw new IOException("Project directory does not exist: " + projectPath);
-      }
+    if (projectPath == null) {
+      throw new ProjectServiceException("Project path cannot be null", null);
+    }
+    Path projectDir = Paths.get(projectPath);
+    if (!Files.exists(projectDir)) {
+      throw new ProjectServiceException("Project directory does not exist: " + projectPath, null);
+    }
 
+    try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try (ZipOutputStream zos = new ZipOutputStream(baos)) {
         Files.walk(projectDir)
@@ -104,6 +98,7 @@ public class ProjectGeneratorService {
                     zos.closeEntry();
                   } catch (IOException e) {
                     logger.error("Failed to add file to ZIP: {}", path, e);
+                    throw new ProjectServiceException("Failed to add file to ZIP: " + path, e);
                   }
                 });
       }
@@ -111,11 +106,7 @@ public class ProjectGeneratorService {
       logger.info("Created ZIP for project: {} ({} bytes)", projectPath, baos.size());
       return baos.toByteArray();
     } catch (IOException e) {
-      handleProjectGenerationError("Failed to create ZIP due to I/O issues", e);
-      return null;
-    } catch (Exception e) {
-      handleProjectGenerationError("Unexpected error during ZIP creation", e);
-      return null;
+      throw new ProjectServiceException("Failed to create ZIP ", e);
     }
   }
 
@@ -165,8 +156,13 @@ public class ProjectGeneratorService {
     }
   }
 
-  private void handleProjectGenerationError(String message, Exception e) {
-    logger.error("Project generation failed: {}", message, e);
-    throw new ProjectServiceException(message + ": " + e.getMessage(), e);
+  private Path createTempDirectory(String artifactId) {
+    try {
+      Path projectDir = Files.createTempDirectory("project-" + artifactId + "-");
+      logger.debug("Created temporary project directory at: {}", projectDir);
+      return projectDir;
+    } catch (IOException e) {
+      throw new ProjectServiceException("Failed to create temporary project directory", e);
+    }
   }
 }

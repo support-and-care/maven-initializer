@@ -68,8 +68,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>eu.maveniverse.maven.plugins</groupId>
-            <artifactId>toolbox</artifactId>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-assertj</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.maveniverse.maven.toolbox</groupId>
+            <artifactId>shared</artifactId>
             <version>0.14.1</version>
         </dependency>
         <dependency>

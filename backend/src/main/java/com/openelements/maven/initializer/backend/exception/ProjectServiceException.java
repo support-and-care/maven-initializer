@@ -19,9 +19,6 @@
 package com.openelements.maven.initializer.backend.exception;
 
 public class ProjectServiceException extends RuntimeException {
-  public ProjectServiceException(String message) {
-    super(message);
-  }
 
   public ProjectServiceException(String message, Throwable cause) {
     super(message, cause);

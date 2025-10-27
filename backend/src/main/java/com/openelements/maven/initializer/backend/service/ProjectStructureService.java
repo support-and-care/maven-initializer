@@ -19,6 +19,7 @@
 package com.openelements.maven.initializer.backend.service;
 
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
+import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,14 +32,18 @@ public class ProjectStructureService {
 
   private static final Logger logger = LoggerFactory.getLogger(ProjectStructureService.class);
 
-  public void createStructure(Path projectRoot, ProjectRequestDTO request) throws IOException {
+  public void createStructure(Path projectRoot, ProjectRequestDTO request) {
     logger.info("Creating project structure for: {}", request.getArtifactId());
 
-    createDirectories(projectRoot, request.getGroupId(), request.getArtifactId());
-    createGitignoreFile(projectRoot);
-    createMainClass(projectRoot, request);
+    try {
+      createDirectories(projectRoot, request.getGroupId(), request.getArtifactId());
+      createGitignoreFile(projectRoot);
+      createMainClass(projectRoot, request);
 
-    logger.info("✅ Project structure created successfully");
+      logger.info("✅ Project structure created successfully");
+    } catch (IOException e) {
+      throw new ProjectServiceException("Failed to create project structure", e);
+    }
   }
 
   private void createDirectories(Path root, String groupId, String artifactId) throws IOException {
