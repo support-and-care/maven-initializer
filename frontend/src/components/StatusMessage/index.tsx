@@ -13,7 +13,7 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
   type = "success",
 }) => {
   const isSuccess = type === "success" || message.includes("successfully");
-  
+
   return (
     <div
       className={`p-4 rounded-lg border flex items-center gap-3 ${

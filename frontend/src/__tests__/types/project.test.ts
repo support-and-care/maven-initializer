@@ -1,4 +1,8 @@
-import { ProjectConfig, ValidationErrors, ProjectGenerationResponse } from "@/types/project";
+import {
+  ProjectConfig,
+  ValidationErrors,
+  ProjectGenerationResponse,
+} from "@/types/project";
 
 describe("Project Types", () => {
   describe("ProjectConfig interface", () => {
@@ -39,7 +43,7 @@ describe("Project Types", () => {
     it("should handle different Java versions", () => {
       const javaVersions = ["8", "11", "17", "21", "25"];
 
-      javaVersions.forEach(version => {
+      javaVersions.forEach((version) => {
         const config: ProjectConfig = {
           groupId: "com.example",
           artifactId: "test-project",
@@ -54,7 +58,7 @@ describe("Project Types", () => {
     it("should handle different version formats", () => {
       const versions = ["1.0.0", "1.0.0-SNAPSHOT", "2.1.3", "0.1.0"];
 
-      versions.forEach(version => {
+      versions.forEach((version) => {
         const config: ProjectConfig = {
           groupId: "com.example",
           artifactId: "test-project",
@@ -87,8 +91,8 @@ describe("Project Types", () => {
 
     it("should handle dynamic keys", () => {
       const errors: ValidationErrors = {
-        "customField": "Custom field error",
-        "anotherField": "Another field error",
+        customField: "Custom field error",
+        anotherField: "Another field error",
       };
 
       expect(errors.customField).toBe("Custom field error");
@@ -153,7 +157,7 @@ describe("Project Types", () => {
         },
       ];
 
-      scenarios.forEach(scenario => {
+      scenarios.forEach((scenario) => {
         const response: ProjectGenerationResponse = scenario;
         expect(response.success).toBe(scenario.success);
         expect(response.message).toBe(scenario.message);

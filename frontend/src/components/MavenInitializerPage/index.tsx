@@ -48,7 +48,7 @@ export const MavenInitializerPage: React.FC = () => {
         document.body.removeChild(a);
 
         setGenerationMessage(
-          "Project generated successfully! Download started."
+          "Project generated successfully! Download started.",
         );
       } else {
         const errorData = await response.json();
@@ -60,7 +60,7 @@ export const MavenInitializerPage: React.FC = () => {
     } catch (error) {
       console.error("Error generating project:", error);
       setGenerationMessage(
-        "Error: Could not connect to backend. Make sure the backend server is running."
+        "Error: Could not connect to backend. Make sure the backend server is running.",
       );
     } finally {
       setIsGenerating(false);

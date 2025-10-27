@@ -11,7 +11,7 @@ describe("Header component", () => {
   it("renders the subtitle correctly", () => {
     render(<Header />);
     expect(
-      screen.getByText("Bootstrap your Maven project with ease")
+      screen.getByText("Bootstrap your Maven project with ease"),
     ).toBeInTheDocument();
   });
 
@@ -34,6 +34,6 @@ describe("Header component", () => {
     const buttons = screen.getAllByRole("button");
     const links = screen.getAllByRole("link");
     expect(buttons.length).toBe(1); // One button (the icon button)
-    expect(links.length).toBe(2);   // Two links: Documentation + GitHub
+    expect(links.length).toBe(2); // Two links: Documentation + GitHub
   });
 });

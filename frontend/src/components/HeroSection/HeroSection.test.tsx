@@ -6,7 +6,7 @@ describe("HeroSection component", () => {
   it("renders the tagline text", () => {
     render(<HeroSection />);
     expect(
-      screen.getByText("Generate Maven projects in seconds")
+      screen.getByText("Generate Maven projects in seconds"),
     ).toBeInTheDocument();
   });
 
@@ -22,18 +22,14 @@ describe("HeroSection component", () => {
     render(<HeroSection />);
     expect(
       screen.getByText(
-        /Create production-ready Maven projects with the perfect dependencies/i
-      )
+        /Create production-ready Maven projects with the perfect dependencies/i,
+      ),
     ).toBeInTheDocument();
   });
 
   it("renders all feature items", () => {
     render(<HeroSection />);
-    const features = [
-      "Enterprise-ready",
-      "Lightning fast",
-      "Best practices",
-    ];
+    const features = ["Enterprise-ready", "Lightning fast", "Best practices"];
 
     for (const feature of features) {
       expect(screen.getByText(feature)).toBeInTheDocument();
@@ -42,7 +38,8 @@ describe("HeroSection component", () => {
 
   it("renders the hero container structure", () => {
     render(<HeroSection />);
-    const heroContainer = screen.getByText("Build Better Java Projects")
+    const heroContainer = screen
+      .getByText("Build Better Java Projects")
       .closest("div");
     expect(heroContainer).toBeInTheDocument();
   });

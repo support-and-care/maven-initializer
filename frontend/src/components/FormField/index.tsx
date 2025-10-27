@@ -33,9 +33,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         )}
       </div>
       {children}
-      {helperText && (
-        <p className="text-xs text-slate-400">{helperText}</p>
-      )}
+      {helperText && <p className="text-xs text-slate-400">{helperText}</p>}
     </div>
   );
 };

@@ -161,7 +161,11 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
             {generationMessage && (
               <StatusMessage
                 message={generationMessage}
-                type={generationMessage.includes("successfully") ? "success" : "error"}
+                type={
+                  generationMessage.includes("successfully")
+                    ? "success"
+                    : "error"
+                }
               />
             )}
           </form>
