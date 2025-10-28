@@ -92,7 +92,7 @@ class ProjectGeneratorServiceTest {
 
     // When
     assertThrows(
-        ProjectServiceException.class,
+        IllegalArgumentException.class,
         () -> projectGeneratorServiceUnderTest.createProjectZip(null));
     assertThrows(
         ProjectServiceException.class,

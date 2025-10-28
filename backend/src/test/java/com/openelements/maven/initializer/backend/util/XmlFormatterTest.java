@@ -118,7 +118,7 @@ public class XmlFormatterTest {
   @Test
   void testFormatXmlEmptyInput() {
     Exception exception =
-        assertThrows(ProjectServiceException.class, () -> XmlFormatter.formatXml(""));
+        assertThrows(IllegalArgumentException.class, () -> XmlFormatter.formatXml(""));
     assertTrue(exception.getMessage().contains("Input source cannot be empty"));
   }
 
