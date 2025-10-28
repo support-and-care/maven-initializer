@@ -23,6 +23,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -35,11 +37,10 @@ public class XmlFormatter {
    *
    * @param xml the XML content to format
    * @return the formatted XML content
-   * @throws Exception if formatting fails
    */
-  public static String formatXml(String xml) throws Exception {
+  public static String formatXml(String xml) {
     if (xml == null || xml.trim().isEmpty()) {
-      throw new ProjectServiceException("Input source cannot be empty", null);
+      throw new IllegalArgumentException("Input source cannot be empty");
     }
 
     String xslt =
@@ -55,17 +56,22 @@ public class XmlFormatter {
                 </xsl:stylesheet>
                 """;
 
-    TransformerFactory factory = TransformerFactory.newInstance();
-    Transformer transformer = factory.newTransformer(new StreamSource(new StringReader(xslt)));
-    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+    Transformer transformer;
+    try {
+      TransformerFactory factory = TransformerFactory.newInstance();
+      transformer = factory.newTransformer(new StreamSource(new StringReader(xslt)));
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+    } catch (TransformerConfigurationException e) {
+      throw new ProjectServiceException("Failed to configure XML transformer", e);
+    }
 
     StringWriter writer = new StringWriter();
     try {
       transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(writer));
-    } catch (Exception e) {
+    } catch (TransformerException e) {
       throw new ProjectServiceException("Invalid XML content", e);
     }
 

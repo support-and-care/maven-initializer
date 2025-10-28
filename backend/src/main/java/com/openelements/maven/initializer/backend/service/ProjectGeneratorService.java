@@ -77,7 +77,7 @@ public class ProjectGeneratorService {
 
   public byte[] createProjectZip(String projectPath) {
     if (projectPath == null) {
-      throw new ProjectServiceException("Project path cannot be null", null);
+      throw new IllegalArgumentException("Project path cannot be null");
     }
     Path projectDir = Paths.get(projectPath);
     if (!Files.exists(projectDir)) {
