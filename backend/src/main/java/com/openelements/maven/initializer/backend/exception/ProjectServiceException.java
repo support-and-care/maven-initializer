@@ -16,15 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.openelements.maven.initializer.backend;
+package com.openelements.maven.initializer.backend.exception;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+public class ProjectServiceException extends RuntimeException {
 
-@SpringBootApplication
-public class MavenInitializerApplication {
-
-  public static void main(String[] args) {
-    SpringApplication.run(MavenInitializerApplication.class, args);
+  public ProjectServiceException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

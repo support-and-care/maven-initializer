@@ -1,56 +1,50 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Home from "@/app/page";
 
-// Mock fetch
-global.fetch = jest.fn();
-
 describe("Home Page", () => {
-  beforeEach(() => {
-    (fetch as jest.Mock).mockClear();
-  });
-
   it("renders the main heading", () => {
     render(<Home />);
     expect(screen.getByText("Maven Initializer")).toBeInTheDocument();
   });
 
-  it("renders the call backend button", () => {
+  it("renders the project configuration form", () => {
     render(<Home />);
-    expect(screen.getByText("Call Backend API")).toBeInTheDocument();
+    expect(screen.getByText("Project Metadata")).toBeInTheDocument();
+    expect(
+      screen.getByText("Configure your Maven project settings"),
+    ).toBeInTheDocument();
   });
 
-  it("calls backend API when button is clicked", async () => {
-    const mockResponse = { message: "Hello from Maven Initializer Backend!" };
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      json: async () => mockResponse,
-    });
-
+  it("renders the hero section", () => {
     render(<Home />);
-
-    const button = screen.getByText("Call Backend API");
-    fireEvent.click(button);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith("http://localhost:8080/api/hello");
-      expect(
-        screen.getByText("Hello from Maven Initializer Backend!"),
-      ).toBeInTheDocument();
-    });
+    expect(screen.getByText("Build Better Java Projects")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Create production-ready Maven projects with the perfect dependencies, configuration, and structure. No more manual setup.",
+      ),
+    ).toBeInTheDocument();
   });
 
-  it("shows error message when API call fails", async () => {
-    (fetch as jest.Mock).mockRejectedValueOnce(new Error("Network error"));
-
+  it("renders the generate button", () => {
     render(<Home />);
+    expect(screen.getByText("Generate Project")).toBeInTheDocument();
+  });
 
-    const button = screen.getByText("Call Backend API");
-    fireEvent.click(button);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Error: Could not connect to backend"),
-      ).toBeInTheDocument();
-    });
+  it("renders form fields", () => {
+    render(<Home />);
+    expect(screen.getByPlaceholderText("com.example")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("my-awesome-project"),
+    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("1.0.0-SNAPSHOT")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("My Awesome Project"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(
+        "Describe your project's purpose and functionality...",
+      ),
+    ).toBeInTheDocument();
   });
 });

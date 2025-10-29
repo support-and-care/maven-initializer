@@ -1,0 +1,8 @@
+target/
+pom.xml.tag
+dependency-reduced-pom.xml
+release.properties
+pom.xml.releaseBackup
+pom.xml.next
+buildNumber.properties
+pom.xml.versionsBackup
