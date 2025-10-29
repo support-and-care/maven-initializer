@@ -63,16 +63,16 @@ public class ProjectGeneratorService {
   public String generateProject(ProjectRequestDTO request) {
     logger.info("Starting project generation for: {}", request);
 
-    try {
-      Path projectDir = createTempDirectory(request.getArtifactId());
-      generatePomFile(projectDir, request);
-      structureService.createStructure(projectDir, request);
-
-      logger.info("Project generated successfully at: {}", projectDir);
-      return projectDir.toString();
-    } catch (Exception e) {
-      throw new ProjectServiceException("Failed to generate project", e);
+    if (request == null) {
+      throw new IllegalArgumentException("ProjectRequestDTO cannot be null");
     }
+
+    Path projectDir = createTempDirectory(request.getArtifactId());
+    generatePomFile(projectDir, request);
+    structureService.createStructure(projectDir, request);
+
+    logger.info("Project generated successfully at: {}", projectDir);
+    return projectDir.toString();
   }
 
   public byte[] createProjectZip(String projectPath) {

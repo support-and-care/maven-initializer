@@ -61,18 +61,15 @@ class ProjectGeneratorServiceTest {
     assertNotNull(result);
     assertTrue(result.contains(validRequest.getArtifactId()));
     assertTrue(java.nio.file.Files.exists(java.nio.file.Paths.get(result)));
-
-    assertThrows(
-        ProjectServiceException.class,
-        () -> projectGeneratorServiceUnderTest.generateProject(null));
   }
 
   @Test
   void testProjectGenerationFailing() {
 
     assertThrows(
-        ProjectServiceException.class,
-        () -> projectGeneratorServiceUnderTest.generateProject(null));
+        IllegalArgumentException.class,
+        () -> projectGeneratorServiceUnderTest.generateProject(null),
+        "Expected exception for null ProjectRequestDTO");
   }
 
   @Test
