@@ -36,7 +36,7 @@ public class XmlFormatterTest {
             <?xml version="1.0" encoding="UTF-8"?>
             <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
             <groupId>dev.parsick.maven.samples</groupId><artifactId>simple-single-module-project</artifactId><version>1.0.0-SNAPSHOT</version>
-            <packaging>jar</packaging><name>OpenElements</name><description>test</description>
+            <packaging>jar</packaging><name>test-project</name><description>This is my test project</description>
             <properties><maven.compiler.release>17</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding></properties>
             <dependencyManagement><dependencies>
               <dependency><groupId>org.junit</groupId><artifactId>junit-bom</artifactId><version>6.0.0</version><type>pom</type><scope>import</scope></dependency>
@@ -66,8 +66,8 @@ public class XmlFormatterTest {
                 <artifactId>simple-single-module-project</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
                 <packaging>jar</packaging>
-                <name>OpenElements</name>
-                <description>test</description>
+                <name>test-project</name>
+                <description>This is my test project</description>
 
                 <properties>
                     <maven.compiler.release>17</maven.compiler.release>
