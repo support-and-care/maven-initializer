@@ -45,6 +45,12 @@ public class ProjectGeneratorService {
   private final ToolboxCommando toolboxCommando;
   private final ProjectStructureService structureService;
 
+  private static final List<String> DEFAULT_DEPENDENCIES =
+      List.of("org.assertj:assertj-core", "org.junit.jupiter:junit-jupiter");
+
+  private static final List<String> DEFAULT_DEPENDENCY_MANAGEMENT =
+      List.of("org.junit:junit-bom:6.0.0", "org.assertj:assertj-bom:3.27.5");
+
   private static final List<String> DEFAULT_PLUGINS =
       List.of(
           "org.apache.maven.plugins:maven-compiler-plugin:3.14.0",
@@ -143,6 +149,74 @@ public class ProjectGeneratorService {
                       .insertMavenElement(
                           s.editor().root(), "description", request.getDescription());
                   s.editor().insertMavenElement(s.editor().root(), "name", request.getName());
+
+                  // Add test-scoped dependencies without explicit versions
+                  {
+                    var editor = s.editor();
+                    var root = editor.root();
+                    var depsTmp =
+                        editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCIES);
+                    if (depsTmp == null) {
+                      depsTmp =
+                          editor.insertMavenElement(root, MavenPomElements.Elements.DEPENDENCIES);
+                    }
+                    final var deps = depsTmp;
+                    DEFAULT_DEPENDENCIES.forEach(
+                        ga -> {
+                          String[] parts = ga.split(":", 2);
+                          if (parts.length == 2) {
+                            var depEl =
+                                editor.insertMavenElement(
+                                    deps, MavenPomElements.Elements.DEPENDENCY);
+                            editor.insertMavenElement(
+                                depEl, MavenPomElements.Elements.GROUP_ID, parts[0]);
+                            editor.insertMavenElement(
+                                depEl, MavenPomElements.Elements.ARTIFACT_ID, parts[1]);
+                            editor.insertMavenElement(
+                                depEl, MavenPomElements.Elements.SCOPE, "test");
+                          }
+                        });
+                  }
+
+                  // Add dependencyManagement
+                  {
+                    var editor = s.editor();
+                    var root = editor.root();
+                    var dm =
+                        editor.findChildElement(
+                            root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
+                    if (dm == null) {
+                      dm =
+                          editor.insertMavenElement(
+                              root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
+                    }
+                    var dmsTmp =
+                        editor.findChildElement(dm, MavenPomElements.Elements.DEPENDENCIES);
+                    if (dmsTmp == null) {
+                      dmsTmp =
+                          editor.insertMavenElement(dm, MavenPomElements.Elements.DEPENDENCIES);
+                    }
+                    final var dms = dmsTmp;
+                    DEFAULT_DEPENDENCY_MANAGEMENT.forEach(
+                        bom -> {
+                          String[] parts = bom.split(":", 3);
+                          if (parts.length == 3) {
+                            var depEl =
+                                editor.insertMavenElement(
+                                    dms, MavenPomElements.Elements.DEPENDENCY);
+                            editor.insertMavenElement(
+                                depEl, MavenPomElements.Elements.GROUP_ID, parts[0]);
+                            editor.insertMavenElement(
+                                depEl, MavenPomElements.Elements.ARTIFACT_ID, parts[1]);
+                            editor.insertMavenElement(
+                                depEl, MavenPomElements.Elements.VERSION, parts[2]);
+                            editor.insertMavenElement(depEl, MavenPomElements.Elements.TYPE, "pom");
+                            editor.insertMavenElement(
+                                depEl, MavenPomElements.Elements.SCOPE, "import");
+                          }
+                        });
+                  }
+
                   DEFAULT_PLUGINS.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
                 }));

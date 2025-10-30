@@ -51,7 +51,7 @@ class ProjectStructureServiceTest {
     // When
     assertDoesNotThrow(() -> projectStructureService.createStructure(tempDir, validRequest));
 
-    Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/Testproject.java");
+    Path mainClassFile = tempDir.resolve("src/main/java/com/example/Testproject.java");
     Path gitignoreFile = tempDir.resolve(".gitignore");
 
     // Then
@@ -70,7 +70,7 @@ class ProjectStructureServiceTest {
     // When
     projectStructureService.createStructure(tempDir, validRequest);
 
-    Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/Testproject.java");
+    Path mainClassFile = tempDir.resolve("src/main/java/com/example/Testproject.java");
     assertTrue(Files.exists(mainClassFile), "Main class file should exist");
 
     String content = Files.readString(mainClassFile);
@@ -121,7 +121,7 @@ class ProjectStructureServiceTest {
     // When
     projectStructureService.createStructure(tempDir, validRequest);
 
-    Path mainJavaDir = tempDir.resolve("src/main/java/com/example/testproject");
+    Path mainJavaDir = tempDir.resolve("src/main/java/com/example");
 
     assertAll(() -> assertTrue(Files.isDirectory(mainJavaDir), "Main Java directory should exist"));
 
