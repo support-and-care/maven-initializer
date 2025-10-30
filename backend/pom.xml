@@ -80,7 +80,7 @@
         <dependency>
             <groupId>eu.maveniverse.maven.toolbox</groupId>
             <artifactId>shared</artifactId>
-            <version>0.14.1</version>
+            <version>0.14.2</version>
         </dependency>
         <dependency>
             <groupId>eu.maveniverse.maven.mima.runtime</groupId>
