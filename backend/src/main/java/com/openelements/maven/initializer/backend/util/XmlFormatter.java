@@ -90,10 +90,17 @@ public class XmlFormatter {
     // Ensure <project> tag is on its own line
     xml = xml.replaceFirst("(<project[^>]*>)", "\n$1");
 
-    // Add empty lines after some specific elements
+    // Add empty lines after specific elements for readability
     xml = xml.replace("</modelVersion>", "</modelVersion>\n");
     xml = xml.replace("</description>", "</description>\n");
     xml = xml.replace("</properties>", "</properties>\n");
+    xml = xml.replace("</dependencies>", "</dependencies>\n");
+
+    // Remove extra blank line directly BEFORE </dependencyManagement>
+    xml = xml.replaceAll("\\n\\s*\\n(\\s*</dependencyManagement>)", "\n$1");
+
+    // Ensure exactly one blank line AFTER </dependencyManagement>
+    xml = xml.replaceAll("(</dependencyManagement>)(\\s*\\n)+", "$1\n\n");
 
     return xml;
   }

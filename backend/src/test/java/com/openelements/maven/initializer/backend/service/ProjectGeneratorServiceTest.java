@@ -152,6 +152,34 @@ class ProjectGeneratorServiceTest {
     assertTrue(missingPlugins.isEmpty(), "Missing plugins in pom.xml: " + missingPlugins);
   }
 
+  @Test
+  void testPomContainsDependenciesAndDependencyManagement() throws Exception {
+    // Given
+    ProjectRequestDTO validRequest = createValidRequest();
+
+    // When
+    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+    String pomContent = Files.readString(pomFile);
+
+    // Dependency Management BOM imports
+    assertTrue(pomContent.contains("<groupId>org.junit</groupId>"));
+    assertTrue(pomContent.contains("<artifactId>junit-bom</artifactId>"));
+    assertTrue(pomContent.contains("<version>6.0.0</version>"));
+    assertTrue(pomContent.contains("<type>pom</type>"));
+    assertTrue(pomContent.contains("<scope>import</scope>"));
+    assertTrue(pomContent.contains("<groupId>org.assertj</groupId>"));
+    assertTrue(pomContent.contains("<artifactId>assertj-bom</artifactId>"));
+    assertTrue(pomContent.contains("<version>3.27.5</version>"));
+    assertTrue(pomContent.contains("<artifactId>assertj-core</artifactId>"));
+    assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
+    assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
+    assertTrue(pomContent.contains("<scope>test</scope>"));
+  }
+
   private ProjectRequestDTO createValidRequest() {
     final ProjectRequestDTO request = new ProjectRequestDTO();
     request.setGroupId("com.example");
