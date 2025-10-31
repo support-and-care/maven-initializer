@@ -171,16 +171,10 @@ class ProjectGeneratorServiceTest {
     assertTrue(pomContent.contains("<version>6.0.0</version>"));
     assertTrue(pomContent.contains("<type>pom</type>"));
     assertTrue(pomContent.contains("<scope>import</scope>"));
-
     assertTrue(pomContent.contains("<groupId>org.assertj</groupId>"));
     assertTrue(pomContent.contains("<artifactId>assertj-bom</artifactId>"));
     assertTrue(pomContent.contains("<version>3.27.5</version>"));
-
-    // Test-scoped dependencies without explicit versions
-    assertTrue(pomContent.contains("<groupId>org.assertj</groupId>"));
     assertTrue(pomContent.contains("<artifactId>assertj-core</artifactId>"));
-    assertTrue(pomContent.contains("<scope>test</scope>"));
-
     assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
     assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
     assertTrue(pomContent.contains("<scope>test</scope>"));

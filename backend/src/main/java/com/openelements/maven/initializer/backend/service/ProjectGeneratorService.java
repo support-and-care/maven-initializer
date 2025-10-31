@@ -45,11 +45,15 @@ public class ProjectGeneratorService {
   private final ToolboxCommando toolboxCommando;
   private final ProjectStructureService structureService;
 
-  private static final List<String> DEFAULT_DEPENDENCIES =
-      List.of("org.assertj:assertj-core", "org.junit.jupiter:junit-jupiter");
+  private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
+      List.of(
+          new MavenDependency("org.assertj", "assertj-core"),
+          new MavenDependency("org.junit.jupiter", "junit-jupiter"));
 
-  private static final List<String> DEFAULT_DEPENDENCY_MANAGEMENT =
-      List.of("org.junit:junit-bom:6.0.0", "org.assertj:assertj-bom:3.27.5");
+  private static final List<MavenBom> DEFAULT_DEPENDENCY_MANAGEMENT =
+      List.of(
+          new MavenBom("org.junit", "junit-bom", "6.0.0"),
+          new MavenBom("org.assertj", "assertj-bom", "3.27.5"));
 
   private static final List<String> DEFAULT_PLUGINS =
       List.of(
@@ -179,14 +183,13 @@ public class ProjectGeneratorService {
 
     final var deps = depsTmp;
     DEFAULT_DEPENDENCIES.forEach(
-        ga -> {
-          String[] parts = ga.split(":", 2);
-          if (parts.length == 2) {
-            var depEl = editor.insertMavenElement(deps, MavenPomElements.Elements.DEPENDENCY);
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.GROUP_ID, parts[0]);
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.ARTIFACT_ID, parts[1]);
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
-          }
+        dependency -> {
+          var depEl = editor.insertMavenElement(deps, MavenPomElements.Elements.DEPENDENCY);
+          editor.insertMavenElement(
+              depEl, MavenPomElements.Elements.GROUP_ID, dependency.groupId());
+          editor.insertMavenElement(
+              depEl, MavenPomElements.Elements.ARTIFACT_ID, dependency.artifactId());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, dependency.scope());
         });
   }
 
@@ -206,15 +209,12 @@ public class ProjectGeneratorService {
     final var dms = dmsTmp;
     DEFAULT_DEPENDENCY_MANAGEMENT.forEach(
         bom -> {
-          String[] parts = bom.split(":", 3);
-          if (parts.length == 3) {
-            var depEl = editor.insertMavenElement(dms, MavenPomElements.Elements.DEPENDENCY);
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.GROUP_ID, parts[0]);
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.ARTIFACT_ID, parts[1]);
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, parts[2]);
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.TYPE, "pom");
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "import");
-          }
+          var depEl = editor.insertMavenElement(dms, MavenPomElements.Elements.DEPENDENCY);
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.GROUP_ID, bom.groupId());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.ARTIFACT_ID, bom.artifactId());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, bom.version());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.TYPE, "pom");
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "import");
         });
   }
 
