@@ -150,72 +150,11 @@ public class ProjectGeneratorService {
                           s.editor().root(), "description", request.getDescription());
                   s.editor().insertMavenElement(s.editor().root(), "name", request.getName());
 
-                  // Add test-scoped dependencies without explicit versions
-                  {
-                    var editor = s.editor();
-                    var root = editor.root();
-                    var depsTmp =
-                        editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCIES);
-                    if (depsTmp == null) {
-                      depsTmp =
-                          editor.insertMavenElement(root, MavenPomElements.Elements.DEPENDENCIES);
-                    }
-                    final var deps = depsTmp;
-                    DEFAULT_DEPENDENCIES.forEach(
-                        ga -> {
-                          String[] parts = ga.split(":", 2);
-                          if (parts.length == 2) {
-                            var depEl =
-                                editor.insertMavenElement(
-                                    deps, MavenPomElements.Elements.DEPENDENCY);
-                            editor.insertMavenElement(
-                                depEl, MavenPomElements.Elements.GROUP_ID, parts[0]);
-                            editor.insertMavenElement(
-                                depEl, MavenPomElements.Elements.ARTIFACT_ID, parts[1]);
-                            editor.insertMavenElement(
-                                depEl, MavenPomElements.Elements.SCOPE, "test");
-                          }
-                        });
-                  }
+                  // Add default dependencies
+                  addDefaultDependencies(s.editor());
 
-                  // Add dependencyManagement
-                  {
-                    var editor = s.editor();
-                    var root = editor.root();
-                    var dm =
-                        editor.findChildElement(
-                            root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
-                    if (dm == null) {
-                      dm =
-                          editor.insertMavenElement(
-                              root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
-                    }
-                    var dmsTmp =
-                        editor.findChildElement(dm, MavenPomElements.Elements.DEPENDENCIES);
-                    if (dmsTmp == null) {
-                      dmsTmp =
-                          editor.insertMavenElement(dm, MavenPomElements.Elements.DEPENDENCIES);
-                    }
-                    final var dms = dmsTmp;
-                    DEFAULT_DEPENDENCY_MANAGEMENT.forEach(
-                        bom -> {
-                          String[] parts = bom.split(":", 3);
-                          if (parts.length == 3) {
-                            var depEl =
-                                editor.insertMavenElement(
-                                    dms, MavenPomElements.Elements.DEPENDENCY);
-                            editor.insertMavenElement(
-                                depEl, MavenPomElements.Elements.GROUP_ID, parts[0]);
-                            editor.insertMavenElement(
-                                depEl, MavenPomElements.Elements.ARTIFACT_ID, parts[1]);
-                            editor.insertMavenElement(
-                                depEl, MavenPomElements.Elements.VERSION, parts[2]);
-                            editor.insertMavenElement(depEl, MavenPomElements.Elements.TYPE, "pom");
-                            editor.insertMavenElement(
-                                depEl, MavenPomElements.Elements.SCOPE, "import");
-                          }
-                        });
-                  }
+                  // Add dependency management
+                  addDefaultDependencyManagement(s.editor());
 
                   DEFAULT_PLUGINS.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
@@ -228,6 +167,55 @@ public class ProjectGeneratorService {
     } catch (Exception e) {
       throw new ProjectServiceException("Failed to generate POM file: " + e.getMessage(), e);
     }
+  }
+
+  private void addDefaultDependencies(PomEditor editor) {
+    var root = editor.root();
+    var depsTmp = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCIES);
+
+    if (depsTmp == null) {
+      depsTmp = editor.insertMavenElement(root, MavenPomElements.Elements.DEPENDENCIES);
+    }
+
+    final var deps = depsTmp;
+    DEFAULT_DEPENDENCIES.forEach(
+        ga -> {
+          String[] parts = ga.split(":", 2);
+          if (parts.length == 2) {
+            var depEl = editor.insertMavenElement(deps, MavenPomElements.Elements.DEPENDENCY);
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.GROUP_ID, parts[0]);
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.ARTIFACT_ID, parts[1]);
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
+          }
+        });
+  }
+
+  private void addDefaultDependencyManagement(PomEditor editor) {
+    var root = editor.root();
+    var dm = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
+
+    if (dm == null) {
+      dm = editor.insertMavenElement(root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
+    }
+
+    var dmsTmp = editor.findChildElement(dm, MavenPomElements.Elements.DEPENDENCIES);
+    if (dmsTmp == null) {
+      dmsTmp = editor.insertMavenElement(dm, MavenPomElements.Elements.DEPENDENCIES);
+    }
+
+    final var dms = dmsTmp;
+    DEFAULT_DEPENDENCY_MANAGEMENT.forEach(
+        bom -> {
+          String[] parts = bom.split(":", 3);
+          if (parts.length == 3) {
+            var depEl = editor.insertMavenElement(dms, MavenPomElements.Elements.DEPENDENCY);
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.GROUP_ID, parts[0]);
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.ARTIFACT_ID, parts[1]);
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, parts[2]);
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.TYPE, "pom");
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "import");
+          }
+        });
   }
 
   private Path createTempDirectory(String artifactId) {
