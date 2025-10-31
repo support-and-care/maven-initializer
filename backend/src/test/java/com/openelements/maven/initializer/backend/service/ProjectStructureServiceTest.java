@@ -124,7 +124,7 @@ class ProjectStructureServiceTest {
     projectStructureService.createStructure(tempDir, validRequest);
 
     Path testJavaDir = tempDir.resolve("src/test/java/com/example");
-    Path testClassFile = testJavaDir.resolve("testProjectTest.java");
+    Path testClassFile = testJavaDir.resolve("TestprojectTest.java");
 
     assertAll(
         () -> assertTrue(Files.isDirectory(testJavaDir), "Test Java directory should exist"),
