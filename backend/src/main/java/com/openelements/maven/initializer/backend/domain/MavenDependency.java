@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.openelements.maven.initializer.backend.service;
+package com.openelements.maven.initializer.backend.domain;
 
-/** Represents a Maven BOM (Bill of Materials) for dependency management. */
-public record MavenBom(String groupId, String artifactId, String version) {}
+/** Represents a Maven dependency with groupId, artifactId, and version. */
+public record MavenDependency(String groupId, String artifactId, String version) {}

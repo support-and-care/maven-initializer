@@ -18,6 +18,7 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
+import com.openelements.maven.initializer.backend.domain.MavenDependency;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import com.openelements.maven.initializer.backend.util.XmlFormatter;
@@ -47,13 +48,13 @@ public class ProjectGeneratorService {
 
   private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
       List.of(
-          new MavenDependency("org.assertj", "assertj-core"),
-          new MavenDependency("org.junit.jupiter", "junit-jupiter"));
+          new MavenDependency("org.assertj", "assertj-core", null),
+          new MavenDependency("org.junit.jupiter", "junit-jupiter", null));
 
-  private static final List<MavenBom> DEFAULT_DEPENDENCY_MANAGEMENT =
+  private static final List<MavenDependency> DEFAULT_DEPENDENCY_MANAGEMENT =
       List.of(
-          new MavenBom("org.junit", "junit-bom", "6.0.0"),
-          new MavenBom("org.assertj", "assertj-bom", "3.27.5"));
+          new MavenDependency("org.junit", "junit-bom", "6.0.0"),
+          new MavenDependency("org.assertj", "assertj-bom", "3.27.5"));
 
   private static final List<String> DEFAULT_PLUGINS =
       List.of(
@@ -189,7 +190,7 @@ public class ProjectGeneratorService {
               depEl, MavenPomElements.Elements.GROUP_ID, dependency.groupId());
           editor.insertMavenElement(
               depEl, MavenPomElements.Elements.ARTIFACT_ID, dependency.artifactId());
-          editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, dependency.scope());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
         });
   }
 
