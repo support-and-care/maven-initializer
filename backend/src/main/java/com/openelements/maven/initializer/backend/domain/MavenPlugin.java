@@ -18,10 +18,14 @@
  */
 package com.openelements.maven.initializer.backend.domain;
 
-/** Represents a Maven dependency with groupId, artifactId, and version. */
-public record MavenDependency(String groupId, String artifactId, String version) {
+import org.jspecify.annotations.NonNull;
 
-  public MavenDependency(String groupId, String artifactId) {
-    this(groupId, artifactId, "");
+/** Represents a Maven plugin with groupId, artifactId, and version. */
+public record MavenPlugin(String groupId, String artifactId, String version) {
+
+  @Override
+  @NonNull
+  public String toString() {
+    return groupId + ":" + artifactId + ":" + version;
   }
 }

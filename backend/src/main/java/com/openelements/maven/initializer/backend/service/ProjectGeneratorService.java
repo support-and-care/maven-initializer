@@ -19,6 +19,7 @@
 package com.openelements.maven.initializer.backend.service;
 
 import com.openelements.maven.initializer.backend.domain.MavenDependency;
+import com.openelements.maven.initializer.backend.domain.MavenPlugin;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import com.openelements.maven.initializer.backend.util.XmlFormatter;
@@ -48,22 +49,22 @@ public class ProjectGeneratorService {
 
   private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
       List.of(
-          new MavenDependency("org.assertj", "assertj-core", null),
-          new MavenDependency("org.junit.jupiter", "junit-jupiter", null));
+          new MavenDependency("org.assertj", "assertj-core"),
+          new MavenDependency("org.junit.jupiter", "junit-jupiter"));
 
   private static final List<MavenDependency> DEFAULT_DEPENDENCY_MANAGEMENT =
       List.of(
           new MavenDependency("org.junit", "junit-bom", "6.0.0"),
           new MavenDependency("org.assertj", "assertj-bom", "3.27.5"));
 
-  private static final List<String> DEFAULT_PLUGINS =
+  private static final List<MavenPlugin> DEFAULT_PLUGINS =
       List.of(
-          "org.apache.maven.plugins:maven-compiler-plugin:3.14.0",
-          "org.apache.maven.plugins:maven-resources-plugin:3.3.1",
-          "org.apache.maven.plugins:maven-surefire-plugin:3.5.4",
-          "org.apache.maven.plugins:maven-jar-plugin:3.4.2",
-          "org.apache.maven.plugins:maven-install-plugin:3.1.4",
-          "org.apache.maven.plugins:maven-deploy-plugin:3.1.4");
+          new MavenPlugin("org.apache.maven.plugins", "maven-compiler-plugin", "3.14.0"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-resources-plugin", "3.3.1"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-surefire-plugin", "3.5.4"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-jar-plugin", "3.4.2"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-install-plugin", "3.1.4"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-deploy-plugin", "3.1.4"));
 
   public ProjectGeneratorService(
       ToolboxCommando toolboxCommando, ProjectStructureService structureService) {
@@ -162,7 +163,7 @@ public class ProjectGeneratorService {
                   addDefaultDependencyManagement(s.editor());
 
                   DEFAULT_PLUGINS.forEach(
-                      plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
+                      plugin -> s.updatePlugin(true, new DefaultArtifact(plugin.toString())));
                 }));
       }
 
