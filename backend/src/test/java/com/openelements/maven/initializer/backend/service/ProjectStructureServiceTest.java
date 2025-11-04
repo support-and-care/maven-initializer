@@ -51,12 +51,14 @@ class ProjectStructureServiceTest {
     // When
     assertDoesNotThrow(() -> projectStructureService.createStructure(tempDir, validRequest));
 
-    Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/Testproject.java");
+    Path mainClassFile = tempDir.resolve("src/main/java/com/example/Testproject.java");
+    Path testClassFile = tempDir.resolve("src/test/java/com/example/TestprojectTest.java");
     Path gitignoreFile = tempDir.resolve(".gitignore");
 
     // Then
     assertAll(
         () -> assertTrue(Files.exists(mainClassFile), "Main class file should exist"),
+        () -> assertTrue(Files.exists(testClassFile), "Test class file should exist"),
         () -> assertTrue(Files.exists(gitignoreFile), ".gitignore file should exist"));
 
     assertThrows(
@@ -70,7 +72,7 @@ class ProjectStructureServiceTest {
     // When
     projectStructureService.createStructure(tempDir, validRequest);
 
-    Path mainClassFile = tempDir.resolve("src/main/java/com/example/testproject/Testproject.java");
+    Path mainClassFile = tempDir.resolve("src/main/java/com/example/Testproject.java");
     assertTrue(Files.exists(mainClassFile), "Main class file should exist");
 
     String content = Files.readString(mainClassFile);
@@ -90,6 +92,45 @@ class ProjectStructureServiceTest {
             assertTrue(
                 content.contains("Test project description"),
                 "JavaDoc should include project description"));
+  }
+
+  @Test
+  void testTestClassContent() throws IOException {
+    projectStructureService.createStructure(tempDir, validRequest);
+
+    Path testClassFile = tempDir.resolve("src/test/java/com/example/TestprojectTest.java");
+    assertTrue(Files.exists(testClassFile), "Test class file should exist");
+
+    String content = Files.readString(testClassFile);
+
+    assertAll(
+        () -> assertTrue(content.contains("package com.example;"), "Package should match group ID"),
+        () ->
+            assertTrue(
+                content.contains("import org.junit.jupiter.api.Test;"),
+                "Should import JUnit test annotation"),
+        () ->
+            assertTrue(
+                content.contains("class TestprojectTest"),
+                "Class name should match main class + 'Test'"),
+        () ->
+            assertTrue(
+                content.contains("assertTrue(true)"), "Test should contain sample assertion"),
+        () -> assertTrue(content.contains("@Test"), "Should include @Test annotation"));
+  }
+
+  @Test
+  void testTestDirectoryStructure() {
+    projectStructureService.createStructure(tempDir, validRequest);
+
+    Path testJavaDir = tempDir.resolve("src/test/java/com/example");
+    Path testClassFile = testJavaDir.resolve("TestprojectTest.java");
+
+    assertAll(
+        () -> assertTrue(Files.isDirectory(testJavaDir), "Test Java directory should exist"),
+        () ->
+            assertTrue(
+                Files.exists(testClassFile), "Test class file should be placed in test directory"));
   }
 
   @ParameterizedTest
@@ -121,7 +162,7 @@ class ProjectStructureServiceTest {
     // When
     projectStructureService.createStructure(tempDir, validRequest);
 
-    Path mainJavaDir = tempDir.resolve("src/main/java/com/example/testproject");
+    Path mainJavaDir = tempDir.resolve("src/main/java/com/example");
 
     assertAll(() -> assertTrue(Files.isDirectory(mainJavaDir), "Main Java directory should exist"));
 

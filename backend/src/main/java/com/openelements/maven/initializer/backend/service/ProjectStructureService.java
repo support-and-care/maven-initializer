@@ -39,6 +39,7 @@ public class ProjectStructureService {
       createDirectories(projectRoot, request.getGroupId(), request.getArtifactId());
       createGitignoreFile(projectRoot);
       createMainClass(projectRoot, request);
+      createTestClass(projectRoot, request);
 
       logger.info("✅ Project structure created successfully");
     } catch (IOException e) {
@@ -48,9 +49,11 @@ public class ProjectStructureService {
 
   private void createDirectories(Path root, String groupId, String artifactId) throws IOException {
     String packagePath = groupId.replace(".", "/");
-    Path javaDir = root.resolve("src/main/java/" + packagePath + "/" + artifactId.toLowerCase());
+    Path javaDir = root.resolve("src/main/java/" + packagePath);
+    Path testDir = root.resolve("src/test/java/" + packagePath);
 
     Files.createDirectories(javaDir);
+    Files.createDirectories(testDir);
 
     logger.debug("Created directory structure for package: {}", packagePath);
   }
@@ -76,7 +79,7 @@ public class ProjectStructureService {
     String artifactId = request.getArtifactId();
     String className = convertToJavaClassName(artifactId);
     String packagePath = pkg.replace(".", "/");
-    Path javaDir = root.resolve("src/main/java/" + packagePath + "/" + artifactId.toLowerCase());
+    Path javaDir = root.resolve("src/main/java/" + packagePath);
     Path mainClassFile = javaDir.resolve(className + ".java");
 
     String content =
@@ -100,6 +103,35 @@ public class ProjectStructureService {
 
     Files.writeString(mainClassFile, content);
     logger.debug("Created main class: {}", className);
+  }
+
+  private void createTestClass(Path root, ProjectRequestDTO request) throws IOException {
+    String pkg = request.getGroupId();
+    String artifactId = request.getArtifactId();
+    String className = convertToJavaClassName(artifactId);
+    String packagePath = pkg.replace(".", "/");
+    Path testDir = root.resolve("src/test/java/" + packagePath);
+    Path testClassFile = testDir.resolve(className + "Test.java");
+
+    String content =
+        String.format(
+            """
+        package %s;
+
+        import org.junit.jupiter.api.Test;
+        import static org.junit.jupiter.api.Assertions.assertTrue;
+
+        class %sTest {
+            @Test
+            void contextLoads() {
+                assertTrue(true);
+            }
+        }
+        """,
+            pkg, className);
+
+    Files.writeString(testClassFile, content);
+    logger.debug("Created sample test class: {}Test", className);
   }
 
   private String convertToJavaClassName(String artifactId) {

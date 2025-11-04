@@ -18,6 +18,8 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
+import com.openelements.maven.initializer.backend.domain.MavenDependency;
+import com.openelements.maven.initializer.backend.domain.MavenPlugin;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import com.openelements.maven.initializer.backend.util.XmlFormatter;
@@ -45,14 +47,24 @@ public class ProjectGeneratorService {
   private final ToolboxCommando toolboxCommando;
   private final ProjectStructureService structureService;
 
-  private static final List<String> DEFAULT_PLUGINS =
+  private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
       List.of(
-          "org.apache.maven.plugins:maven-compiler-plugin:3.14.0",
-          "org.apache.maven.plugins:maven-resources-plugin:3.3.1",
-          "org.apache.maven.plugins:maven-surefire-plugin:3.5.4",
-          "org.apache.maven.plugins:maven-jar-plugin:3.4.2",
-          "org.apache.maven.plugins:maven-install-plugin:3.1.4",
-          "org.apache.maven.plugins:maven-deploy-plugin:3.1.4");
+          new MavenDependency("org.assertj", "assertj-core"),
+          new MavenDependency("org.junit.jupiter", "junit-jupiter"));
+
+  private static final List<MavenDependency> DEFAULT_DEPENDENCY_MANAGEMENT =
+      List.of(
+          new MavenDependency("org.junit", "junit-bom", "6.0.0"),
+          new MavenDependency("org.assertj", "assertj-bom", "3.27.5"));
+
+  private static final List<MavenPlugin> DEFAULT_PLUGINS =
+      List.of(
+          new MavenPlugin("org.apache.maven.plugins", "maven-compiler-plugin", "3.14.0"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-resources-plugin", "3.3.1"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-surefire-plugin", "3.5.4"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-jar-plugin", "3.4.2"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-install-plugin", "3.1.4"),
+          new MavenPlugin("org.apache.maven.plugins", "maven-deploy-plugin", "3.1.4"));
 
   public ProjectGeneratorService(
       ToolboxCommando toolboxCommando, ProjectStructureService structureService) {
@@ -143,8 +155,15 @@ public class ProjectGeneratorService {
                       .insertMavenElement(
                           s.editor().root(), "description", request.getDescription());
                   s.editor().insertMavenElement(s.editor().root(), "name", request.getName());
+
+                  // Add default dependencies
+                  addDefaultDependencies(s.editor());
+
+                  // Add dependency management
+                  addDefaultDependencyManagement(s.editor());
+
                   DEFAULT_PLUGINS.forEach(
-                      plugin -> s.updatePlugin(true, new DefaultArtifact(plugin)));
+                      plugin -> s.updatePlugin(true, new DefaultArtifact(plugin.toString())));
                 }));
       }
 
@@ -154,6 +173,51 @@ public class ProjectGeneratorService {
     } catch (Exception e) {
       throw new ProjectServiceException("Failed to generate POM file: " + e.getMessage(), e);
     }
+  }
+
+  private void addDefaultDependencies(PomEditor editor) {
+    var root = editor.root();
+    var depsTmp = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCIES);
+
+    if (depsTmp == null) {
+      depsTmp = editor.insertMavenElement(root, MavenPomElements.Elements.DEPENDENCIES);
+    }
+
+    final var deps = depsTmp;
+    DEFAULT_DEPENDENCIES.forEach(
+        dependency -> {
+          var depEl = editor.insertMavenElement(deps, MavenPomElements.Elements.DEPENDENCY);
+          editor.insertMavenElement(
+              depEl, MavenPomElements.Elements.GROUP_ID, dependency.groupId());
+          editor.insertMavenElement(
+              depEl, MavenPomElements.Elements.ARTIFACT_ID, dependency.artifactId());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
+        });
+  }
+
+  private void addDefaultDependencyManagement(PomEditor editor) {
+    var root = editor.root();
+    var dm = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
+
+    if (dm == null) {
+      dm = editor.insertMavenElement(root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
+    }
+
+    var dmsTmp = editor.findChildElement(dm, MavenPomElements.Elements.DEPENDENCIES);
+    if (dmsTmp == null) {
+      dmsTmp = editor.insertMavenElement(dm, MavenPomElements.Elements.DEPENDENCIES);
+    }
+
+    final var dms = dmsTmp;
+    DEFAULT_DEPENDENCY_MANAGEMENT.forEach(
+        bom -> {
+          var depEl = editor.insertMavenElement(dms, MavenPomElements.Elements.DEPENDENCY);
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.GROUP_ID, bom.groupId());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.ARTIFACT_ID, bom.artifactId());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, bom.version());
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.TYPE, "pom");
+          editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "import");
+        });
   }
 
   private Path createTempDirectory(String artifactId) {
