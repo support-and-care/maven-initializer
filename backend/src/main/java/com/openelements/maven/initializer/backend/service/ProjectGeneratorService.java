@@ -263,14 +263,14 @@ public class ProjectGeneratorService {
     }
 
     // Add executions element if not present
-    var executions = editor.findChildElement(jacocoPlugin, "executions");
+    var executions = editor.findChildElement(jacocoPlugin, MavenPomElements.Elements.EXECUTIONS);
     if (executions == null) {
-      executions = editor.insertMavenElement(jacocoPlugin, "executions");
+      executions = editor.insertMavenElement(jacocoPlugin, MavenPomElements.Elements.EXECUTIONS);
     }
 
     var execution = editor.insertMavenElement(executions, "execution");
 
-    var goals = editor.insertMavenElement(execution, "goals");
+    var goals = editor.insertMavenElement(execution, MavenPomElements.Elements.GOALS);
 
     var prepareAgentGoal = editor.insertMavenElement(goals, "goal");
     prepareAgentGoal.textContent("prepare-agent");
