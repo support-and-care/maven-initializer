@@ -144,7 +144,8 @@ class ProjectGeneratorServiceTest {
             "maven-surefire-plugin",
             "maven-jar-plugin",
             "maven-install-plugin",
-            "maven-deploy-plugin");
+            "maven-deploy-plugin",
+            "jacoco-maven-plugin");
 
     List<String> missingPlugins =
         defaultPlugins.stream().filter(plugin -> !pomContent.contains(plugin)).toList();
@@ -178,6 +179,44 @@ class ProjectGeneratorServiceTest {
     assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
     assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
     assertTrue(pomContent.contains("<scope>test</scope>"));
+  }
+
+  @Test
+  void testPomContainsJacocoPluginConfiguration() throws Exception {
+    // Given
+    ProjectRequestDTO validRequest = createValidRequest();
+
+    // When
+    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+    String pomContent = Files.readString(pomFile);
+
+    // Verify jacoco plugin is present
+    assertTrue(
+        pomContent.contains("<groupId>org.jacoco</groupId>"),
+        "POM should contain jacoco plugin groupId");
+    assertTrue(
+        pomContent.contains("<artifactId>jacoco-maven-plugin</artifactId>"),
+        "POM should contain jacoco-maven-plugin artifactId");
+
+    // Verify executions configuration
+    assertTrue(
+        pomContent.contains("<executions>"),
+        "POM should contain executions element for jacoco plugin");
+    assertTrue(
+        pomContent.contains("<execution>"),
+        "POM should contain execution element for jacoco plugin");
+
+    // Verify goals
+    assertTrue(
+        pomContent.contains("<goal>prepare-agent</goal>"),
+        "POM should contain prepare-agent goal for jacoco plugin");
+    assertTrue(
+        pomContent.contains("<goal>report</goal>"),
+        "POM should contain report goal for jacoco plugin");
   }
 
   private ProjectRequestDTO createValidRequest() {
