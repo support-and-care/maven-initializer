@@ -23,6 +23,7 @@ import com.openelements.maven.initializer.backend.domain.MavenPlugin;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import com.openelements.maven.initializer.backend.util.XmlFormatter;
+import eu.maveniverse.domtrip.Element;
 import eu.maveniverse.maven.toolbox.shared.ToolboxCommando;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -64,7 +65,8 @@ public class ProjectGeneratorService {
           new MavenPlugin("org.apache.maven.plugins", "maven-surefire-plugin", "3.5.4"),
           new MavenPlugin("org.apache.maven.plugins", "maven-jar-plugin", "3.4.2"),
           new MavenPlugin("org.apache.maven.plugins", "maven-install-plugin", "3.1.4"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-deploy-plugin", "3.1.4"));
+          new MavenPlugin("org.apache.maven.plugins", "maven-deploy-plugin", "3.1.4"),
+          new MavenPlugin("org.jacoco", "jacoco-maven-plugin", "0.8.13"));
 
   public ProjectGeneratorService(
       ToolboxCommando toolboxCommando, ProjectStructureService structureService) {
@@ -164,6 +166,9 @@ public class ProjectGeneratorService {
 
                   DEFAULT_PLUGINS.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin.toString())));
+
+                  // Add jacoco plugin configuration with executions
+                  addJacocoPluginConfiguration(s.editor());
                 }));
       }
 
@@ -218,6 +223,60 @@ public class ProjectGeneratorService {
           editor.insertMavenElement(depEl, MavenPomElements.Elements.TYPE, "pom");
           editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "import");
         });
+  }
+
+  private void addJacocoPluginConfiguration(PomEditor editor) {
+    var root = editor.root();
+    var build = editor.findChildElement(root, MavenPomElements.Elements.BUILD);
+    if (build == null) {
+      return;
+    }
+
+    var plugins = editor.findChildElement(build, MavenPomElements.Elements.PLUGINS);
+    if (plugins == null) {
+      return;
+    }
+
+    // Find the jacoco plugin
+    var jacocoPlugin =
+        plugins
+            .children(MavenPomElements.Elements.PLUGIN)
+            .filter(
+                plugin ->
+                    "org.jacoco"
+                            .equals(
+                                plugin
+                                    .child(MavenPomElements.Elements.GROUP_ID)
+                                    .map(Element::textContent)
+                                    .orElse(null))
+                        && "jacoco-maven-plugin"
+                            .equals(
+                                plugin
+                                    .child(MavenPomElements.Elements.ARTIFACT_ID)
+                                    .map(Element::textContent)
+                                    .orElse(null)))
+            .findFirst()
+            .orElse(null);
+
+    if (jacocoPlugin == null) {
+      return;
+    }
+
+    // Add executions element if not present
+    var executions = editor.findChildElement(jacocoPlugin, "executions");
+    if (executions == null) {
+      executions = editor.insertMavenElement(jacocoPlugin, "executions");
+    }
+
+    var execution = editor.insertMavenElement(executions, "execution");
+
+    var goals = editor.insertMavenElement(execution, "goals");
+
+    var prepareAgentGoal = editor.insertMavenElement(goals, "goal");
+    prepareAgentGoal.textContent("prepare-agent");
+
+    var reportGoal = editor.insertMavenElement(goals, "goal");
+    reportGoal.textContent("report");
   }
 
   private Path createTempDirectory(String artifactId) {
