@@ -26,7 +26,10 @@ describe("Header component", () => {
     render(<Header />);
     const githubLink = screen.getByText("GitHub");
     expect(githubLink).toBeInTheDocument();
-    expect(githubLink.closest("a")).toHaveAttribute("href", "#");
+    expect(githubLink.closest("a")).toHaveAttribute(
+      "href",
+      "https://github.com/support-and-care/maven-initializer",
+    );
   });
 
   it("renders all navigation elements", () => {
