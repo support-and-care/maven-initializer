@@ -47,6 +47,7 @@ public class ProjectGeneratorService {
   private static final Logger logger = LoggerFactory.getLogger(ProjectGeneratorService.class);
   private final ToolboxCommando toolboxCommando;
   private final ProjectStructureService structureService;
+  private final ArtifactVersionService artifactVersionService;
 
   private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
       List.of(
@@ -69,9 +70,12 @@ public class ProjectGeneratorService {
           new MavenPlugin("org.jacoco", "jacoco-maven-plugin", "0.8.13"));
 
   public ProjectGeneratorService(
-      ToolboxCommando toolboxCommando, ProjectStructureService structureService) {
+      ToolboxCommando toolboxCommando,
+      ProjectStructureService structureService,
+      ArtifactVersionService artifactVersionService) {
     this.toolboxCommando = toolboxCommando;
     this.structureService = structureService;
+    this.artifactVersionService = artifactVersionService;
   }
 
   public String generateProject(ProjectRequestDTO request) {
@@ -145,6 +149,9 @@ public class ProjectGeneratorService {
           createEmptyPom(request.getGroupId(), request.getArtifactId(), request.getVersion());
       Files.writeString(pomFile, pomContent);
 
+      List<MavenDependency> dependencyManagement = resolveDependencyManagement();
+      List<MavenPlugin> plugins = resolvePlugins();
+
       try (ToolboxCommando.EditSession editSession = toolboxCommando.createEditSession(pomFile)) {
         toolboxCommando.editPom(
             editSession,
@@ -162,9 +169,9 @@ public class ProjectGeneratorService {
                   addDefaultDependencies(s.editor());
 
                   // Add dependency management
-                  addDefaultDependencyManagement(s.editor());
+                  addDefaultDependencyManagement(s.editor(), dependencyManagement);
 
-                  DEFAULT_PLUGINS.forEach(
+                  plugins.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin.toString())));
 
                   // Add jacoco plugin configuration with executions
@@ -200,7 +207,32 @@ public class ProjectGeneratorService {
         });
   }
 
-  private void addDefaultDependencyManagement(PomEditor editor) {
+  private List<MavenDependency> resolveDependencyManagement() {
+    return DEFAULT_DEPENDENCY_MANAGEMENT.stream()
+        .map(
+            bom ->
+                new MavenDependency(
+                    bom.groupId(),
+                    bom.artifactId(),
+                    artifactVersionService.resolveLatestPomVersion(
+                        bom.groupId(), bom.artifactId(), bom.version())))
+        .toList();
+  }
+
+  private List<MavenPlugin> resolvePlugins() {
+    return DEFAULT_PLUGINS.stream()
+        .map(
+            plugin ->
+                new MavenPlugin(
+                    plugin.groupId(),
+                    plugin.artifactId(),
+                    artifactVersionService.resolveLatestJarVersion(
+                        plugin.groupId(), plugin.artifactId(), plugin.version())))
+        .toList();
+  }
+
+  private void addDefaultDependencyManagement(
+      PomEditor editor, List<MavenDependency> dependencyManagement) {
     var root = editor.root();
     var dm = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
 
@@ -214,7 +246,7 @@ public class ProjectGeneratorService {
     }
 
     final var dms = dmsTmp;
-    DEFAULT_DEPENDENCY_MANAGEMENT.forEach(
+    dependencyManagement.forEach(
         bom -> {
           var depEl = editor.insertMavenElement(dms, MavenPomElements.Elements.DEPENDENCY);
           editor.insertMavenElement(depEl, MavenPomElements.Elements.GROUP_ID, bom.groupId());

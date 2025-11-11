@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,14 +42,26 @@ class ProjectGeneratorServiceTest {
 
   private ProjectGeneratorService projectGeneratorServiceUnderTest;
   @Mock private ProjectStructureService projectStructureServiceMock;
+  @Mock private ArtifactVersionService artifactVersionService;
 
   @BeforeEach
   void setUp() {
     MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
 
     var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
+    Mockito.lenient()
+        .when(
+            artifactVersionService.resolveLatestPomVersion(
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        .thenAnswer(invocation -> invocation.getArgument(2));
+    Mockito.lenient()
+        .when(
+            artifactVersionService.resolveLatestJarVersion(
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        .thenAnswer(invocation -> invocation.getArgument(2));
+
     projectGeneratorServiceUnderTest =
-        new ProjectGeneratorService(toolbox, projectStructureServiceMock);
+        new ProjectGeneratorService(toolbox, projectStructureServiceMock, artifactVersionService);
   }
 
   @Test
@@ -217,6 +230,29 @@ class ProjectGeneratorServiceTest {
     assertTrue(
         pomContent.contains("<goal>report</goal>"),
         "POM should contain report goal for jacoco plugin");
+  }
+
+  @Test
+  void testResolvedPluginVersionIsApplied() throws Exception {
+
+    Mockito.when(
+            artifactVersionService.resolveLatestJarVersion(
+                "org.jacoco", "jacoco-maven-plugin", "0.8.13"))
+        .thenReturn("9.9.9");
+
+    ProjectRequestDTO validRequest = createValidRequest();
+
+    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    String pomContent = Files.readString(pomFile);
+
+    assertTrue(
+        pomContent.contains("<artifactId>jacoco-maven-plugin</artifactId>"),
+        "Jacoco plugin should be present");
+    assertTrue(
+        pomContent.contains("<version>9.9.9</version>"),
+        "Jacoco plugin version should match resolved value");
   }
 
   private ProjectRequestDTO createValidRequest() {
