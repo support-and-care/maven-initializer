@@ -18,14 +18,54 @@
  */
 package com.openelements.maven.initializer.backend.domain;
 
+import com.openelements.maven.initializer.backend.service.ArtifactVersionService;
+import java.util.Objects;
 import org.jspecify.annotations.NonNull;
 
 /** Represents a Maven plugin with groupId, artifactId, and version. */
-public record MavenPlugin(String groupId, String artifactId, String version) {
+public final class MavenPlugin {
+  private final String groupId;
+  private final String artifactId;
+  private final String version;
+
+  /** */
+  public MavenPlugin(
+      String groupId, String artifactId, ArtifactVersionService artifactVersionService) {
+    this.groupId = groupId;
+    this.artifactId = artifactId;
+    this.version = artifactVersionService.resolveLatestPluginVersion(groupId, artifactId);
+  }
 
   @Override
   @NonNull
   public String toString() {
     return groupId + ":" + artifactId + ":" + version;
+  }
+
+  public String groupId() {
+    return groupId;
+  }
+
+  public String artifactId() {
+    return artifactId;
+  }
+
+  public String version() {
+    return version;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) return true;
+    if (obj == null || obj.getClass() != this.getClass()) return false;
+    var that = (MavenPlugin) obj;
+    return Objects.equals(this.groupId, that.groupId)
+        && Objects.equals(this.artifactId, that.artifactId)
+        && Objects.equals(this.version, that.version);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(groupId, artifactId, version);
   }
 }

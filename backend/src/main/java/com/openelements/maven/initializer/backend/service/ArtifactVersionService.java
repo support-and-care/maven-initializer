@@ -41,21 +41,17 @@ public class ArtifactVersionService {
     this.toolboxResolver = toolboxCommando.getToolboxResolver();
   }
 
-  public String resolveLatestJarVersion(String groupId, String artifactId, String defaultVersion) {
-    return resolveLatestVersion(groupId, artifactId, "", "jar", defaultVersion);
+  public String resolveLatestPluginVersion(String groupId, String artifactId) {
+    return resolveLatestVersion(groupId, artifactId, "", "jar");
   }
 
-  public String resolveLatestPomVersion(String groupId, String artifactId, String defaultVersion) {
-    return resolveLatestVersion(groupId, artifactId, "", "pom", defaultVersion);
+  public String resolveLatestDependencyBomVersion(String groupId, String artifactId) {
+    return resolveLatestVersion(groupId, artifactId, "", "pom");
   }
 
   public String resolveLatestVersion(
-      String groupId,
-      String artifactId,
-      String classifier,
-      String extension,
-      String defaultVersion) {
-    String fallback = defaultVersion == null ? "" : defaultVersion;
+      String groupId, String artifactId, String classifier, String extension) {
+    String fallback = "TODO";
     try {
       Version newestVersion =
           toolboxResolver.findNewestVersion(

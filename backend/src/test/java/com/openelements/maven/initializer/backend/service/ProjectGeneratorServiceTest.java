@@ -49,16 +49,18 @@ class ProjectGeneratorServiceTest {
     MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
 
     var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
-    Mockito.lenient()
-        .when(
-            artifactVersionService.resolveLatestPomVersion(
-                Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-        .thenAnswer(invocation -> invocation.getArgument(2));
-    Mockito.lenient()
-        .when(
-            artifactVersionService.resolveLatestJarVersion(
-                Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-        .thenAnswer(invocation -> invocation.getArgument(2));
+    Mockito.when(
+            artifactVersionService.resolveLatestDependencyBomVersion(
+                Mockito.anyString(), Mockito.anyString()))
+        .thenReturn("TODO");
+    Mockito.when(
+            artifactVersionService.resolveLatestPluginVersion(
+                Mockito.anyString(), Mockito.anyString()))
+        .thenReturn("TODO");
+
+    Mockito.when(
+            artifactVersionService.resolveLatestPluginVersion("org.jacoco", "jacoco-maven-plugin"))
+        .thenReturn("9.9.9");
 
     projectGeneratorServiceUnderTest =
         new ProjectGeneratorService(toolbox, projectStructureServiceMock, artifactVersionService);
@@ -182,12 +184,12 @@ class ProjectGeneratorServiceTest {
     // Dependency Management BOM imports
     assertTrue(pomContent.contains("<groupId>org.junit</groupId>"));
     assertTrue(pomContent.contains("<artifactId>junit-bom</artifactId>"));
-    assertTrue(pomContent.contains("<version>6.0.0</version>"));
+    assertTrue(pomContent.contains("<version>TODO</version>"));
     assertTrue(pomContent.contains("<type>pom</type>"));
     assertTrue(pomContent.contains("<scope>import</scope>"));
     assertTrue(pomContent.contains("<groupId>org.assertj</groupId>"));
     assertTrue(pomContent.contains("<artifactId>assertj-bom</artifactId>"));
-    assertTrue(pomContent.contains("<version>3.27.5</version>"));
+    assertTrue(pomContent.contains("<version>TODO</version>"));
     assertTrue(pomContent.contains("<artifactId>assertj-core</artifactId>"));
     assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
     assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
@@ -234,12 +236,6 @@ class ProjectGeneratorServiceTest {
 
   @Test
   void testResolvedPluginVersionIsApplied() throws Exception {
-
-    Mockito.when(
-            artifactVersionService.resolveLatestJarVersion(
-                "org.jacoco", "jacoco-maven-plugin", "0.8.13"))
-        .thenReturn("9.9.9");
-
     ProjectRequestDTO validRequest = createValidRequest();
 
     String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);

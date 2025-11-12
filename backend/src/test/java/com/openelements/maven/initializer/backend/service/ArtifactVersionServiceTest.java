@@ -53,7 +53,7 @@ class ArtifactVersionServiceTest {
         .thenReturn(version);
     Mockito.when(version.toString()).thenReturn("1.2.3");
 
-    String resolved = artifactVersionService.resolveLatestJarVersion("g", "a", "0.0.1");
+    String resolved = artifactVersionService.resolveLatestPluginVersion("g", "a");
 
     assertEquals("1.2.3", resolved);
 
@@ -69,8 +69,8 @@ class ArtifactVersionServiceTest {
     Mockito.when(toolboxResolver.findNewestVersion(Mockito.any(), Mockito.any()))
         .thenThrow(new VersionRangeResolutionException(null, "resolution failed"));
 
-    String resolved = artifactVersionService.resolveLatestPomVersion("g", "a", "5.6.7");
+    String resolved = artifactVersionService.resolveLatestDependencyBomVersion("g", "a");
 
-    assertEquals("5.6.7", resolved);
+    assertEquals("TODO", resolved);
   }
 }

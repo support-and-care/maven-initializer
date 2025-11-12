@@ -47,27 +47,15 @@ public class ProjectGeneratorService {
   private static final Logger logger = LoggerFactory.getLogger(ProjectGeneratorService.class);
   private final ToolboxCommando toolboxCommando;
   private final ProjectStructureService structureService;
-  private final ArtifactVersionService artifactVersionService;
 
   private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
       List.of(
           new MavenDependency("org.assertj", "assertj-core"),
           new MavenDependency("org.junit.jupiter", "junit-jupiter"));
 
-  private static final List<MavenDependency> DEFAULT_DEPENDENCY_MANAGEMENT =
-      List.of(
-          new MavenDependency("org.junit", "junit-bom", "6.0.0"),
-          new MavenDependency("org.assertj", "assertj-bom", "3.27.5"));
+  private List<MavenDependency> dependencyManagement;
 
-  private static final List<MavenPlugin> DEFAULT_PLUGINS =
-      List.of(
-          new MavenPlugin("org.apache.maven.plugins", "maven-compiler-plugin", "3.14.0"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-resources-plugin", "3.3.1"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-surefire-plugin", "3.5.4"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-jar-plugin", "3.4.2"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-install-plugin", "3.1.4"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-deploy-plugin", "3.1.4"),
-          new MavenPlugin("org.jacoco", "jacoco-maven-plugin", "0.8.13"));
+  private List<MavenPlugin> plugins;
 
   public ProjectGeneratorService(
       ToolboxCommando toolboxCommando,
@@ -75,7 +63,33 @@ public class ProjectGeneratorService {
       ArtifactVersionService artifactVersionService) {
     this.toolboxCommando = toolboxCommando;
     this.structureService = structureService;
-    this.artifactVersionService = artifactVersionService;
+
+    fillDependencyManagement(artifactVersionService);
+    fillPlugins(artifactVersionService);
+  }
+
+  private void fillPlugins(ArtifactVersionService artifactVersionService) {
+    plugins =
+        List.of(
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-compiler-plugin", artifactVersionService),
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-resources-plugin", artifactVersionService),
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-surefire-plugin", artifactVersionService),
+            new MavenPlugin("org.apache.maven.plugins", "maven-jar-plugin", artifactVersionService),
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-install-plugin", artifactVersionService),
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-deploy-plugin", artifactVersionService),
+            new MavenPlugin("org.jacoco", "jacoco-maven-plugin", artifactVersionService));
+  }
+
+  private void fillDependencyManagement(ArtifactVersionService artifactVersionService) {
+    dependencyManagement =
+        List.of(
+            new MavenDependency("org.junit", "junit-bom", artifactVersionService),
+            new MavenDependency("org.assertj", "assertj-bom", artifactVersionService));
   }
 
   public String generateProject(ProjectRequestDTO request) {
@@ -149,9 +163,6 @@ public class ProjectGeneratorService {
           createEmptyPom(request.getGroupId(), request.getArtifactId(), request.getVersion());
       Files.writeString(pomFile, pomContent);
 
-      List<MavenDependency> dependencyManagement = resolveDependencyManagement();
-      List<MavenPlugin> plugins = resolvePlugins();
-
       try (ToolboxCommando.EditSession editSession = toolboxCommando.createEditSession(pomFile)) {
         toolboxCommando.editPom(
             editSession,
@@ -205,30 +216,6 @@ public class ProjectGeneratorService {
               depEl, MavenPomElements.Elements.ARTIFACT_ID, dependency.artifactId());
           editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
         });
-  }
-
-  private List<MavenDependency> resolveDependencyManagement() {
-    return DEFAULT_DEPENDENCY_MANAGEMENT.stream()
-        .map(
-            bom ->
-                new MavenDependency(
-                    bom.groupId(),
-                    bom.artifactId(),
-                    artifactVersionService.resolveLatestPomVersion(
-                        bom.groupId(), bom.artifactId(), bom.version())))
-        .toList();
-  }
-
-  private List<MavenPlugin> resolvePlugins() {
-    return DEFAULT_PLUGINS.stream()
-        .map(
-            plugin ->
-                new MavenPlugin(
-                    plugin.groupId(),
-                    plugin.artifactId(),
-                    artifactVersionService.resolveLatestJarVersion(
-                        plugin.groupId(), plugin.artifactId(), plugin.version())))
-        .toList();
   }
 
   private void addDefaultDependencyManagement(
