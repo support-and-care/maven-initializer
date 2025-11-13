@@ -39,7 +39,7 @@ public class ProjectController {
 
   @PostMapping("/generate")
   public ResponseEntity<byte[]> generateProject(@Valid @RequestBody ProjectRequestDTO request) {
-    String result = projectGeneratorService.generateProject(request);
+    String result = projectGeneratorService.generateProject(request).projectPath();
     byte[] zipBytes = projectGeneratorService.createProjectZip(result);
     return ResponseEntity.ok()
         .header(

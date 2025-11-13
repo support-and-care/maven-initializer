@@ -18,17 +18,20 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.openelements.maven.initializer.backend.config.MavenToolboxConfig;
+import com.openelements.maven.initializer.backend.domain.ProjectGenerationResult;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,44 +47,54 @@ class ProjectGeneratorServiceTest {
   @Mock private ProjectStructureService projectStructureServiceMock;
   @Mock private ArtifactVersionService artifactVersionService;
 
-  @BeforeEach
-  void setUp() {
+  private ProjectGeneratorService configureProjectGeneratorService() {
     MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
-
     var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
-    //    Mockito.when(
-    //            artifactVersionService.resolveLatestDependencyBomVersion(
-    //                Mockito.anyString(), Mockito.anyString()))
-    //        .thenReturn("TODO");
-    //    Mockito.when(
-    //            artifactVersionService.resolveLatestPluginVersion(
-    //                Mockito.anyString(), Mockito.anyString()))
-    //        .thenReturn("TODO");
-    //
-    //    Mockito.when(
-    //            artifactVersionService.resolveLatestPluginVersion("org.jacoco",
-    // "jacoco-maven-plugin"))
-    //        .thenReturn("9.9.9");
-
-    projectGeneratorServiceUnderTest =
-        new ProjectGeneratorService(toolbox, projectStructureServiceMock, artifactVersionService);
+    return new ProjectGeneratorService(
+        toolbox, projectStructureServiceMock, artifactVersionService);
   }
 
   @Test
-  void testProjectGeneration() {
+  void testProjectGenerationWithoutIssues() {
     // Given
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     final ProjectRequestDTO validRequest = createValidRequest();
 
     // When
-    final String result = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    final ProjectGenerationResult result =
+        projectGeneratorServiceUnderTest.generateProject(validRequest);
     assertNotNull(result);
-    assertTrue(result.contains(validRequest.getArtifactId()));
-    assertTrue(java.nio.file.Files.exists(java.nio.file.Paths.get(result)));
+    assertTrue(result.projectPath().contains(validRequest.getArtifactId()));
+    assertTrue(Files.exists(Paths.get(result.projectPath())));
+    assertEquals(result.status(), ProjectGenerationResult.Status.NO_ISSUES);
+  }
+
+  @Test
+  void testProjectGenerationUsingFallbackVersion() {
+    // Given
+    Mockito.when(
+            artifactVersionService.resolveLatestDependencyBomVersion(
+                Mockito.anyString(), Mockito.anyString()))
+        .thenReturn("TODO");
+    Mockito.when(
+            artifactVersionService.resolveLatestPluginVersion(
+                Mockito.anyString(), Mockito.anyString()))
+        .thenReturn("TODO");
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
+
+    final ProjectRequestDTO validRequest = createValidRequest();
+    // When
+    final ProjectGenerationResult result =
+        projectGeneratorServiceUnderTest.generateProject(validRequest);
+    assertNotNull(result);
+    assertTrue(result.projectPath().contains(validRequest.getArtifactId()));
+    assertTrue(Files.exists(Paths.get(result.projectPath())));
+    assertEquals(result.status(), ProjectGenerationResult.Status.FALLBACK_VERSION);
   }
 
   @Test
   void testProjectGenerationFailing() {
-
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     assertThrows(
         IllegalArgumentException.class,
         () -> projectGeneratorServiceUnderTest.generateProject(null),
@@ -90,6 +103,7 @@ class ProjectGeneratorServiceTest {
 
   @Test
   void testProjectZipCreation() {
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     // When
     String validProjectPath = new File("src/test/resources/validTestProject").getAbsolutePath();
     final byte[] zipBytes = projectGeneratorServiceUnderTest.createProjectZip(validProjectPath);
@@ -102,7 +116,7 @@ class ProjectGeneratorServiceTest {
   void testProjectZipCreationFailing() {
     // Given
     final String invalidProjectPath = "/non/existent/path";
-
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     // When
     assertThrows(
         IllegalArgumentException.class,
@@ -114,12 +128,13 @@ class ProjectGeneratorServiceTest {
 
   @Test
   void testPomFileContainsExpectedElements() throws IOException {
-
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     // Given
     ProjectRequestDTO validRequest = createValidRequest();
 
     // When
-    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
 
     Path pomFile = Path.of(projectPath, "pom.xml");
     assertTrue(Files.exists(pomFile));
@@ -141,12 +156,13 @@ class ProjectGeneratorServiceTest {
 
   @Test
   void testPomContainsAllDefaultPlugins() throws Exception {
-
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     // Given
     ProjectRequestDTO validRequest = createValidRequest();
 
     // When
-    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
     Path pomFile = Path.of(projectPath, "pom.xml");
 
     // Then
@@ -172,7 +188,6 @@ class ProjectGeneratorServiceTest {
   @Test
   void testPomContainsDependenciesAndDependencyManagement() throws Exception {
     // Given
-    ProjectRequestDTO validRequest = createValidRequest();
     Mockito.when(
             artifactVersionService.resolveLatestDependencyBomVersion(
                 Mockito.anyString(), Mockito.anyString()))
@@ -181,9 +196,12 @@ class ProjectGeneratorServiceTest {
             artifactVersionService.resolveLatestPluginVersion(
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
+    ProjectRequestDTO validRequest = createValidRequest();
 
     // When
-    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
     Path pomFile = Path.of(projectPath, "pom.xml");
 
     // Then
@@ -198,6 +216,7 @@ class ProjectGeneratorServiceTest {
     assertTrue(pomContent.contains("<scope>import</scope>"));
     assertTrue(pomContent.contains("<groupId>org.assertj</groupId>"));
     assertTrue(pomContent.contains("<artifactId>assertj-bom</artifactId>"));
+    assertTrue(pomContent.contains("<version>TODO</version>"));
     assertTrue(pomContent.contains("<artifactId>assertj-core</artifactId>"));
     assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
     assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
@@ -208,9 +227,10 @@ class ProjectGeneratorServiceTest {
   void testPomContainsJacocoPluginConfiguration() throws Exception {
     // Given
     ProjectRequestDTO validRequest = createValidRequest();
-
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     // When
-    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
     Path pomFile = Path.of(projectPath, "pom.xml");
 
     // Then
@@ -248,14 +268,15 @@ class ProjectGeneratorServiceTest {
             artifactVersionService.resolveLatestPluginVersion(
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
-
     Mockito.when(
             artifactVersionService.resolveLatestPluginVersion("org.jacoco", "jacoco-maven-plugin"))
         .thenReturn("9.9.9");
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
 
     ProjectRequestDTO validRequest = createValidRequest();
 
-    String projectPath = projectGeneratorServiceUnderTest.generateProject(validRequest);
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
     Path pomFile = Path.of(projectPath, "pom.xml");
 
     String pomContent = Files.readString(pomFile);
