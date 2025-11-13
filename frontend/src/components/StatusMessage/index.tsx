@@ -40,7 +40,9 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
     statusStyles[resolvedType] ?? statusStyles.error;
 
   return (
-    <div className={`p-4 rounded-lg border flex items-center gap-3 ${container}`}>
+    <div
+      className={`p-4 rounded-lg border flex items-center gap-3 ${container}`}
+    >
       <Icon className={`w-5 h-5 ${iconClass}`} />
       <span className="text-sm font-medium">{message}</span>
     </div>
