@@ -1,6 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import JSZip from "jszip";
 import { MavenInitializerPage } from "@/components/MavenInitializerPage";
 
 // Helpers
@@ -24,6 +25,20 @@ const fillBasicForm = () => {
     { target: { value: "A demo project" } },
   );
 };
+
+const createZipBlobWithPom = async (pomContent: string) => {
+  const zip = new JSZip();
+  zip.file("pom.xml", pomContent);
+  const buffer = await zip.generateAsync({ type: "uint8array" });
+  return {
+    arrayBuffer: async () => buffer.buffer,
+    size: buffer.byteLength,
+    type: "application/zip",
+  } as unknown as Blob;
+};
+
+const FALLBACK_WARNING_MESSAGE =
+  'Some dependencies/plugins could not be resolved automatically. The generated pom.xml contains placeholder version "TODO". Please update these versions manually.';
 
 describe("MavenInitializerPage", () => {
   const originalFetch = global.fetch;
@@ -62,9 +77,12 @@ describe("MavenInitializerPage", () => {
   });
 
   it("submits and handles success by starting download and showing message", async () => {
+    const zipBlob = await createZipBlobWithPom(
+      "<project><version>1.0.0</version></project>",
+    );
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      blob: async () => new Blob(["zip-content"], { type: "application/zip" }),
+      blob: async () => zipBlob,
     });
 
     render(<MavenInitializerPage />);
@@ -81,6 +99,9 @@ describe("MavenInitializerPage", () => {
     expect(
       screen.getByText(/Project generated successfully!/i),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText(FALLBACK_WARNING_MESSAGE),
+    ).not.toBeInTheDocument();
   });
 
   it("shows server validation errors and error message when response has errors", async () => {
@@ -103,6 +124,28 @@ describe("MavenInitializerPage", () => {
     await screen.findByText(/Validation failed/i);
     expect(screen.getByText("Group ID is required")).toBeInTheDocument();
     expect(screen.getByText("Invalid")).toBeInTheDocument();
+  });
+
+  it("shows fallback warning when placeholder TODO versions are used", async () => {
+    const zipBlob = await createZipBlobWithPom(
+      "<project><version>TODO</version></project>",
+    );
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      blob: async () => zipBlob,
+    });
+
+    render(<MavenInitializerPage />);
+    fillBasicForm();
+
+    fireEvent.submit(
+      screen
+        .getByRole("button", { name: /generate project/i })
+        .closest("form") as HTMLFormElement,
+    );
+
+    await screen.findByText(/Project generated successfully!/i);
+    expect(screen.getByText(FALLBACK_WARNING_MESSAGE)).toBeInTheDocument();
   });
 
   it("shows a network error message when fetch throws", async () => {
