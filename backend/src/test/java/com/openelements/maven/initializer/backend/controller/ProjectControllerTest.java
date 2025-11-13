@@ -20,21 +20,27 @@ package com.openelements.maven.initializer.backend.controller;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import java.util.Objects;
+
+import com.openelements.maven.initializer.backend.service.ArtifactVersionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -42,6 +48,7 @@ class ProjectControllerTest {
 
   @Autowired private ProjectController projectController;
   private ProjectRequestDTO validRequest;
+  @MockitoBean private ArtifactVersionService artifactVersionServiceMock;
 
   @BeforeEach
   void setUp() {
@@ -49,10 +56,13 @@ class ProjectControllerTest {
   }
 
   @Test
-  void testProjectGenerationSuccess() {
+  void testProjectGenerationSuccessWithoutFallbackVersion() {
+      when(artifactVersionServiceMock.resolveLatestDependencyBomVersion(anyString(), anyString()))
+              .thenReturn("1.2.3");
+      when(artifactVersionServiceMock.resolveLatestPluginVersion(anyString(), anyString()))
+              .thenReturn("1.2.3");
     // When
     ResponseEntity<byte[]> response = projectController.generateProject(validRequest);
-
     // Then
     assertAll(
         () -> assertNotNull(response, "Response should not be null"),
@@ -66,12 +76,52 @@ class ProjectControllerTest {
             assertTrue(
                 response.getHeaders().containsKey("Content-Disposition"),
                 "Should contain Content-Disposition header"),
+
+            () ->
+                    assertFalse(
+                            response.getHeaders().containsKey("Has-Fallback-Version"),
+                            "Should not contain Has-Fallback-Version header"),
         () ->
             assertTrue(
                 Objects.requireNonNull(response.getHeaders().getFirst("Content-Disposition"))
                     .contains("testproject.zip"),
                 "Filename should match artifact ID"));
   }
+
+    @Test
+    void testProjectGenerationSuccessWithFallbackVersion() {
+        when(artifactVersionServiceMock.resolveLatestDependencyBomVersion(anyString(), anyString()))
+                .thenReturn("TODO");
+        when(artifactVersionServiceMock.resolveLatestPluginVersion(anyString(), anyString()))
+                .thenReturn("TODO");
+
+        // When
+        ResponseEntity<byte[]> response = projectController.generateProject(validRequest);
+
+        // Then
+        assertAll(
+                () -> assertNotNull(response, "Response should not be null"),
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "Status should be OK"),
+                () -> assertNotNull(response.getBody(), "Response body should not be null"),
+                () -> {
+                    assertNotNull(response.getBody());
+                    assertTrue(response.getBody().length > 0, "Response body should contain ZIP data");
+                },
+                () ->
+                        assertTrue(
+                                response.getHeaders().containsKey("Content-Disposition"),
+                                "Should contain Content-Disposition header"),
+
+                () ->
+                        assertTrue(
+                                response.getHeaders().containsKey("Has-Fallback-Version"),
+                                "Should contain Has-Fallback-Version header"),
+                () ->
+                        assertTrue(
+                                Objects.requireNonNull(response.getHeaders().getFirst("Content-Disposition"))
+                                        .contains("testproject.zip"),
+                                "Filename should match artifact ID"));
+    }
 
   @Test
   void testProjectGenerationFailure() {

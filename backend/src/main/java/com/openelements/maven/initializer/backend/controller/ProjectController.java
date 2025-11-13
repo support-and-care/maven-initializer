@@ -18,9 +18,13 @@
  */
 package com.openelements.maven.initializer.backend.controller;
 
+import com.google.gson.internal.NonNullElementWrapperList;
+import com.openelements.maven.initializer.backend.domain.ProjectGenerationResult;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.service.ProjectGeneratorService;
+import com.sun.net.httpserver.Headers;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,11 +43,15 @@ public class ProjectController {
 
   @PostMapping("/generate")
   public ResponseEntity<byte[]> generateProject(@Valid @RequestBody ProjectRequestDTO request) {
-    String result = projectGeneratorService.generateProject(request).projectPath();
-    byte[] zipBytes = projectGeneratorService.createProjectZip(result);
+    ProjectGenerationResult result = projectGeneratorService.generateProject(request);
+    byte[] zipBytes = projectGeneratorService.createProjectZip(result.projectPath());
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Disposition", "attachment; filename=\"" + request.getArtifactId() + ".zip\"");
+    if (result.status().equals(ProjectGenerationResult.Status.FALLBACK_VERSION)) {
+        headers.add("Has-Fallback-Version", "true");
+    }
     return ResponseEntity.ok()
-        .header(
-            "Content-Disposition", "attachment; filename=\"" + request.getArtifactId() + ".zip\"")
+        .headers(headers)
         .body(zipBytes);
   }
 }
