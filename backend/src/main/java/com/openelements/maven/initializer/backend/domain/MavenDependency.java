@@ -25,19 +25,18 @@ import java.util.Objects;
 public final class MavenDependency {
   private final String groupId;
   private final String artifactId;
-  private final String version;
+  private ArtifactVersionService artifactVersionService;
 
   public MavenDependency(String groupId, String artifactId) {
     this.groupId = groupId;
     this.artifactId = artifactId;
-    this.version = "";
   }
 
   public MavenDependency(
       String groupId, String artifactId, ArtifactVersionService artifactVersionService) {
     this.groupId = groupId;
     this.artifactId = artifactId;
-    this.version = artifactVersionService.resolveLatestDependencyBomVersion(groupId, artifactId);
+    this.artifactVersionService = artifactVersionService;
   }
 
   public String groupId() {
@@ -49,7 +48,10 @@ public final class MavenDependency {
   }
 
   public String version() {
-    return version;
+    if (artifactVersionService != null) {
+      return artifactVersionService.resolveLatestDependencyBomVersion(groupId, artifactId);
+    }
+    return "";
   }
 
   @Override
@@ -58,13 +60,12 @@ public final class MavenDependency {
     if (obj == null || obj.getClass() != this.getClass()) return false;
     var that = (MavenDependency) obj;
     return Objects.equals(this.groupId, that.groupId)
-        && Objects.equals(this.artifactId, that.artifactId)
-        && Objects.equals(this.version, that.version);
+        && Objects.equals(this.artifactId, that.artifactId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupId, artifactId, version);
+    return Objects.hash(groupId, artifactId);
   }
 
   @Override
@@ -77,7 +78,7 @@ public final class MavenDependency {
         + artifactId
         + ", "
         + "version="
-        + version
+        + version()
         + ']';
   }
 }

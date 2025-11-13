@@ -26,20 +26,20 @@ import org.jspecify.annotations.NonNull;
 public final class MavenPlugin {
   private final String groupId;
   private final String artifactId;
-  private final String version;
+  private final ArtifactVersionService artifactVersionService;
 
   /** */
   public MavenPlugin(
       String groupId, String artifactId, ArtifactVersionService artifactVersionService) {
     this.groupId = groupId;
     this.artifactId = artifactId;
-    this.version = artifactVersionService.resolveLatestPluginVersion(groupId, artifactId);
+    this.artifactVersionService = artifactVersionService;
   }
 
   @Override
   @NonNull
   public String toString() {
-    return groupId + ":" + artifactId + ":" + version;
+    return groupId + ":" + artifactId + ":" + version();
   }
 
   public String groupId() {
@@ -51,7 +51,7 @@ public final class MavenPlugin {
   }
 
   public String version() {
-    return version;
+    return artifactVersionService.resolveLatestPluginVersion(groupId, artifactId);
   }
 
   @Override
@@ -60,12 +60,11 @@ public final class MavenPlugin {
     if (obj == null || obj.getClass() != this.getClass()) return false;
     var that = (MavenPlugin) obj;
     return Objects.equals(this.groupId, that.groupId)
-        && Objects.equals(this.artifactId, that.artifactId)
-        && Objects.equals(this.version, that.version);
+        && Objects.equals(this.artifactId, that.artifactId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupId, artifactId, version);
+    return Objects.hash(groupId, artifactId);
   }
 }
