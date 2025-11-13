@@ -33,13 +33,13 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       {/* Main Form Card */}
-      <Card className="bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+      <Card className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         {/* Card Header */}
-        <CardHeader className="bg-slate-700 border-b border-slate-600 px-8 py-6">
-          <CardTitle className="text-2xl font-semibold text-white mb-2">
+        <CardHeader className="bg-slate-50 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 px-8 py-6">
+          <CardTitle className="text-2xl font-semibold text-slate-900 dark:text-white mb-2">
             Project Metadata
           </CardTitle>
-          <CardDescription className="text-slate-300">
+          <CardDescription className="text-slate-600 dark:text-slate-300">
             Configure your Maven project settings
           </CardDescription>
         </CardHeader>
@@ -61,7 +61,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                   name="groupId"
                   placeholder="com.example"
                   required
-                  className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 transition-colors"
                 />
               </FormField>
 
@@ -78,7 +78,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                   placeholder="my-awesome-project"
                   required
                   pattern="^[a-z][a-z0-9-]*[a-z0-9]$"
-                  className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 transition-colors"
                 />
               </FormField>
 
@@ -92,7 +92,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                   name="version"
                   placeholder="1.0.0-SNAPSHOT"
                   defaultValue="1.0.0-SNAPSHOT"
-                  className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 transition-colors"
                 />
               </FormField>
 
@@ -105,7 +105,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                   type="text"
                   name="name"
                   placeholder="My Awesome Project"
-                  className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 transition-colors"
                 />
               </FormField>
 
@@ -117,7 +117,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                 <select
                   name="javaVersion"
                   defaultValue="25"
-                  className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full h-12 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 transition-colors"
                 >
                   <option value="8">Java 8 (LTS)</option>
                   <option value="11">Java 11 (LTS)</option>
@@ -137,7 +137,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                 name="description"
                 placeholder="Describe your project's purpose and functionality..."
                 rows={3}
-                className="w-full px-4 py-3 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 transition-colors"
               />
             </FormField>
 
@@ -146,7 +146,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
               <Button
                 type="submit"
                 disabled={isGenerating}
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 min-w-[200px] justify-center"
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-slate-400 dark:disabled:bg-slate-600 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 min-w-[200px] justify-center"
               >
                 {isGenerating ? (
                   <>
