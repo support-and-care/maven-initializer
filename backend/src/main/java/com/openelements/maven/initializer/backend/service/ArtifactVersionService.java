@@ -49,7 +49,7 @@ public class ArtifactVersionService {
     return resolveLatestVersion(groupId, artifactId, "", "pom");
   }
 
-  public String resolveLatestVersion(
+  private String resolveLatestVersion(
       String groupId, String artifactId, String classifier, String extension) {
     String fallback = "TODO";
     try {

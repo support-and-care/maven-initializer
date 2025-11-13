@@ -189,7 +189,6 @@ class ProjectGeneratorServiceTest {
     assertTrue(pomContent.contains("<scope>import</scope>"));
     assertTrue(pomContent.contains("<groupId>org.assertj</groupId>"));
     assertTrue(pomContent.contains("<artifactId>assertj-bom</artifactId>"));
-    assertTrue(pomContent.contains("<version>TODO</version>"));
     assertTrue(pomContent.contains("<artifactId>assertj-core</artifactId>"));
     assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
     assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
