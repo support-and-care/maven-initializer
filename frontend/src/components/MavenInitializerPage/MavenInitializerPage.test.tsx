@@ -38,7 +38,7 @@ const createZipBlobWithPom = async (pomContent: string) => {
 };
 
 const FALLBACK_WARNING_MESSAGE =
-  'Some dependencies/plugins could not be resolved automatically. The generated pom.xml contains placeholder version "TODO". Please update these versions manually.';
+  'Some dependencies could not be resolved automatically. The generated pom.xml contains placeholder version "TODO". Please update these versions manually.';
 
 describe("MavenInitializerPage", () => {
   const originalFetch = global.fetch;
