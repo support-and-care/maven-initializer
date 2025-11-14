@@ -186,7 +186,7 @@ public class ProjectGeneratorService {
                   addDefaultDependencies(s.editor());
 
                   // Add dependency management
-                  addDefaultDependencyManagement(s.editor(), dependencyManagement);
+                  addDefaultDependencyManagement(s.editor());
 
                   plugins.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin.toString())));
@@ -225,8 +225,7 @@ public class ProjectGeneratorService {
         });
   }
 
-  private void addDefaultDependencyManagement(
-      PomEditor editor, List<MavenDependency> dependencyManagement) {
+  private void addDefaultDependencyManagement(PomEditor editor) {
     var root = editor.root();
     var dm = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
 
