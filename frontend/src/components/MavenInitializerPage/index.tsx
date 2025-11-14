@@ -12,31 +12,6 @@ export const MavenInitializerPage: React.FC = () => {
   const [serverErrors, setServerErrors] = useState<ValidationErrors>({});
   const [fallbackMessage, setFallbackMessage] = useState<string>("");
 
-  const detectFallbackUsage = async (blob: Blob): Promise<boolean> => {
-    try {
-      const arrayBuffer =
-        typeof blob.arrayBuffer === "function"
-          ? await blob.arrayBuffer()
-          : await new Response(blob).arrayBuffer();
-      const { default: JSZip } = await import("jszip");
-      const zip = await JSZip.loadAsync(arrayBuffer);
-      const pomFile = zip.file("pom.xml");
-
-      if (!pomFile) {
-        return false;
-      }
-
-      const pomContent = await pomFile.async("string");
-      return pomContent.includes("TODO");
-    } catch (error) {
-      console.warn(
-        "Could not inspect generated ZIP for fallback versions",
-        error,
-      );
-      return false;
-    }
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsGenerating(true);
@@ -65,7 +40,10 @@ export const MavenInitializerPage: React.FC = () => {
 
       if (response.ok) {
         const blob = await response.blob();
-        const fallbackPromise = detectFallbackUsage(blob);
+
+        // Check for fallback version header
+        const fallbackUsed =
+          response.headers.get("X-Fallback-Version-Used") === "true";
 
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -80,7 +58,6 @@ export const MavenInitializerPage: React.FC = () => {
           "Project generated successfully! Download started.",
         );
 
-        const fallbackUsed = await fallbackPromise;
         if (fallbackUsed) {
           setFallbackMessage(
             'Some dependencies could not be resolved automatically. The generated pom.xml contains placeholder version "TODO". Please update these versions manually.',

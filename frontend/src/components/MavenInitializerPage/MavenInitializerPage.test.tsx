@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import JSZip from "jszip";
 import { MavenInitializerPage } from "@/components/MavenInitializerPage";
 
 // Helpers
@@ -26,15 +25,8 @@ const fillBasicForm = () => {
   );
 };
 
-const createZipBlobWithPom = async (pomContent: string) => {
-  const zip = new JSZip();
-  zip.file("pom.xml", pomContent);
-  const buffer = await zip.generateAsync({ type: "uint8array" });
-  return {
-    arrayBuffer: async () => buffer.buffer,
-    size: buffer.byteLength,
-    type: "application/zip",
-  } as unknown as Blob;
+const createMockBlob = () => {
+  return new Blob(["mock zip content"], { type: "application/zip" });
 };
 
 const FALLBACK_WARNING_MESSAGE =
@@ -77,11 +69,11 @@ describe("MavenInitializerPage", () => {
   });
 
   it("submits and handles success by starting download and showing message", async () => {
-    const zipBlob = await createZipBlobWithPom(
-      "<project><version>1.0.0</version></project>",
-    );
+    const zipBlob = createMockBlob();
+    const mockHeaders = new Headers();
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
+      headers: mockHeaders,
       blob: async () => zipBlob,
     });
 
@@ -126,12 +118,13 @@ describe("MavenInitializerPage", () => {
     expect(screen.getByText("Invalid")).toBeInTheDocument();
   });
 
-  it("shows fallback warning when placeholder TODO versions are used", async () => {
-    const zipBlob = await createZipBlobWithPom(
-      "<project><version>TODO</version></project>",
-    );
+  it("shows fallback warning when X-Fallback-Version-Used header is present", async () => {
+    const zipBlob = createMockBlob();
+    const mockHeaders = new Headers();
+    mockHeaders.set("X-Fallback-Version-Used", "true");
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
+      headers: mockHeaders,
       blob: async () => zipBlob,
     });
 

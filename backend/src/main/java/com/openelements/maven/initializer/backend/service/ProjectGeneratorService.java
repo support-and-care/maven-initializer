@@ -20,6 +20,7 @@ package com.openelements.maven.initializer.backend.service;
 
 import com.openelements.maven.initializer.backend.domain.MavenDependency;
 import com.openelements.maven.initializer.backend.domain.MavenPlugin;
+import com.openelements.maven.initializer.backend.domain.ProjectGenerationResult;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import com.openelements.maven.initializer.backend.util.XmlFormatter;
@@ -92,7 +93,7 @@ public class ProjectGeneratorService {
             new MavenDependency("org.assertj", "assertj-bom", artifactVersionService));
   }
 
-  public String generateProject(ProjectRequestDTO request) {
+  public ProjectGenerationResult generateProject(ProjectRequestDTO request) {
     logger.info("Starting project generation for: {}", request);
 
     if (request == null) {
@@ -100,11 +101,11 @@ public class ProjectGeneratorService {
     }
 
     Path projectDir = createTempDirectory(request.getArtifactId());
-    generatePomFile(projectDir, request);
     structureService.createStructure(projectDir, request);
+    boolean hasResolvedVersion = generatePomFile(projectDir, request);
 
     logger.info("Project generated successfully at: {}", projectDir);
-    return projectDir.toString();
+    return ProjectGenerationResult.create(hasResolvedVersion, projectDir.toString());
   }
 
   public byte[] createProjectZip(String projectPath) {
@@ -156,7 +157,12 @@ public class ProjectGeneratorService {
     return pomEditor.toXml();
   }
 
-  private void generatePomFile(Path projectDir, ProjectRequestDTO request) {
+  /**
+   * @param projectDir
+   * @param request
+   * @return true, if version resolving was successful - false, if a fallback version is used
+   */
+  private boolean generatePomFile(Path projectDir, ProjectRequestDTO request) {
     try {
       Path pomFile = projectDir.resolve("pom.xml");
       String pomContent =
@@ -180,7 +186,7 @@ public class ProjectGeneratorService {
                   addDefaultDependencies(s.editor());
 
                   // Add dependency management
-                  addDefaultDependencyManagement(s.editor());
+                  addDefaultDependencyManagement(s.editor(), dependencyManagement);
 
                   plugins.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin.toString())));
@@ -193,6 +199,7 @@ public class ProjectGeneratorService {
       // Format the XML properly
       String formattedXml = XmlFormatter.formatXml(Files.readString(pomFile));
       Files.writeString(pomFile, formattedXml);
+      return !formattedXml.contains("TODO");
     } catch (Exception e) {
       throw new ProjectServiceException("Failed to generate POM file: " + e.getMessage(), e);
     }
@@ -218,7 +225,8 @@ public class ProjectGeneratorService {
         });
   }
 
-  private void addDefaultDependencyManagement(PomEditor editor) {
+  private void addDefaultDependencyManagement(
+      PomEditor editor, List<MavenDependency> dependencyManagement) {
     var root = editor.root();
     var dm = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
 
