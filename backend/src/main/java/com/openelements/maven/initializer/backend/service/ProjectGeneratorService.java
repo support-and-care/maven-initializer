@@ -20,6 +20,7 @@ package com.openelements.maven.initializer.backend.service;
 
 import com.openelements.maven.initializer.backend.domain.MavenDependency;
 import com.openelements.maven.initializer.backend.domain.MavenPlugin;
+import com.openelements.maven.initializer.backend.domain.ProjectGenerationResult;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import com.openelements.maven.initializer.backend.util.XmlFormatter;
@@ -53,28 +54,46 @@ public class ProjectGeneratorService {
           new MavenDependency("org.assertj", "assertj-core"),
           new MavenDependency("org.junit.jupiter", "junit-jupiter"));
 
-  private static final List<MavenDependency> DEFAULT_DEPENDENCY_MANAGEMENT =
-      List.of(
-          new MavenDependency("org.junit", "junit-bom", "6.0.0"),
-          new MavenDependency("org.assertj", "assertj-bom", "3.27.5"));
+  private List<MavenDependency> dependencyManagement;
 
-  private static final List<MavenPlugin> DEFAULT_PLUGINS =
-      List.of(
-          new MavenPlugin("org.apache.maven.plugins", "maven-compiler-plugin", "3.14.0"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-resources-plugin", "3.3.1"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-surefire-plugin", "3.5.4"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-jar-plugin", "3.4.2"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-install-plugin", "3.1.4"),
-          new MavenPlugin("org.apache.maven.plugins", "maven-deploy-plugin", "3.1.4"),
-          new MavenPlugin("org.jacoco", "jacoco-maven-plugin", "0.8.13"));
+  private List<MavenPlugin> plugins;
 
   public ProjectGeneratorService(
-      ToolboxCommando toolboxCommando, ProjectStructureService structureService) {
+      ToolboxCommando toolboxCommando,
+      ProjectStructureService structureService,
+      ArtifactVersionService artifactVersionService) {
     this.toolboxCommando = toolboxCommando;
     this.structureService = structureService;
+
+    fillDependencyManagement(artifactVersionService);
+    fillPlugins(artifactVersionService);
   }
 
-  public String generateProject(ProjectRequestDTO request) {
+  private void fillPlugins(ArtifactVersionService artifactVersionService) {
+    plugins =
+        List.of(
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-compiler-plugin", artifactVersionService),
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-resources-plugin", artifactVersionService),
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-surefire-plugin", artifactVersionService),
+            new MavenPlugin("org.apache.maven.plugins", "maven-jar-plugin", artifactVersionService),
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-install-plugin", artifactVersionService),
+            new MavenPlugin(
+                "org.apache.maven.plugins", "maven-deploy-plugin", artifactVersionService),
+            new MavenPlugin("org.jacoco", "jacoco-maven-plugin", artifactVersionService));
+  }
+
+  private void fillDependencyManagement(ArtifactVersionService artifactVersionService) {
+    dependencyManagement =
+        List.of(
+            new MavenDependency("org.junit", "junit-bom", artifactVersionService),
+            new MavenDependency("org.assertj", "assertj-bom", artifactVersionService));
+  }
+
+  public ProjectGenerationResult generateProject(ProjectRequestDTO request) {
     logger.info("Starting project generation for: {}", request);
 
     if (request == null) {
@@ -82,11 +101,11 @@ public class ProjectGeneratorService {
     }
 
     Path projectDir = createTempDirectory(request.getArtifactId());
-    generatePomFile(projectDir, request);
     structureService.createStructure(projectDir, request);
+    boolean hasResolvedVersion = generatePomFile(projectDir, request);
 
     logger.info("Project generated successfully at: {}", projectDir);
-    return projectDir.toString();
+    return ProjectGenerationResult.create(hasResolvedVersion, projectDir.toString());
   }
 
   public byte[] createProjectZip(String projectPath) {
@@ -138,7 +157,12 @@ public class ProjectGeneratorService {
     return pomEditor.toXml();
   }
 
-  private void generatePomFile(Path projectDir, ProjectRequestDTO request) {
+  /**
+   * @param projectDir
+   * @param request
+   * @return true, if version resolving was successful - false, if a fallback version is used
+   */
+  private boolean generatePomFile(Path projectDir, ProjectRequestDTO request) {
     try {
       Path pomFile = projectDir.resolve("pom.xml");
       String pomContent =
@@ -164,7 +188,7 @@ public class ProjectGeneratorService {
                   // Add dependency management
                   addDefaultDependencyManagement(s.editor());
 
-                  DEFAULT_PLUGINS.forEach(
+                  plugins.forEach(
                       plugin -> s.updatePlugin(true, new DefaultArtifact(plugin.toString())));
 
                   // Add jacoco plugin configuration with executions
@@ -175,6 +199,7 @@ public class ProjectGeneratorService {
       // Format the XML properly
       String formattedXml = XmlFormatter.formatXml(Files.readString(pomFile));
       Files.writeString(pomFile, formattedXml);
+      return !formattedXml.contains("TODO");
     } catch (Exception e) {
       throw new ProjectServiceException("Failed to generate POM file: " + e.getMessage(), e);
     }
@@ -214,7 +239,7 @@ public class ProjectGeneratorService {
     }
 
     final var dms = dmsTmp;
-    DEFAULT_DEPENDENCY_MANAGEMENT.forEach(
+    dependencyManagement.forEach(
         bom -> {
           var depEl = editor.insertMavenElement(dms, MavenPomElements.Elements.DEPENDENCY);
           editor.insertMavenElement(depEl, MavenPomElements.Elements.GROUP_ID, bom.groupId());

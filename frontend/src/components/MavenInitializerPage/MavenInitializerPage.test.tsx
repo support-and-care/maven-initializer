@@ -25,6 +25,13 @@ const fillBasicForm = () => {
   );
 };
 
+const createMockBlob = () => {
+  return new Blob(["mock zip content"], { type: "application/zip" });
+};
+
+const FALLBACK_WARNING_MESSAGE =
+  'Some dependencies could not be resolved automatically. The generated pom.xml contains placeholder version "TODO". Please update these versions manually.';
+
 describe("MavenInitializerPage", () => {
   const originalFetch = global.fetch;
   const originalCreateObjectURL = URL.createObjectURL;
@@ -62,9 +69,12 @@ describe("MavenInitializerPage", () => {
   });
 
   it("submits and handles success by starting download and showing message", async () => {
+    const zipBlob = createMockBlob();
+    const mockHeaders = new Headers();
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      blob: async () => new Blob(["zip-content"], { type: "application/zip" }),
+      headers: mockHeaders,
+      blob: async () => zipBlob,
     });
 
     render(<MavenInitializerPage />);
@@ -81,6 +91,9 @@ describe("MavenInitializerPage", () => {
     expect(
       screen.getByText(/Project generated successfully!/i),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText(FALLBACK_WARNING_MESSAGE),
+    ).not.toBeInTheDocument();
   });
 
   it("shows server validation errors and error message when response has errors", async () => {
@@ -103,6 +116,29 @@ describe("MavenInitializerPage", () => {
     await screen.findByText(/Validation failed/i);
     expect(screen.getByText("Group ID is required")).toBeInTheDocument();
     expect(screen.getByText("Invalid")).toBeInTheDocument();
+  });
+
+  it("shows fallback warning when X-Fallback-Version-Used header is present", async () => {
+    const zipBlob = createMockBlob();
+    const mockHeaders = new Headers();
+    mockHeaders.set("X-Fallback-Version-Used", "true");
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      headers: mockHeaders,
+      blob: async () => zipBlob,
+    });
+
+    render(<MavenInitializerPage />);
+    fillBasicForm();
+
+    fireEvent.submit(
+      screen
+        .getByRole("button", { name: /generate project/i })
+        .closest("form") as HTMLFormElement,
+    );
+
+    await screen.findByText(/Project generated successfully!/i);
+    expect(screen.getByText(FALLBACK_WARNING_MESSAGE)).toBeInTheDocument();
   });
 
   it("shows a network error message when fetch throws", async () => {

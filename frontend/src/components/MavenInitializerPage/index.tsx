@@ -10,12 +10,14 @@ export const MavenInitializerPage: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationMessage, setGenerationMessage] = useState<string>("");
   const [serverErrors, setServerErrors] = useState<ValidationErrors>({});
+  const [fallbackMessage, setFallbackMessage] = useState<string>("");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsGenerating(true);
     setGenerationMessage("");
     setServerErrors({});
+    setFallbackMessage("");
 
     try {
       const formData = new FormData(event.currentTarget);
@@ -38,6 +40,11 @@ export const MavenInitializerPage: React.FC = () => {
 
       if (response.ok) {
         const blob = await response.blob();
+
+        // Check for fallback version header
+        const fallbackUsed =
+          response.headers.get("X-Fallback-Version-Used") === "true";
+
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -50,6 +57,12 @@ export const MavenInitializerPage: React.FC = () => {
         setGenerationMessage(
           "Project generated successfully! Download started.",
         );
+
+        if (fallbackUsed) {
+          setFallbackMessage(
+            'Some dependencies could not be resolved automatically. The generated pom.xml contains placeholder version "TODO". Please update these versions manually.',
+          );
+        }
       } else {
         const errorData = await response.json();
         if (errorData.errors) {
@@ -76,6 +89,7 @@ export const MavenInitializerPage: React.FC = () => {
         isGenerating={isGenerating}
         generationMessage={generationMessage}
         serverErrors={serverErrors}
+        fallbackMessage={fallbackMessage}
       />
     </div>
   );

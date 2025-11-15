@@ -30,12 +30,19 @@ export async function POST(request: NextRequest) {
         ?.split("filename=")[1]
         ?.replace(/"/g, "") || "project.zip";
 
+    // Forward fallback version header if present
+    const fallbackHeader = response.headers.get("X-Fallback-Version-Used");
+    const responseHeaders: HeadersInit = {
+      "Content-Type": "application/octet-stream",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+    };
+    if (fallbackHeader) {
+      responseHeaders["X-Fallback-Version-Used"] = fallbackHeader;
+    }
+
     return new NextResponse(zipBuffer, {
       status: 200,
-      headers: {
-        "Content-Type": "application/octet-stream",
-        "Content-Disposition": `attachment; filename="${filename}"`,
-      },
+      headers: responseHeaders,
     });
   } catch (error) {
     console.error("Error proxying to backend:", error);

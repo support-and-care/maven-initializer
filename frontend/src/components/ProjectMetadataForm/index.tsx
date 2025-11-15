@@ -20,6 +20,7 @@ interface ProjectMetadataFormProps {
   isGenerating: boolean;
   generationMessage: string;
   serverErrors: ValidationErrors;
+  fallbackMessage?: string;
 }
 
 export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
@@ -27,6 +28,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
   isGenerating,
   generationMessage,
   serverErrors,
+  fallbackMessage,
 }) => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -167,6 +169,9 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                     : "error"
                 }
               />
+            )}
+            {fallbackMessage && (
+              <StatusMessage message={fallbackMessage} type="warning" />
             )}
           </form>
         </CardContent>
