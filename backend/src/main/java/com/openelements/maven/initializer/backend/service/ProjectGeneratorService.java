@@ -25,6 +25,9 @@ import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import com.openelements.maven.initializer.backend.util.XmlFormatter;
 import eu.maveniverse.domtrip.Element;
+import eu.maveniverse.domtrip.maven.Coordinates;
+import eu.maveniverse.domtrip.maven.MavenPomElements;
+import eu.maveniverse.domtrip.maven.PomEditor;
 import eu.maveniverse.maven.toolbox.shared.ToolboxCommando;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,9 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.maveniverse.domtrip.maven.MavenPomElements;
-import org.maveniverse.domtrip.maven.PomEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -175,24 +175,22 @@ public class ProjectGeneratorService {
             Collections.singletonList(
                 s -> {
                   s.setPackaging("jar");
-                  s.updateProperty(true, "maven.compiler.release", request.getJavaVersion());
-                  s.updateProperty(true, "project.build.sourceEncoding", "UTF-8");
-                  s.editor()
-                      .insertMavenElement(
-                          s.editor().root(), "description", request.getDescription());
-                  s.editor().insertMavenElement(s.editor().root(), "name", request.getName());
+                  s.properties()
+                      .updateProperty(true, "maven.compiler.release", request.getJavaVersion());
+                  s.properties().updateProperty(true, "project.build.sourceEncoding", "UTF-8");
+                  s.insertMavenElement(s.root(), "description", request.getDescription());
+                  s.insertMavenElement(s.root(), "name", request.getName());
 
                   // Add default dependencies
-                  addDefaultDependencies(s.editor());
+                  addDefaultDependencies(s);
 
                   // Add dependency management
-                  addDefaultDependencyManagement(s.editor());
+                  addDefaultDependencyManagement(s);
 
-                  plugins.forEach(
-                      plugin -> s.updatePlugin(true, new DefaultArtifact(plugin.toString())));
+                  plugins.forEach(plugin -> s.plugins().updatePlugin(true, toCoordinates(plugin)));
 
                   // Add jacoco plugin configuration with executions
-                  addJacocoPluginConfiguration(s.editor());
+                  addJacocoPluginConfiguration(s);
                 }));
       }
 
@@ -203,6 +201,11 @@ public class ProjectGeneratorService {
     } catch (Exception e) {
       throw new ProjectServiceException("Failed to generate POM file: " + e.getMessage(), e);
     }
+  }
+
+  private Coordinates toCoordinates(MavenPlugin plugin) {
+    return Coordinates.of(
+        plugin.groupId(), plugin.artifactId(), plugin.version(), "", "maven-plugin");
   }
 
   private void addDefaultDependencies(PomEditor editor) {
