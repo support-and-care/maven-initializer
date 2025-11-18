@@ -21,6 +21,9 @@ export const MavenInitializerPage: React.FC = () => {
 
     try {
       const formData = new FormData(event.currentTarget);
+      const includeMavenWrapper =
+        formData.get("includeMavenWrapper") === "on" ||
+        formData.get("includeMavenWrapper") === "true";
       const projectConfig: ProjectConfig = {
         groupId: formData.get("groupId") as string,
         artifactId: formData.get("artifactId") as string,
@@ -28,6 +31,7 @@ export const MavenInitializerPage: React.FC = () => {
         name: (formData.get("name") as string) || "",
         description: (formData.get("description") as string) || "",
         javaVersion: (formData.get("javaVersion") as string) || "25",
+        includeMavenWrapper: includeMavenWrapper,
       };
 
       const response = await fetch("/api/projects/generate", {
