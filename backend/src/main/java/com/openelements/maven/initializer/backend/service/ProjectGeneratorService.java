@@ -48,6 +48,7 @@ public class ProjectGeneratorService {
   private static final Logger logger = LoggerFactory.getLogger(ProjectGeneratorService.class);
   private final ToolboxCommando toolboxCommando;
   private final ProjectStructureService structureService;
+  private final MavenWrapperService mavenWrapperService;
 
   private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
       List.of(
@@ -61,9 +62,11 @@ public class ProjectGeneratorService {
   public ProjectGeneratorService(
       ToolboxCommando toolboxCommando,
       ProjectStructureService structureService,
-      ArtifactVersionService artifactVersionService) {
+      ArtifactVersionService artifactVersionService,
+      MavenWrapperService mavenWrapperService) {
     this.toolboxCommando = toolboxCommando;
     this.structureService = structureService;
+    this.mavenWrapperService = mavenWrapperService;
 
     fillDependencyManagement(artifactVersionService);
     fillPlugins(artifactVersionService);
@@ -103,6 +106,11 @@ public class ProjectGeneratorService {
     Path projectDir = createTempDirectory(request.getArtifactId());
     structureService.createStructure(projectDir, request);
     boolean hasResolvedVersion = generatePomFile(projectDir, request);
+
+    // Add Maven Wrapper if requested
+    if (request.isIncludeMavenWrapper()) {
+      mavenWrapperService.addMavenWrapper(projectDir);
+    }
 
     logger.info("Project generated successfully at: {}", projectDir);
     return ProjectGenerationResult.create(hasResolvedVersion, projectDir.toString());
