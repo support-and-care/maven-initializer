@@ -2,6 +2,7 @@
 
 import React from "react";
 import { CheckCircle, AlertCircle, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface StatusMessageProps {
   message: string;
@@ -18,9 +19,9 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
   const statusStyles = {
     success: {
       container:
-        "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200",
+        "bg-primary/10 border-primary/30 text-primary dark:bg-primary/20 dark:border-primary/40 dark:text-primary",
       Icon: CheckCircle,
-      iconClass: "text-green-600 dark:text-green-400",
+      iconClass: "text-primary",
     },
     warning: {
       container:
@@ -30,9 +31,9 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
     },
     error: {
       container:
-        "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200",
+        "bg-destructive/10 border-destructive/30 text-destructive dark:bg-destructive/20 dark:border-destructive/40 dark:text-destructive",
       Icon: AlertCircle,
-      iconClass: "text-red-600 dark:text-red-400",
+      iconClass: "text-destructive",
     },
   } as const;
 
@@ -41,9 +42,12 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
 
   return (
     <div
-      className={`p-4 rounded-lg border flex items-center gap-3 ${container}`}
+      className={cn(
+        "p-3 rounded-xl border flex items-center gap-2 transition-smooth",
+        container
+      )}
     >
-      <Icon className={`w-5 h-5 ${iconClass}`} />
+      <Icon className={cn("w-4 h-4 flex-shrink-0", iconClass)} />
       <span className="text-sm font-medium">{message}</span>
     </div>
   );

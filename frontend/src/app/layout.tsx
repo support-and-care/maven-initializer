@@ -1,13 +1,43 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const geistSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  display: "swap",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Maven Initializer - Full Stack Demo",
   description: "A full-stack application with Next.js and Spring Boot",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      {
+        rel: "android-chrome-192x192",
+        url: "/android-chrome-192x192.png",
+      },
+      {
+        rel: "android-chrome-512x512",
+        url: "/android-chrome-512x512.png",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -17,14 +47,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <div className="relative min-h-screen bg-background">
+            <div className="pointer-events-none fixed inset-0 -z-10">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(157,213,253,0.16),_transparent_55%)]"></div>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(93,186,159,0.12),_transparent_60%)]"></div>
+              <div className="absolute inset-0 bg-[linear-gradient(135deg,_rgba(2,1,68,0.08),_transparent)]"></div>
+              <div className="absolute inset-0 opacity-[0.25] mix-blend-overlay" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"180\" height=\"180\" viewBox=\"0 0 180 180\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M0 180L180 0\" stroke=\"rgba(148, 163, 184, 0.18)\"/%3E%3C/svg%3E')" }} />
+            </div>
+            {children}
+          </div>
         </ThemeProvider>
       </body>
     </html>

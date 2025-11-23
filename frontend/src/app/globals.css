@@ -1,197 +1,386 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
-  --radius: 0.5rem;
+  /* Support & Care For East Africa brand colors */
+  --background: #f4f7ff;
+  --foreground: #07133a;
+  --card: rgba(255, 255, 255, 0.98);
+  --card-foreground: #07133a;
+  --popover: rgba(255, 255, 255, 0.98);
+  --popover-foreground: #07133a;
+  --primary: #5dba9f;
+  --primary-foreground: #ffffff;
+  --secondary: #0c1d58;
+  --secondary-foreground: #ffffff;
+  --muted: rgba(230, 237, 255, 0.85);
+  --muted-foreground: #4b5a7c;
+  --accent: #9cd5fd;
+  --accent-foreground: #061237;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #3a0a0a;
+  --border: rgba(32, 59, 125, 0.2);
+  --input: rgba(32, 59, 125, 0.18);
+  --ring: #5dba9f;
+  --chart-1: #5dba9f;
+  --chart-2: #9cd5fd;
+  --chart-3: #020144;
+  --chart-4: oklch(0.55 0.1 35);
+  --chart-5: oklch(0.75 0.12 50);
+  --radius: 0.625rem;
+  --sidebar: rgba(248, 250, 255, 0.92);
+  --sidebar-foreground: #07133a;
+  --sidebar-primary: #5dba9f;
+  --sidebar-primary-foreground: #07133a;
+  --sidebar-accent: #9cd5fd;
+  --sidebar-accent-foreground: #061237;
+  --sidebar-border: rgba(32, 59, 125, 0.2);
+  --sidebar-ring: #5dba9f;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --background: #0a0a1a;
+  --foreground: oklch(0.95 0 0);
+  --card: oklch(0.1 0 0);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.12 0 0);
+  --popover-foreground: oklch(0.95 0 0);
+  --primary: #5dba9f;
+  --primary-foreground: #020144;
+  --secondary: #1a1a4d;
+  --secondary-foreground: oklch(0.95 0 0);
+  --muted: oklch(0.3 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: #9cd5fd;
+  --accent-foreground: #020144;
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.2 0 0);
+  --input: oklch(0.2 0 0);
+  --ring: #5dba9f;
+  --chart-1: #5dba9f;
+  --chart-2: #9cd5fd;
+  --chart-3: oklch(0.75 0.12 50);
+  --chart-4: oklch(0.55 0.1 35);
+  --chart-5: oklch(0.7 0.13 40);
+  --sidebar: #0a0a1a;
+  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar-primary: #5dba9f;
+  --sidebar-primary-foreground: oklch(0.95 0 0);
+  --sidebar-accent: #9cd5fd;
+  --sidebar-accent-foreground: #020144;
+  --sidebar-border: oklch(0.2 0 0);
+  --sidebar-ring: #5dba9f;
 }
 
 @theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Improved typography hierarchy */
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl font-semibold;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
 }
 
-/* Custom animations */
+/* Modern animations and transitions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes float {
   0%,
   100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-12px);
   }
 }
 
 @keyframes glow {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 5px rgba(93, 186, 159, 0.3);
   }
   50% {
-    box-shadow: 0 0 40px rgba(168, 85, 247, 0.8);
+    box-shadow: 0 0 20px rgba(93, 186, 159, 0.6);
   }
 }
 
-.animation-delay-2000 {
-  animation-delay: 2s;
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }
 
-.animation-delay-4000 {
-  animation-delay: 4s;
+@keyframes rotateGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-.float-animation {
-  animation: float 6s ease-in-out infinite;
+/* Added new modern animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.glow-animation {
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes blur-in {
+  from {
+    filter: blur(10px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.8s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.6s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
   animation: glow 2s ease-in-out infinite;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+.animate-shimmer {
+  background: linear-gradient(90deg, #5dba9f, #9cd5fd, #5dba9f);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+.animate-rotate-gradient {
+  background: linear-gradient(-45deg, #5dba9f, #9cd5fd, #5dba9f, #020144);
+  background-size: 400% 400%;
+  animation: rotateGradient 8s ease infinite;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.5);
-  border-radius: 4px;
+/* New animation classes */
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.7);
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+.animate-blur-in {
+  animation: blur-in 0.6s ease-out;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.5);
+.animate-gradient-shift {
+  background-size: 300% 300%;
+  animation: gradient-shift 6s ease infinite;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.7);
+/* Smooth transitions for all interactive elements */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Selection styling */
-::selection {
-  background: rgba(168, 85, 247, 0.3);
-  color: white;
+/* Enhanced button styles */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
 }
 
-/* Hide Next.js dev tools button - More aggressive approach */
-[data-nextjs-dialog-overlay],
-[data-nextjs-dialog],
-[data-nextjs-toast],
-[data-nextjs-portal],
-[data-nextjs-scroll-focus-boundary],
-[data-nextjs-dev-tools],
-iframe[src*="nextjs"],
-div[data-nextjs-toast],
-button[data-nextjs-dialog-close],
-button[title*="Next.js"],
-button[aria-label*="Next.js"],
-div[style*="position: fixed"][style*="bottom"][style*="right"],
-div[style*="position: fixed"][style*="z-index: 9999"],
-div[style*="position: fixed"][style*="z-index: 999"],
-div[id*="nextjs"],
-div[class*="nextjs"],
-button[title*="Open Next.js Dev Tools"],
-button[aria-label*="Open Next.js Dev Tools"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  position: absolute !important;
-  left: -9999px !important;
-  top: -9999px !important;
-  width: 0 !important;
-  height: 0 !important;
-  overflow: hidden !important;
+.btn-glow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.5s ease;
 }
 
-/* Hide any floating elements in bottom-right corner */
-div[style*="position: fixed"] {
-  display: none !important;
+.btn-glow:hover::before {
+  left: 100%;
 }
 
-/* Hide any button with Next.js related text */
-button:has-text("Next.js"),
-button:has-text("Dev Tools"),
-button:has-text("Open"),
-div:has-text("Next.js") {
-  display: none !important;
+/* Refined card styles with better shadows */
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(93, 186, 159, 0.15);
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bg-surface {
+    background-color: color-mix(in srgb, var(--card) 88%, var(--background) 12%);
+  }
+
+  .bg-surface-strong {
+    background-color: color-mix(in srgb, var(--card) 94%, var(--background) 6%);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 22px 55px rgba(7, 19, 58, 0.08);
+  }
 }
