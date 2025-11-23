@@ -44,7 +44,7 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
     <div
       className={cn(
         "p-3 rounded-xl border flex items-center gap-2 transition-smooth",
-        container
+        container,
       )}
     >
       <Icon className={cn("w-4 h-4 flex-shrink-0", iconClass)} />

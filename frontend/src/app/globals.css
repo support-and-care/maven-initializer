@@ -373,7 +373,11 @@
   }
 
   .bg-surface {
-    background-color: color-mix(in srgb, var(--card) 88%, var(--background) 12%);
+    background-color: color-mix(
+      in srgb,
+      var(--card) 88%,
+      var(--background) 12%
+    );
   }
 
   .bg-surface-strong {

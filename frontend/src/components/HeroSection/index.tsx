@@ -15,7 +15,8 @@ export const HeroSection: React.FC = () => {
           Build Better Java Projects
         </h1>
         <p className="max-w-md mx-auto lg:mx-0 text-pretty text-base text-muted-foreground dark:text-white/75">
-          Create production-ready Maven projects with the perfect dependencies, configuration, and structure. No more manual setup.
+          Create production-ready Maven projects with the perfect dependencies,
+          configuration, and structure. No more manual setup.
         </p>
         <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs uppercase tracking-[0.3em] text-muted-foreground dark:text-white/60 pt-2">
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 dark:bg-white/10">

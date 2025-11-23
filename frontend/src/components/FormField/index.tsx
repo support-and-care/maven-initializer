@@ -35,9 +35,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       </div>
       {children}
       {helperText && !error && (
-        <p className="text-xs text-muted-foreground">
-          {helperText}
-        </p>
+        <p className="text-xs text-muted-foreground">{helperText}</p>
       )}
     </div>
   );

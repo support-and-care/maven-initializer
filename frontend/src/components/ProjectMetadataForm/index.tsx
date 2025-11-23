@@ -34,7 +34,8 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
           Configure Your Maven Project
         </h2>
         <p className="text-sm text-muted-foreground sm:text-base mb-6">
-          Fill in the details below to generate your production-ready Maven project structure.
+          Fill in the details below to generate your production-ready Maven
+          project structure.
         </p>
 
         <form onSubmit={onSubmit} className="space-y-5">
@@ -76,10 +77,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
             </FormField>
 
             {/* Version */}
-            <FormField
-              label="Version"
-              helperText="The version of your project"
-            >
+            <FormField label="Version" helperText="The version of your project">
               <Input
                 type="text"
                 name="version"
@@ -149,7 +147,9 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
               ) : (
                 <>
                   Generate Project
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </>
               )}
             </Button>
@@ -160,9 +160,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
             <StatusMessage
               message={generationMessage}
               type={
-                generationMessage.includes("successfully")
-                  ? "success"
-                  : "error"
+                generationMessage.includes("successfully") ? "success" : "error"
               }
             />
           )}

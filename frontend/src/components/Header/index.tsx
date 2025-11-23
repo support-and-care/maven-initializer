@@ -36,8 +36,12 @@ export const Header: React.FC = () => {
               <div className="absolute inset-0 rounded-2xl ring-1 ring-primary/30 z-0" />
             </div>
             <div className="hidden flex-col leading-tight sm:flex">
-              <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Maven</span>
-              <span className="text-sm font-semibold text-foreground">Initializer</span>
+              <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                Maven
+              </span>
+              <span className="text-sm font-semibold text-foreground">
+                Initializer
+              </span>
             </div>
           </div>
 
@@ -96,7 +100,9 @@ export const Header: React.FC = () => {
               className="flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-medium transition-smooth text-muted-foreground hover:bg-muted/40 hover:text-foreground"
             >
               Documentation
-              <span className="text-xs uppercase tracking-[0.3em] text-primary/70">Explore</span>
+              <span className="text-xs uppercase tracking-[0.3em] text-primary/70">
+                Explore
+              </span>
             </a>
             <a
               href="https://github.com/support-and-care/maven-initializer"
@@ -105,7 +111,9 @@ export const Header: React.FC = () => {
               className="flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-medium transition-smooth text-muted-foreground hover:bg-muted/40 hover:text-foreground"
             >
               GitHub
-              <span className="text-xs uppercase tracking-[0.3em] text-primary/70">Explore</span>
+              <span className="text-xs uppercase tracking-[0.3em] text-primary/70">
+                Explore
+              </span>
             </a>
           </div>
         )}
