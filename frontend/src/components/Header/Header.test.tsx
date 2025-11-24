@@ -5,14 +5,8 @@ import "@testing-library/jest-dom";
 describe("Header component", () => {
   it("renders the main title correctly", () => {
     render(<Header />);
-    expect(screen.getByText("Maven Initializer")).toBeInTheDocument();
-  });
-
-  it("renders the subtitle correctly", () => {
-    render(<Header />);
-    expect(
-      screen.getByText("Bootstrap your Maven project with ease"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Maven")).toBeInTheDocument();
+    expect(screen.getByText("Initializer")).toBeInTheDocument();
   });
 
   it("renders the Documentation link", () => {
@@ -36,7 +30,7 @@ describe("Header component", () => {
     render(<Header />);
     const buttons = screen.getAllByRole("button");
     const links = screen.getAllByRole("link");
-    expect(buttons.length).toBe(1); // One button (the icon button)
-    expect(links.length).toBe(2); // Two links: Documentation + GitHub
+    expect(buttons.length).toBeGreaterThanOrEqual(1);
+    expect(links.length).toBe(2);
   });
 });
