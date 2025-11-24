@@ -149,8 +149,9 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                 Include Maven Wrapper
               </label>
               <p className="text-xs text-muted-foreground mt-1">
-                Includes mvnw and mvnw.cmd scripts for building without requiring Maven to be
-                installed. Uses the only-script distribution type that downloads Maven directly.
+                Includes mvnw and mvnw.cmd scripts for building without
+                requiring Maven to be installed. Uses the only-script
+                distribution type that downloads Maven directly.
               </p>
             </div>
           </div>
