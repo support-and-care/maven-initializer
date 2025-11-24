@@ -5,14 +5,15 @@ import Home from "@/app/page";
 describe("Home Page", () => {
   it("renders the main heading", () => {
     render(<Home />);
-    expect(screen.getByText("Maven Initializer")).toBeInTheDocument();
+    expect(screen.getByText("Maven")).toBeInTheDocument();
+    expect(screen.getByText("Initializer")).toBeInTheDocument();
   });
 
   it("renders the project configuration form", () => {
     render(<Home />);
-    expect(screen.getByText("Project Metadata")).toBeInTheDocument();
+    expect(screen.getByText("Project Configuration")).toBeInTheDocument();
     expect(
-      screen.getByText("Configure your Maven project settings"),
+      screen.getByText("Configure Your Maven Project"),
     ).toBeInTheDocument();
   });
 

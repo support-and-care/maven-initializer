@@ -19,70 +19,141 @@
 package com.openelements.maven.initializer.backend.service;
 
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+/** Service responsible for adding Maven Wrapper (mvnw) files to a generated project. */
 @Service
 public class MavenWrapperService {
 
   private static final Logger logger = LoggerFactory.getLogger(MavenWrapperService.class);
-  private static final String MAVEN_WRAPPER_PLUGIN_VERSION = "3.3.4";
-  private static final String MAVEN_WRAPPER_PLUGIN_GOAL =
-      "org.apache.maven.plugins:maven-wrapper-plugin:" + MAVEN_WRAPPER_PLUGIN_VERSION + ":wrapper";
+
+  private static final String MAVEN_WRAPPER_VERSION = "3.3.4";
+  private static final String MAVEN_VERSION = "3.9.11";
+
+  private static final String MAVEN_WRAPPER_DISTRIBUTION_URL =
+      "https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper-distribution/"
+          + MAVEN_WRAPPER_VERSION
+          + "/maven-wrapper-distribution-"
+          + MAVEN_WRAPPER_VERSION
+          + "-only-script.zip";
+
+  private static final String MAVEN_DISTRIBUTION_URL =
+      "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/"
+          + MAVEN_VERSION
+          + "/apache-maven-"
+          + MAVEN_VERSION
+          + "-bin.zip";
 
   /**
-   * Adds Maven Wrapper to the project by executing the Maven Wrapper Plugin via ProcessBuilder.
-   * This automatically generates all wrapper files (mvnw, mvnw.cmd, .mvn/wrapper/*).
+   * Adds Maven Wrapper files to the specified project directory.
+   *
+   * <p>This includes:
+   *
+   * <ul>
+   *   <li>Creating the {@code .mvn/wrapper} directory
+   *   <li>Downloading and extracting {@code mvnw} and {@code mvnw.cmd} scripts
+   *   <li>Generating {@code maven-wrapper.properties} with the correct distribution URL
+   * </ul>
+   *
+   * <p>Uses the "only-script" distribution type, which avoids including {@code maven-wrapper.jar}
+   * and downloads Maven directly on first use.
    *
    * @param projectRoot the root directory of the generated project
-   * @throws ProjectServiceException if wrapper generation fails
+   * @throws ProjectServiceException if adding the Maven Wrapper fails due to I/O or network issues
    */
   public void addMavenWrapper(Path projectRoot) {
     logger.info("Adding Maven Wrapper to project at: {}", projectRoot);
 
     try {
-      // Execute Maven Wrapper Plugin
-      ProcessBuilder builder = new ProcessBuilder("mvn", "-N", MAVEN_WRAPPER_PLUGIN_GOAL);
-      builder.directory(projectRoot.toFile());
-      builder.redirectErrorStream(true);
+      Path wrapperDir = projectRoot.resolve(".mvn/wrapper");
+      Files.createDirectories(wrapperDir);
 
-      Process process = builder.start();
-
-      // Read output for logging
-      StringBuilder output = new StringBuilder();
-      try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          output.append(line).append("\n");
-          logger.debug("Maven Wrapper Plugin: {}", line);
-        }
-      }
-
-      int exitCode = process.waitFor();
-
-      if (exitCode != 0) {
-        logger.error(
-            "Maven Wrapper Plugin failed with exit code: {}\nOutput: {}", exitCode, output);
-        throw new ProjectServiceException(
-            "Failed to generate Maven Wrapper. Exit code: " + exitCode + "\nOutput: " + output,
-            null);
-      }
+      downloadAndExtractWrapper(projectRoot);
+      createWrapperProperties(wrapperDir);
 
       logger.info("Maven Wrapper added successfully");
     } catch (IOException e) {
-      logger.error("IO error while executing Maven Wrapper Plugin", e);
-      throw new ProjectServiceException(
-          "Failed to execute Maven Wrapper Plugin: " + e.getMessage(), e);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      logger.error("Interrupted while executing Maven Wrapper Plugin", e);
-      throw new ProjectServiceException("Maven Wrapper Plugin execution was interrupted", e);
+      logger.error("Failed to add Maven Wrapper", e);
+      throw new ProjectServiceException("Failed to add Maven Wrapper: " + e.getMessage(), e);
     }
+  }
+
+  /**
+   * Downloads the Maven Wrapper "only-script" distribution and extracts only the necessary
+   * executable scripts ({@code mvnw} and {@code mvnw.cmd}).
+   *
+   * <p>Debug variants ({@code mvnwDebug}, {@code mvnwDebug.cmd}) are intentionally excluded.
+   *
+   * @param projectRoot the target project root directory
+   * @throws IOException if download or extraction fails
+   */
+  private void downloadAndExtractWrapper(Path projectRoot) throws IOException {
+    logger.debug("Downloading Maven Wrapper distribution from: {}", MAVEN_WRAPPER_DISTRIBUTION_URL);
+
+    Path tempZip = Files.createTempFile("maven-wrapper-", ".zip");
+
+    try (InputStream in = URI.create(MAVEN_WRAPPER_DISTRIBUTION_URL).toURL().openStream()) {
+      Files.copy(in, tempZip, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    try (FileSystem zipFileSystem =
+        FileSystems.newFileSystem(URI.create("jar:" + tempZip.toUri()), Collections.emptyMap())) {
+      Path zipRoot = zipFileSystem.getPath("/");
+
+      // Extract Unix wrapper script
+      Path mvnwSource = zipRoot.resolve("mvnw");
+      if (Files.exists(mvnwSource)) {
+        Path mvnwTarget = projectRoot.resolve("mvnw");
+        Files.copy(mvnwSource, mvnwTarget, StandardCopyOption.REPLACE_EXISTING);
+        boolean success = mvnwTarget.toFile().setExecutable(true, false);
+        if (!success) {
+          logger.warn("Failed to set executable permission for {}", mvnwTarget);
+        }
+      }
+
+      // Extract Windows wrapper script
+      Path mvnwCmdSource = zipRoot.resolve("mvnw.cmd");
+      if (Files.exists(mvnwCmdSource)) {
+        Path mvnwCmdTarget = projectRoot.resolve("mvnw.cmd");
+        Files.copy(mvnwCmdSource, mvnwCmdTarget, StandardCopyOption.REPLACE_EXISTING);
+      }
+    } finally {
+      Files.deleteIfExists(tempZip);
+    }
+  }
+
+  /**
+   * Creates the {@code maven-wrapper.properties} file in the {@code .mvn/wrapper} directory.
+   *
+   * <p>Configures the wrapper to use the "only-script" distribution type and points to the official
+   * Apache Maven binary distribution.
+   *
+   * @param wrapperDir the {@code .mvn/wrapper} directory
+   * @throws IOException if writing the properties file fails
+   */
+  private void createWrapperProperties(Path wrapperDir) throws IOException {
+    Path propertiesFile = wrapperDir.resolve("maven-wrapper.properties");
+    String propertiesContent =
+        "wrapperVersion="
+            + MAVEN_WRAPPER_VERSION
+            + "\n"
+            + "distributionType=only-script\n"
+            + "distributionUrl="
+            + MAVEN_DISTRIBUTION_URL
+            + "\n";
+
+    Files.writeString(propertiesFile, propertiesContent);
+    logger.debug("Created maven-wrapper.properties at: {}", propertiesFile);
   }
 }

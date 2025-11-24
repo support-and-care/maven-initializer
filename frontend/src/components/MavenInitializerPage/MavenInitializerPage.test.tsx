@@ -62,9 +62,10 @@ describe("MavenInitializerPage", () => {
 
   it("renders header, hero and form", () => {
     render(<MavenInitializerPage />);
-    expect(screen.getByText("Maven Initializer")).toBeInTheDocument();
+    expect(screen.getByText("Maven")).toBeInTheDocument();
+    expect(screen.getByText("Initializer")).toBeInTheDocument();
     expect(screen.getByText("Build Better Java Projects")).toBeInTheDocument();
-    expect(screen.getByText("Project Metadata")).toBeInTheDocument();
+    expect(screen.getByText("Project Configuration")).toBeInTheDocument();
     expect(screen.getByText("Generate Project")).toBeInTheDocument();
   });
 

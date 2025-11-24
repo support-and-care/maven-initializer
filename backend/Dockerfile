@@ -22,9 +22,6 @@ FROM eclipse-temurin:25-alpine
 WORKDIR /application
 EXPOSE 8080
 
-# Install Maven for Maven Wrapper generation feature
-RUN apk add --no-cache maven
-
 # Copy extracted layers from the builder stage
 COPY --from=builder /application/dependencies/ ./
 COPY --from=builder /application/spring-boot-loader/ ./
