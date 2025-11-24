@@ -25,8 +25,8 @@ export const Header: React.FC = () => {
           <div className="flex items-center gap-3 transition-smooth hover:opacity-90">
             <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 via-primary/30 to-accent/30 shadow-inner overflow-hidden">
               <Image
-                src="/maven.jpeg"
-                alt="Apache Maven Logo"
+                src="/logo.svg"
+                alt="Maven Initializer Logo"
                 width={32}
                 height={32}
                 className="h-8 w-8 object-contain relative z-10"
