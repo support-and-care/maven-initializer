@@ -27,7 +27,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collections;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -116,10 +118,7 @@ public class MavenWrapperService {
       if (Files.exists(mvnwSource)) {
         Path mvnwTarget = projectRoot.resolve("mvnw");
         Files.copy(mvnwSource, mvnwTarget, StandardCopyOption.REPLACE_EXISTING);
-        boolean success = mvnwTarget.toFile().setExecutable(true, false);
-        if (!success) {
-          logger.warn("Failed to set executable permission for {}", mvnwTarget);
-        }
+        setExecutablePermissions(mvnwTarget);
       }
 
       // Extract Windows wrapper script
@@ -155,5 +154,26 @@ public class MavenWrapperService {
 
     Files.writeString(propertiesFile, propertiesContent);
     logger.debug("Created maven-wrapper.properties at: {}", propertiesFile);
+  }
+
+  /**
+   * Sets executable permissions on a file.
+   *
+   * @param filePath the file to make executable
+   * @throws IOException if setting permissions fails
+   */
+  private void setExecutablePermissions(Path filePath) throws IOException {
+    try {
+      Set<PosixFilePermission> perms = Files.getPosixFilePermissions(filePath);
+      perms.add(PosixFilePermission.OWNER_EXECUTE);
+      perms.add(PosixFilePermission.GROUP_EXECUTE);
+      perms.add(PosixFilePermission.OTHERS_EXECUTE);
+      Files.setPosixFilePermissions(filePath, perms);
+    } catch (UnsupportedOperationException e) {
+      boolean success = filePath.toFile().setExecutable(true, false);
+      if (!success) {
+        logger.warn("Failed to set executable permission for {}", filePath);
+      }
+    }
   }
 }

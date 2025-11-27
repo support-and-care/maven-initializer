@@ -308,6 +308,29 @@ class ProjectGeneratorServiceTest {
         "Jacoco plugin version should match resolved value");
   }
 
+  @Test
+  void testMavenWrapperFilesHaveExecutablePermissions() throws IOException {
+    // Given
+    MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
+    var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
+    MavenWrapperService realMavenWrapperService = new MavenWrapperService();
+    projectGeneratorServiceUnderTest =
+        new ProjectGeneratorService(
+            toolbox, projectStructureServiceMock, artifactVersionService, realMavenWrapperService);
+
+    ProjectRequestDTO request = createValidRequest();
+    request.setIncludeMavenWrapper(true);
+
+    // When
+    ProjectGenerationResult result = projectGeneratorServiceUnderTest.generateProject(request);
+    Path projectPath = Paths.get(result.projectPath());
+    Path mvnw = projectPath.resolve("mvnw");
+
+    // Then
+    assertTrue(Files.exists(mvnw), "mvnw should exist");
+    assertTrue(Files.isExecutable(mvnw), "mvnw should have executable permissions");
+  }
+
   private ProjectRequestDTO createValidRequest() {
     final ProjectRequestDTO request = new ProjectRequestDTO();
     request.setGroupId("com.example");
