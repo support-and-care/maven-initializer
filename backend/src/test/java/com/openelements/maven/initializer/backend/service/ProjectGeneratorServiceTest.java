@@ -27,12 +27,15 @@ import com.openelements.maven.initializer.backend.config.MavenToolboxConfig;
 import com.openelements.maven.initializer.backend.domain.ProjectGenerationResult;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -329,6 +332,70 @@ class ProjectGeneratorServiceTest {
     // Then
     assertTrue(Files.exists(mvnw), "mvnw should exist");
     assertTrue(Files.isExecutable(mvnw), "mvnw should have executable permissions");
+  }
+
+  @Test
+  void testGeneratedProjectBuildsSuccessfully() throws IOException, InterruptedException {
+    // Given
+    MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
+    var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
+    ArtifactVersionService realArtifactVersionService = new ArtifactVersionService(toolbox);
+    ProjectStructureService realProjectStructureService = new ProjectStructureService();
+    MavenWrapperService realMavenWrapperService = new MavenWrapperService();
+    projectGeneratorServiceUnderTest =
+        new ProjectGeneratorService(
+            toolbox,
+            realProjectStructureService,
+            realArtifactVersionService,
+            realMavenWrapperService);
+
+    ProjectRequestDTO request = createValidRequest();
+    request.setIncludeMavenWrapper(true);
+
+    // When - Generate project
+    ProjectGenerationResult result = projectGeneratorServiceUnderTest.generateProject(request);
+    Path projectPath = Paths.get(result.projectPath());
+    Path mvnw = projectPath.resolve("mvnw");
+
+    assertTrue(Files.exists(mvnw), "mvnw should exist");
+    assertTrue(Files.isExecutable(mvnw), "mvnw should be executable");
+
+    ProcessBuilder processBuilder = new ProcessBuilder();
+    processBuilder.directory(projectPath.toFile());
+
+    String os = System.getProperty("os.name").toLowerCase();
+    String mvnwCommand = os.contains("win") ? "mvnw.cmd" : "./mvnw";
+
+    processBuilder.command(mvnwCommand, "clean", "install");
+    processBuilder.redirectErrorStream(true);
+
+    Process process = processBuilder.start();
+
+    StringBuilder output = new StringBuilder();
+    try (BufferedReader reader =
+        new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        output.append(line).append("\n");
+      }
+    }
+
+    boolean finished = process.waitFor(3, TimeUnit.MINUTES);
+
+    // Then
+    assertTrue(finished, "Maven build should complete within timeout");
+
+    int exitCode = process.exitValue();
+    if (exitCode != 0) {
+      System.err.println("Maven build failed with exit code: " + exitCode);
+      System.err.println("Build output:\n" + output);
+    }
+
+    assertEquals(0, exitCode, "Maven build should succeed with exit code 0. Output: " + output);
+
+    // Verify target directory was created
+    Path targetDir = projectPath.resolve("target");
+    assertTrue(Files.exists(targetDir), "target directory should exist after successful build");
   }
 
   private ProjectRequestDTO createValidRequest() {
