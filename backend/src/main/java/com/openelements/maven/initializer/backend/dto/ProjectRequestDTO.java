@@ -41,6 +41,8 @@ public class ProjectRequestDTO {
 
   private String name;
 
+  private boolean includeMavenWrapper = true;
+
   // Default constructor
   public ProjectRequestDTO() {}
 
@@ -109,6 +111,14 @@ public class ProjectRequestDTO {
     this.name = name;
   }
 
+  public boolean isIncludeMavenWrapper() {
+    return includeMavenWrapper;
+  }
+
+  public void setIncludeMavenWrapper(boolean includeMavenWrapper) {
+    this.includeMavenWrapper = includeMavenWrapper;
+  }
+
   @Override
   public String toString() {
     return "ProjectRequestDTO{"
@@ -130,6 +140,8 @@ public class ProjectRequestDTO {
         + ", name='"
         + name
         + '\''
+        + ", includeMavenWrapper="
+        + includeMavenWrapper
         + '}';
   }
 }

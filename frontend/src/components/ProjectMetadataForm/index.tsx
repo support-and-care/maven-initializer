@@ -132,6 +132,29 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
             />
           </FormField>
 
+          {/* Maven Wrapper Checkbox */}
+          <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-4">
+            <input
+              type="checkbox"
+              name="includeMavenWrapper"
+              id="includeMavenWrapper"
+              defaultChecked={true}
+              className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+            />
+            <div className="flex-1">
+              <label
+                htmlFor="includeMavenWrapper"
+                className="text-sm font-medium text-foreground cursor-pointer block"
+              >
+                Include Maven Wrapper
+              </label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Includes mvnw and mvnw.cmd scripts for building without
+                requiring Maven to be installed.
+              </p>
+            </div>
+          </div>
+
           {/* Generate Button */}
           <div className="flex justify-center pt-4">
             <Button
