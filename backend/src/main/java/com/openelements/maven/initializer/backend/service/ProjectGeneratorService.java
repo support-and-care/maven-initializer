@@ -76,6 +76,8 @@ public class ProjectGeneratorService {
     plugins =
         List.of(
             new MavenPlugin(
+                "org.apache.maven.plugins", "maven-clean-plugin", artifactVersionService),
+            new MavenPlugin(
                 "org.apache.maven.plugins", "maven-compiler-plugin", artifactVersionService),
             new MavenPlugin(
                 "org.apache.maven.plugins", "maven-resources-plugin", artifactVersionService),
