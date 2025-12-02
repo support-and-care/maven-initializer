@@ -64,7 +64,7 @@ class ProjectControllerTest {
         },
         () ->
             assertTrue(
-                response.getHeaders().containsKey("Content-Disposition"),
+                response.getHeaders().getFirst("Content-Disposition") != null,
                 "Should contain Content-Disposition header"),
         () ->
             assertTrue(
