@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -112,20 +111,8 @@ class ProjectGeneratorITTest {
       }
     }
 
-    // Wait for process to complete
-    long startTime = System.currentTimeMillis();
-    long timeoutMillis = TimeUnit.MINUTES.toMillis(3);
-    while (process.isAlive() && (System.currentTimeMillis() - startTime) < timeoutMillis) {
-      Thread.sleep(100);
-    }
-
     // Then
-    if (process.isAlive()) {
-      process.destroyForcibly();
-      throw new AssertionError("Maven build did not complete within timeout");
-    }
-
-    int exitCode = process.exitValue();
+    int exitCode = process.waitFor();
     if (exitCode != 0) {
       System.err.println("Maven build failed with exit code: " + exitCode);
       System.err.println("Build output:\n" + output);
