@@ -125,6 +125,10 @@ public class ProjectGeneratorService {
       throw new ProjectServiceException("Project directory does not exist: " + projectPath, null);
     }
 
+    return createZipArchive(projectDir, projectPath);
+  }
+
+  private byte[] createZipArchive(Path projectDir, String projectPath) {
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {

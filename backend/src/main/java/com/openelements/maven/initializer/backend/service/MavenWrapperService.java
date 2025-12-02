@@ -18,7 +18,7 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
-import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
+import com.openelements.maven.initializer.backend.exception.MavenWrapperException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -72,9 +72,13 @@ public class MavenWrapperService {
    * and downloads Maven directly on first use.
    *
    * @param projectRoot the root directory of the generated project
-   * @throws ProjectServiceException if adding the Maven Wrapper fails due to I/O or network issues
+   * @throws MavenWrapperException if adding the Maven Wrapper fails due to I/O or network issues
+   * @throws IllegalArgumentException if projectRoot is null
    */
   public void addMavenWrapper(Path projectRoot) {
+    if (projectRoot == null) {
+      throw new IllegalArgumentException("Project root cannot be null");
+    }
     logger.info("Adding Maven Wrapper to project at: {}", projectRoot);
 
     try {
@@ -87,7 +91,7 @@ public class MavenWrapperService {
       logger.info("Maven Wrapper added successfully");
     } catch (IOException e) {
       logger.error("Failed to add Maven Wrapper", e);
-      throw new ProjectServiceException("Failed to add Maven Wrapper: " + e.getMessage(), e);
+      throw new MavenWrapperException("Failed to add Maven Wrapper: " + e.getMessage(), e);
     }
   }
 

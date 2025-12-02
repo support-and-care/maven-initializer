@@ -19,12 +19,11 @@
 package com.openelements.maven.initializer.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
+import com.openelements.maven.initializer.backend.exception.MavenWrapperException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,7 +49,7 @@ class MavenWrapperServiceTest {
     copyValidTestProject(tempDir);
 
     // When
-    assertDoesNotThrow(() -> mavenWrapperService.addMavenWrapper(tempDir));
+    mavenWrapperService.addMavenWrapper(tempDir);
 
     // Then
     assertAll(
@@ -80,11 +79,11 @@ class MavenWrapperServiceTest {
     Path nonExistentPath = Paths.get("/non/existent/directory/path");
 
     // When & Then
-    ProjectServiceException exception =
+    MavenWrapperException exception =
         assertThrows(
-            ProjectServiceException.class,
+            MavenWrapperException.class,
             () -> mavenWrapperService.addMavenWrapper(nonExistentPath),
-            "Should throw ProjectServiceException for non-existent directory");
+            "Should throw MavenWrapperException for non-existent directory");
 
     assertNotNull(exception.getMessage());
     assertTrue(
@@ -95,9 +94,9 @@ class MavenWrapperServiceTest {
   void testAddMavenWrapperWithNullPath() {
     // When & Then
     assertThrows(
-        NullPointerException.class,
+        IllegalArgumentException.class,
         () -> mavenWrapperService.addMavenWrapper(null),
-        "Should throw NullPointerException for null path");
+        "Should throw IllegalArgumentException for null path");
   }
 
   @Test
@@ -132,7 +131,7 @@ class MavenWrapperServiceTest {
     mavenWrapperService.addMavenWrapper(tempDir);
 
     // When - Add wrapper again (should overwrite/update)
-    assertDoesNotThrow(() -> mavenWrapperService.addMavenWrapper(tempDir));
+    mavenWrapperService.addMavenWrapper(tempDir);
 
     // Then
     assertAll(
