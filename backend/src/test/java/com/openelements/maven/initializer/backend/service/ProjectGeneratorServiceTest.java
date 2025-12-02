@@ -45,12 +45,13 @@ class ProjectGeneratorServiceTest {
   private ProjectGeneratorService projectGeneratorServiceUnderTest;
   @Mock private ProjectStructureService projectStructureServiceMock;
   @Mock private ArtifactVersionService artifactVersionService;
+  @Mock private MavenWrapperService mavenWrapperService;
 
   private ProjectGeneratorService configureProjectGeneratorService() {
     MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
     var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
     return new ProjectGeneratorService(
-        toolbox, projectStructureServiceMock, artifactVersionService);
+        toolbox, projectStructureServiceMock, artifactVersionService, mavenWrapperService);
   }
 
   @Test

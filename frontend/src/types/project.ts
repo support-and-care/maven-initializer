@@ -5,6 +5,7 @@ export interface ProjectConfig {
   name?: string;
   description?: string;
   javaVersion: string;
+  includeMavenWrapper?: boolean;
 }
 
 export interface ValidationErrors {

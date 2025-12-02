@@ -36,8 +36,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,6 +48,7 @@ public class ProjectGeneratorService {
   private static final Logger logger = LoggerFactory.getLogger(ProjectGeneratorService.class);
   private final ToolboxCommando toolboxCommando;
   private final ProjectStructureService structureService;
+  private final MavenWrapperService mavenWrapperService;
 
   private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
       List.of(
@@ -61,9 +62,11 @@ public class ProjectGeneratorService {
   public ProjectGeneratorService(
       ToolboxCommando toolboxCommando,
       ProjectStructureService structureService,
-      ArtifactVersionService artifactVersionService) {
+      ArtifactVersionService artifactVersionService,
+      MavenWrapperService mavenWrapperService) {
     this.toolboxCommando = toolboxCommando;
     this.structureService = structureService;
+    this.mavenWrapperService = mavenWrapperService;
 
     fillDependencyManagement(artifactVersionService);
     fillPlugins(artifactVersionService);
@@ -104,6 +107,11 @@ public class ProjectGeneratorService {
     structureService.createStructure(projectDir, request);
     boolean hasResolvedVersion = generatePomFile(projectDir, request);
 
+    // Add Maven Wrapper if requested
+    if (request.isIncludeMavenWrapper()) {
+      mavenWrapperService.addMavenWrapper(projectDir);
+    }
+
     logger.info("Project generated successfully at: {}", projectDir);
     return ProjectGenerationResult.create(hasResolvedVersion, projectDir.toString());
   }
@@ -117,18 +125,26 @@ public class ProjectGeneratorService {
       throw new ProjectServiceException("Project directory does not exist: " + projectPath, null);
     }
 
+    return createZipArchive(projectDir, projectPath);
+  }
+
+  private byte[] createZipArchive(Path projectDir, String projectPath) {
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+      try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
         Files.walk(projectDir)
             .filter(Files::isRegularFile)
             .forEach(
                 path -> {
                   try {
                     Path rel = projectDir.relativize(path);
-                    zos.putNextEntry(new ZipEntry(rel.toString()));
+                    ZipArchiveEntry entry = new ZipArchiveEntry(rel.toString());
+
+                    setZipEntryPermissions(entry, path);
+
+                    zos.putArchiveEntry(entry);
                     Files.copy(path, zos);
-                    zos.closeEntry();
+                    zos.closeArchiveEntry();
                   } catch (IOException e) {
                     logger.error("Failed to add file to ZIP: {}", path, e);
                     throw new ProjectServiceException("Failed to add file to ZIP: " + path, e);
@@ -314,6 +330,22 @@ public class ProjectGeneratorService {
       return projectDir;
     } catch (IOException e) {
       throw new ProjectServiceException("Failed to create temporary project directory", e);
+    }
+  }
+
+  /**
+   * Sets file permissions in ZIP entry to preserve executable permissions.
+   *
+   * @param entry the ZIP archive entry to set permissions for
+   * @param filePath the file path to check permissions from
+   */
+  private void setZipEntryPermissions(ZipArchiveEntry entry, Path filePath) {
+    try {
+      int mode = Files.isExecutable(filePath) ? 0755 : 0644;
+      entry.setUnixMode(mode);
+    } catch (Exception e) {
+      entry.setUnixMode(0644);
+      logger.debug("Using default permissions for {}", filePath);
     }
   }
 }
