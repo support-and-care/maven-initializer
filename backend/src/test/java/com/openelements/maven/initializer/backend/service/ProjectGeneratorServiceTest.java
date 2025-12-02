@@ -187,6 +187,7 @@ class ProjectGeneratorServiceTest {
     String pomContent = Files.readString(pomFile);
     List<String> defaultPlugins =
         List.of(
+            "maven-clean-plugin",
             "maven-compiler-plugin",
             "maven-resources-plugin",
             "maven-surefire-plugin",
