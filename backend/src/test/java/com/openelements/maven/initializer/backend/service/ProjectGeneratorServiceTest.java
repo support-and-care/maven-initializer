@@ -19,6 +19,7 @@
 package com.openelements.maven.initializer.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -307,6 +308,48 @@ class ProjectGeneratorServiceTest {
     assertTrue(
         pomContent.contains("<version>9.9.9</version>"),
         "Jacoco plugin version should match resolved value");
+  }
+
+  @Test
+  void testReadmeContentWithoutMavenWrapper() throws IOException {
+    ProjectRequestDTO validRequest = createValidRequest();
+    validRequest.setIncludeMavenWrapper(false);
+
+    String readmeContent = generateProjectReadme(validRequest);
+
+    assertTrue(readmeContent.contains("# " + validRequest.getName()));
+    assertTrue(readmeContent.contains("**Java SDK**: Version " + validRequest.getJavaVersion()));
+    assertTrue(readmeContent.contains("**Maven**: Version 3.9.x or higher"));
+    assertTrue(readmeContent.contains("mvn verify"));
+    assertFalse(readmeContent.contains("./mvnw"));
+  }
+
+  @Test
+  void testReadmeContentWithMavenWrapper() throws IOException {
+    ProjectRequestDTO validRequest = createValidRequest();
+    validRequest.setIncludeMavenWrapper(true);
+
+    String readmeContent = generateProjectReadme(validRequest);
+
+    assertTrue(readmeContent.contains("# " + validRequest.getName()));
+    assertTrue(readmeContent.contains("**Java SDK**: Version " + validRequest.getJavaVersion()));
+    assertFalse(readmeContent.contains("**Maven**: Version"));
+    assertTrue(readmeContent.contains(".\\mvnw.cmd verify"));
+    assertTrue(readmeContent.contains("./mvnw verify"));
+  }
+
+  /** Helper method to generate project, call actual createReadmeFile, and return README content */
+  private String generateProjectReadme(ProjectRequestDTO request) throws IOException {
+    Mockito.doCallRealMethod()
+        .when(projectStructureServiceMock)
+        .createReadmeFile(Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
+    String projectPath = projectGeneratorServiceUnderTest.generateProject(request).projectPath();
+
+    Path readmeFile = Path.of(projectPath, "README.md");
+    assertTrue(Files.exists(readmeFile), "README.md should exist");
+    return Files.readString(readmeFile);
   }
 
   private ProjectRequestDTO createValidRequest() {
