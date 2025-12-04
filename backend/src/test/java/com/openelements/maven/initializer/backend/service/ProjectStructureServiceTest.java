@@ -170,6 +170,32 @@ class ProjectStructureServiceTest {
     assertTrue(Files.exists(mainClassFile), "Main class should be correctly placed");
   }
 
+  @Test
+  void testReadmeCreationWithMavenWrapper() {
+    // Given
+    validRequest.setIncludeMavenWrapper(true);
+
+    // When
+    projectStructureService.createReadmeFile(tempDir, validRequest);
+
+    // Then
+    Path readmeFile = tempDir.resolve("README.md");
+    assertTrue(Files.exists(readmeFile), "README.md file should exist");
+  }
+
+  @Test
+  void testReadmeCreationWithoutMavenWrapper() {
+    // Given
+    validRequest.setIncludeMavenWrapper(false);
+
+    // When
+    projectStructureService.createReadmeFile(tempDir, validRequest);
+
+    // Then
+    Path readmeFile = tempDir.resolve("README.md");
+    assertTrue(Files.exists(readmeFile), "README.md file should exist");
+  }
+
   private ProjectRequestDTO createValidRequest() {
     ProjectRequestDTO request = new ProjectRequestDTO();
     request.setGroupId("com.example");
