@@ -47,8 +47,7 @@ public class ProjectStructureService {
     }
   }
 
-  public void createReadmeFile(
-      Path projectRoot, ProjectRequestDTO request, boolean includeMavenWrapper) {
+  public void createReadmeFile(Path projectRoot, ProjectRequestDTO request) {
     try {
       String projectName =
           request.getName() != null && !request.getName().isEmpty()
@@ -57,7 +56,7 @@ public class ProjectStructureService {
       String javaVersion = request.getJavaVersion();
 
       String readmeContent;
-      if (includeMavenWrapper) {
+      if (request.isIncludeMavenWrapper()) {
         readmeContent = generateReadmeWithWrapper(projectName, javaVersion);
       } else {
         readmeContent = generateReadmeWithoutWrapper(projectName, javaVersion);

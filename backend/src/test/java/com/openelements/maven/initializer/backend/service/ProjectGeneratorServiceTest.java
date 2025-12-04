@@ -342,7 +342,7 @@ class ProjectGeneratorServiceTest {
   private String generateProjectReadme(ProjectRequestDTO request) throws IOException {
     Mockito.doCallRealMethod()
         .when(projectStructureServiceMock)
-        .createReadmeFile(Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        .createReadmeFile(Mockito.any(), Mockito.any());
 
     projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     String projectPath = projectGeneratorServiceUnderTest.generateProject(request).projectPath();

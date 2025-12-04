@@ -115,7 +115,7 @@ public class ProjectGeneratorService {
     }
 
     // Generate README.md
-    structureService.createReadmeFile(projectDir, request, request.isIncludeMavenWrapper());
+    structureService.createReadmeFile(projectDir, request);
 
     logger.info("Project generated successfully at: {}", projectDir);
     return ProjectGenerationResult.create(hasResolvedVersion, projectDir.toString());

@@ -172,8 +172,11 @@ class ProjectStructureServiceTest {
 
   @Test
   void testReadmeCreationWithMavenWrapper() {
+    // Given
+    validRequest.setIncludeMavenWrapper(true);
+
     // When
-    projectStructureService.createReadmeFile(tempDir, validRequest, true);
+    projectStructureService.createReadmeFile(tempDir, validRequest);
 
     // Then
     Path readmeFile = tempDir.resolve("README.md");
@@ -182,8 +185,11 @@ class ProjectStructureServiceTest {
 
   @Test
   void testReadmeCreationWithoutMavenWrapper() {
+    // Given
+    validRequest.setIncludeMavenWrapper(false);
+
     // When
-    projectStructureService.createReadmeFile(tempDir, validRequest, false);
+    projectStructureService.createReadmeFile(tempDir, validRequest);
 
     // Then
     Path readmeFile = tempDir.resolve("README.md");
