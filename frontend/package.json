@@ -1,6 +1,19 @@
 {
   "name": "maven-initializer-frontend",
   "version": "1.0.0",
+  "license": "Apache-2.0",
+  "contributors": [
+    {
+      "name": "Noah Tayebwa"
+    },
+    {
+      "name": "Sandra Parsick"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/support-and-care/maven-initializer.git"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
