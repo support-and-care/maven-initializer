@@ -17,18 +17,45 @@
     <description>Backend service for Maven Initializer</description>
     <url/>
 	<licenses>
-		<license/>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
 	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+    <developers>
+        <developer>
+            <id>Ndacyayisenga-droid</id>
+            <name>Noah Tayebwa</name>
+            <email>noah (at) open-elements.com</email>
+            <organization>Open Elements</organization>
+            <organizationUrl>https://www.open-elements.com</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>sparsick</id>
+            <name>Sandra Parsick</name>
+            <email>mail (at) sandra-parsick.de</email>
+            <url>https://www.sandra-parsick.de</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/support-and-care/maven-initializer/issues</url>
+    </issueManagement>
+
+    <scm>
+        <developerConnection>scm:git:git@github.com:support-and-care/maven-initializer.git</developerConnection>
+        <connection>scm:git:git@github.com:support-and-care/maven-initializer.git</connection>
+        <url>https://github.com/support-and-care/maven-initializer</url>
+        <tag>HEAD</tag>
+    </scm>
     <properties>
         <java.version>25</java.version>
         <mima.version>2.4.37</mima.version>
