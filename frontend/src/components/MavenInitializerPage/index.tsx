@@ -24,6 +24,12 @@ export const MavenInitializerPage: React.FC = () => {
       const includeMavenWrapper =
         formData.get("includeMavenWrapper") === "on" ||
         formData.get("includeMavenWrapper") === "true";
+      const includeSpotless =
+        formData.get("includeSpotless") === "on" ||
+        formData.get("includeSpotless") === "true";
+      const includeCheckstyle =
+        formData.get("includeCheckstyle") === "on" ||
+        formData.get("includeCheckstyle") === "true";
       const projectConfig: ProjectConfig = {
         groupId: formData.get("groupId") as string,
         artifactId: formData.get("artifactId") as string,
@@ -32,6 +38,8 @@ export const MavenInitializerPage: React.FC = () => {
         description: (formData.get("description") as string) || "",
         javaVersion: (formData.get("javaVersion") as string) || "25",
         includeMavenWrapper: includeMavenWrapper,
+        includeSpotless: includeSpotless,
+        includeCheckstyle: includeCheckstyle,
       };
 
       const response = await fetch("/api/projects/generate", {

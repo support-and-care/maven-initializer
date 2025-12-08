@@ -57,9 +57,9 @@ public class ProjectStructureService {
 
       String readmeContent;
       if (request.isIncludeMavenWrapper()) {
-        readmeContent = generateReadmeWithWrapper(projectName, javaVersion);
+        readmeContent = generateReadmeWithWrapper(projectName, javaVersion, request);
       } else {
-        readmeContent = generateReadmeWithoutWrapper(projectName, javaVersion);
+        readmeContent = generateReadmeWithoutWrapper(projectName, javaVersion, request);
       }
 
       Files.writeString(projectRoot.resolve("README.md"), readmeContent);
@@ -69,9 +69,12 @@ public class ProjectStructureService {
     }
   }
 
-  private String generateReadmeWithWrapper(String projectName, String javaVersion) {
-    return String.format(
-        """
+  private String generateReadmeWithWrapper(
+      String projectName, String javaVersion, ProjectRequestDTO request) {
+    StringBuilder readme = new StringBuilder();
+    readme.append(
+        String.format(
+            """
         # %s
 
         ## Prerequisites
@@ -96,12 +99,46 @@ public class ProjectStructureService {
         ./mvnw verify
         ```
         """,
-        projectName, javaVersion);
+            projectName, javaVersion));
+
+    // Add code formatting plugin hints
+    if (request.isIncludeSpotless() || request.isIncludeCheckstyle()) {
+      readme.append("\n## Code Formatting Plugins\n\n");
+
+      if (request.isIncludeSpotless()) {
+        readme.append(
+            """
+            ### Spotless Maven Plugin
+
+            This project includes the [Spotless Maven Plugin](https://github.com/diffplug/spotless/tree/main/plugin-maven).
+            Please configure the plugin according to your code style preferences.
+            See the [Spotless documentation](https://github.com/diffplug/spotless/tree/main/plugin-maven) for configuration options.
+
+            """);
+      }
+
+      if (request.isIncludeCheckstyle()) {
+        readme.append(
+            """
+            ### Maven Checkstyle Plugin
+
+            This project includes the [Maven Checkstyle Plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/).
+            Please configure the plugin according to your coding standards.
+            See the [Maven Checkstyle Plugin documentation](https://maven.apache.org/plugins/maven-checkstyle-plugin/) for configuration options.
+
+            """);
+      }
+    }
+
+    return readme.toString();
   }
 
-  private String generateReadmeWithoutWrapper(String projectName, String javaVersion) {
-    return String.format(
-        """
+  private String generateReadmeWithoutWrapper(
+      String projectName, String javaVersion, ProjectRequestDTO request) {
+    StringBuilder readme = new StringBuilder();
+    readme.append(
+        String.format(
+            """
         # %s
 
         ## Prerequisites
@@ -119,7 +156,38 @@ public class ProjectStructureService {
         mvn verify
         ```
         """,
-        projectName, javaVersion);
+            projectName, javaVersion));
+
+    // Add code formatting plugin hints
+    if (request.isIncludeSpotless() || request.isIncludeCheckstyle()) {
+      readme.append("\n## Code Formatting Plugins\n\n");
+
+      if (request.isIncludeSpotless()) {
+        readme.append(
+            """
+            ### Spotless Maven Plugin
+
+            This project includes the [Spotless Maven Plugin](https://github.com/diffplug/spotless/tree/main/plugin-maven).
+            Please configure the plugin according to your code style preferences.
+            See the [Spotless documentation](https://github.com/diffplug/spotless/tree/main/plugin-maven) for configuration options.
+
+            """);
+      }
+
+      if (request.isIncludeCheckstyle()) {
+        readme.append(
+            """
+            ### Maven Checkstyle Plugin
+
+            This project includes the [Maven Checkstyle Plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/).
+            Please configure the plugin according to your coding standards.
+            See the [Maven Checkstyle Plugin documentation](https://maven.apache.org/plugins/maven-checkstyle-plugin/) for configuration options.
+
+            """);
+      }
+    }
+
+    return readme.toString();
   }
 
   private void createDirectories(Path root, String groupId, String artifactId) throws IOException {

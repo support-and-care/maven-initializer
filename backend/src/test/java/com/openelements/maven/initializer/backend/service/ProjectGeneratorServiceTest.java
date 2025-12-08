@@ -352,6 +352,122 @@ class ProjectGeneratorServiceTest {
     return Files.readString(readmeFile);
   }
 
+  @Test
+  void testPomContainsSpotlessPluginConfiguration() throws Exception {
+    // Given
+    Mockito.doCallRealMethod()
+        .when(projectStructureServiceMock)
+        .createReadmeFile(Mockito.any(), Mockito.any());
+    ProjectRequestDTO validRequest = createValidRequest();
+    validRequest.setIncludeSpotless(true);
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
+
+    // When
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+    String pomContent = Files.readString(pomFile);
+
+    assertTrue(
+        pomContent.contains("<groupId>com.diffplug.spotless</groupId>"),
+        "POM should contain spotless plugin groupId");
+    assertTrue(
+        pomContent.contains("<artifactId>spotless-maven-plugin</artifactId>"),
+        "POM should contain spotless-maven-plugin artifactId");
+
+    assertTrue(
+        pomContent.contains("<executions>"),
+        "POM should contain executions element for spotless plugin");
+    assertTrue(
+        pomContent.contains("<execution>"),
+        "POM should contain execution element for spotless plugin");
+
+    assertTrue(
+        pomContent.contains("<goal>check</goal>"),
+        "POM should contain check goal for spotless plugin");
+
+    assertTrue(
+        pomContent.contains("<configuration>"),
+        "POM should contain configuration element for spotless plugin");
+    assertTrue(
+        pomContent.contains("<!-- TODO please define your configuration -->"),
+        "POM should contain TODO comment in spotless plugin configuration");
+
+    Path readmeFile = Path.of(projectPath, "README.md");
+    assertTrue(Files.exists(readmeFile), "README.md should exist");
+    String readmeContent = Files.readString(readmeFile);
+    assertTrue(
+        readmeContent.contains("Spotless Maven Plugin"),
+        "README should contain Spotless Maven Plugin section");
+    assertTrue(
+        readmeContent.contains("Code Formatting Plugins"),
+        "README should contain Code Formatting Plugins section");
+    assertTrue(
+        readmeContent.contains("github.com/diffplug/spotless"),
+        "README should contain Spotless documentation link");
+  }
+
+  @Test
+  void testPomContainsCheckstylePluginConfiguration() throws Exception {
+    // Given
+    Mockito.doCallRealMethod()
+        .when(projectStructureServiceMock)
+        .createReadmeFile(Mockito.any(), Mockito.any());
+    ProjectRequestDTO validRequest = createValidRequest();
+    validRequest.setIncludeCheckstyle(true);
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
+
+    // When
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+    String pomContent = Files.readString(pomFile);
+
+    assertTrue(
+        pomContent.contains("<groupId>org.apache.maven.plugins</groupId>"),
+        "POM should contain checkstyle plugin groupId");
+    assertTrue(
+        pomContent.contains("<artifactId>maven-checkstyle-plugin</artifactId>"),
+        "POM should contain maven-checkstyle-plugin artifactId");
+
+    assertTrue(
+        pomContent.contains("<executions>"),
+        "POM should contain executions element for checkstyle plugin");
+    assertTrue(
+        pomContent.contains("<execution>"),
+        "POM should contain execution element for checkstyle plugin");
+
+    assertTrue(
+        pomContent.contains("<goal>check</goal>"),
+        "POM should contain check goal for checkstyle plugin");
+
+    assertTrue(
+        pomContent.contains("<configuration>"),
+        "POM should contain configuration element for checkstyle plugin");
+    assertTrue(
+        pomContent.contains("<!-- TODO please define your configuration -->"),
+        "POM should contain TODO comment in checkstyle plugin configuration");
+
+    Path readmeFile = Path.of(projectPath, "README.md");
+    assertTrue(Files.exists(readmeFile), "README.md should exist");
+    String readmeContent = Files.readString(readmeFile);
+    assertTrue(
+        readmeContent.contains("Maven Checkstyle Plugin"),
+        "README should contain Maven Checkstyle Plugin section");
+    assertTrue(
+        readmeContent.contains("Code Formatting Plugins"),
+        "README should contain Code Formatting Plugins section");
+    assertTrue(
+        readmeContent.contains("maven.apache.org/plugins/maven-checkstyle-plugin"),
+        "README should contain Checkstyle documentation link");
+  }
+
   private ProjectRequestDTO createValidRequest() {
     final ProjectRequestDTO request = new ProjectRequestDTO();
     request.setGroupId("com.example");

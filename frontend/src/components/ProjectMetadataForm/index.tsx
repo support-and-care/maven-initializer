@@ -155,6 +155,58 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
             </div>
           </div>
 
+          {/* Code Formatting Plugins Section */}
+          <div className="space-y-3">
+            <div className="text-sm font-medium text-foreground">
+              Code Formatting Plugins
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">
+              Select one or both plugins to ensure code style consistency.
+            </p>
+
+            {/* Spotless Plugin Checkbox */}
+            <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-4">
+              <input
+                type="checkbox"
+                name="includeSpotless"
+                id="includeSpotless"
+                className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+              />
+              <div className="flex-1">
+                <label
+                  htmlFor="includeSpotless"
+                  className="text-sm font-medium text-foreground cursor-pointer block"
+                >
+                  Spotless Maven Plugin
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Keeps your code spotless by automatically formatting it. Requires configuration.
+                </p>
+              </div>
+            </div>
+
+            {/* Checkstyle Plugin Checkbox */}
+            <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-4">
+              <input
+                type="checkbox"
+                name="includeCheckstyle"
+                id="includeCheckstyle"
+                className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+              />
+              <div className="flex-1">
+                <label
+                  htmlFor="includeCheckstyle"
+                  className="text-sm font-medium text-foreground cursor-pointer block"
+                >
+                  Maven Checkstyle Plugin
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Checks that your code adheres to a coding standard. Requires configuration.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Generate Button */}
           <div className="flex justify-center pt-4">
             <Button
