@@ -26,7 +26,7 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
 }) => {
   return (
     <section className="flex h-full items-center justify-center">
-      <div className="w-full rounded-3xl border border-border/60 bg-card/70 p-8 shadow-[0_25px_60px_-30px_rgba(7,8,45,0.35)] backdrop-blur-xl">
+      <div className="w-full rounded-3xl border border-border/60 bg-card/70 p-6 lg:p-8 shadow-[0_25px_60px_-30px_rgba(7,8,45,0.35)] backdrop-blur-xl">
         <div className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-transparent px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary mb-4">
           Project Configuration
         </div>
@@ -38,9 +38,9 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
           project structure.
         </p>
 
-        <form onSubmit={onSubmit} className="space-y-5">
+        <form onSubmit={onSubmit} className="space-y-4">
           {/* Form Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
             {/* Group ID */}
             <FormField
               label="Group ID"
@@ -117,92 +117,97 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                 <option value="25">Java 25 (Latest)</option>
               </select>
             </FormField>
+
+            {/* Description */}
+            <FormField
+              label="Project Description"
+              helperText="A brief description of what your project does"
+              className="sm:col-span-2 lg:col-span-3"
+            >
+              <Textarea
+                name="description"
+                placeholder="Describe your project's purpose and functionality..."
+                rows={2}
+                className="w-full text-sm"
+              />
+            </FormField>
           </div>
 
-          {/* Description */}
-          <FormField
-            label="Project Description"
-            helperText="A brief description of what your project does"
-          >
-            <Textarea
-              name="description"
-              placeholder="Describe your project's purpose and functionality..."
-              rows={3}
-              className="w-full text-sm"
-            />
-          </FormField>
-
-          {/* Maven Wrapper Checkbox */}
-          <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-4">
-            <input
-              type="checkbox"
-              name="includeMavenWrapper"
-              id="includeMavenWrapper"
-              defaultChecked={true}
-              className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
-            />
-            <div className="flex-1">
-              <label
-                htmlFor="includeMavenWrapper"
-                className="text-sm font-medium text-foreground cursor-pointer block"
-              >
-                Include Maven Wrapper
-              </label>
-              <p className="text-xs text-muted-foreground mt-1">
-                Includes mvnw and mvnw.cmd scripts for building without
-                requiring Maven to be installed.
-              </p>
-            </div>
-          </div>
-
-          {/* Code Formatting Plugins Section */}
-          <div className="space-y-3">
-            <div className="text-sm font-medium text-foreground">
-              Code Formatting Plugins
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              Select one or both plugins to ensure code style consistency.
-            </p>
-
-            {/* Spotless Plugin Checkbox */}
-            <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            {/* Maven Wrapper Checkbox */}
+            <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-3 lg:p-4">
               <input
                 type="checkbox"
-                name="includeSpotless"
-                id="includeSpotless"
+                name="includeMavenWrapper"
+                id="includeMavenWrapper"
+                defaultChecked={true}
                 className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
               />
               <div className="flex-1">
                 <label
-                  htmlFor="includeSpotless"
+                  htmlFor="includeMavenWrapper"
                   className="text-sm font-medium text-foreground cursor-pointer block"
                 >
-                  Spotless Maven Plugin
+                  Include Maven Wrapper
                 </label>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Keeps your code spotless by automatically formatting it. Requires configuration.
+                  Includes mvnw and mvnw.cmd scripts for building without
+                  requiring Maven to be installed.
                 </p>
               </div>
             </div>
 
-            {/* Checkstyle Plugin Checkbox */}
-            <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-4">
-              <input
-                type="checkbox"
-                name="includeCheckstyle"
-                id="includeCheckstyle"
-                className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
-              />
-              <div className="flex-1">
-                <label
-                  htmlFor="includeCheckstyle"
-                  className="text-sm font-medium text-foreground cursor-pointer block"
-                >
-                  Maven Checkstyle Plugin
-                </label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Checks that your code adheres to a coding standard. Requires configuration.
-                </p>
+            {/* Code Formatting Plugins Section */}
+            <div className="space-y-3">
+              <div className="text-sm font-medium text-foreground">
+                Code Formatting Plugins
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Select one or both plugins to ensure code style consistency.
+              </p>
+
+              {/* Spotless Plugin Checkbox */}
+              <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-3 lg:p-4">
+                <input
+                  type="checkbox"
+                  name="includeSpotless"
+                  id="includeSpotless"
+                  className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+                />
+                <div className="flex-1">
+                  <label
+                    htmlFor="includeSpotless"
+                    className="text-sm font-medium text-foreground cursor-pointer block"
+                  >
+                    Spotless Maven Plugin
+                  </label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Keeps your code spotless by automatically formatting it.
+                    Requires configuration.
+                  </p>
+                </div>
+              </div>
+
+              {/* Checkstyle Plugin Checkbox */}
+              <div className="flex items-start gap-3 rounded-md border border-border/60 bg-card/50 p-3 lg:p-4">
+                <input
+                  type="checkbox"
+                  name="includeCheckstyle"
+                  id="includeCheckstyle"
+                  className="mt-0.5 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+                />
+                <div className="flex-1">
+                  <label
+                    htmlFor="includeCheckstyle"
+                    className="text-sm font-medium text-foreground cursor-pointer block"
+                  >
+                    Maven Checkstyle Plugin
+                  </label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Checks that your code adheres to a coding standard. Requires
+                    configuration.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

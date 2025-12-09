@@ -10,6 +10,7 @@ interface FormFieldProps {
   error?: string;
   helperText?: string;
   children: React.ReactNode;
+  className?: string;
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
@@ -18,9 +19,10 @@ export const FormField: React.FC<FormFieldProps> = ({
   error,
   helperText,
   children,
+  className,
 }) => {
   return (
-    <div className="space-y-1.5">
+    <div className={`space-y-1.5 ${className || ""}`}>
       <div className="flex items-center justify-between">
         <Label className="text-sm font-medium text-foreground flex items-center gap-1">
           {label}
