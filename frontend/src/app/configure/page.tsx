@@ -126,8 +126,8 @@ export default function ConfigurePage() {
                 </Link>
               </Button>
             </div>
-            <div className="flex h-full items-center justify-center">
-              <div className="w-full max-w-5xl">
+            <div className="flex h-full items-center justify-center py-4">
+              <div className="w-full max-w-7xl">
                 <ProjectMetadataForm
                   onSubmit={handleSubmit}
                   isGenerating={isGenerating}
