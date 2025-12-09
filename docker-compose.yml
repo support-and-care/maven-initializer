@@ -6,7 +6,7 @@ services:
   frontend:
     build: ./frontend
     environment:
-      - BACKEND_URL="http://backend:8080"
+      - BACKEND_URL=http://backend:8080
     ports:
       - "${FRONTEND_PORT:-4001}:3000"
     depends_on:
