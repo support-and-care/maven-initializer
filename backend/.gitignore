@@ -23,3 +23,6 @@ application-*.yml
 application-*.yaml
 !application-example.yml
 !application-example.yaml
+
+# jte generated classes
+/jte-classes

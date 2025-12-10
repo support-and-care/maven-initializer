@@ -71,7 +71,9 @@ class ProjectGeneratorITTest {
     MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
     var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
     ArtifactVersionService realArtifactVersionService = new ArtifactVersionService(toolbox);
-    ProjectStructureService realProjectStructureService = new ProjectStructureService();
+    ResourceTemplateEngine resourceTemplateEngine = new ResourceTemplateEngine();
+    ProjectStructureService realProjectStructureService =
+        new ProjectStructureService(resourceTemplateEngine);
     MavenWrapperService realMavenWrapperService = new MavenWrapperService();
     projectGeneratorServiceUnderTest =
         new ProjectGeneratorService(

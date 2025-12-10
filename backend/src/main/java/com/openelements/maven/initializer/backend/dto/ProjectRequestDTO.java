@@ -43,6 +43,10 @@ public class ProjectRequestDTO {
 
   private boolean includeMavenWrapper = true;
 
+  private boolean includeSpotless = false;
+
+  private boolean includeCheckstyle = false;
+
   // Default constructor
   public ProjectRequestDTO() {}
 
@@ -119,6 +123,22 @@ public class ProjectRequestDTO {
     this.includeMavenWrapper = includeMavenWrapper;
   }
 
+  public boolean isIncludeSpotless() {
+    return includeSpotless;
+  }
+
+  public void setIncludeSpotless(boolean includeSpotless) {
+    this.includeSpotless = includeSpotless;
+  }
+
+  public boolean isIncludeCheckstyle() {
+    return includeCheckstyle;
+  }
+
+  public void setIncludeCheckstyle(boolean includeCheckstyle) {
+    this.includeCheckstyle = includeCheckstyle;
+  }
+
   @Override
   public String toString() {
     return "ProjectRequestDTO{"
@@ -142,6 +162,10 @@ public class ProjectRequestDTO {
         + '\''
         + ", includeMavenWrapper="
         + includeMavenWrapper
+        + ", includeSpotless="
+        + includeSpotless
+        + ", includeCheckstyle="
+        + includeCheckstyle
         + '}';
   }
 }

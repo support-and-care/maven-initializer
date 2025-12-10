@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { ProjectConfig, ValidationErrors } from "@/types/project";
 import { Header } from "@/components/Header";
-import { HeroSection } from "@/components/HeroSection";
 import { ProjectMetadataForm } from "@/components/ProjectMetadataForm";
+import { Button } from "@/components/ui/button";
 
-export const MavenInitializerPage: React.FC = () => {
+export default function ConfigurePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationMessage, setGenerationMessage] = useState<string>("");
   const [serverErrors, setServerErrors] = useState<ValidationErrors>({});
@@ -108,20 +110,36 @@ export const MavenInitializerPage: React.FC = () => {
             }}
           />
 
-          <div className="mx-auto h-full max-w-7xl px-4 py-4 lg:px-8">
-            <div className="grid h-full gap-4 lg:grid-cols-[1fr_1.2fr] lg:items-center">
-              <HeroSection />
-              <ProjectMetadataForm
-                onSubmit={handleSubmit}
-                isGenerating={isGenerating}
-                generationMessage={generationMessage}
-                serverErrors={serverErrors}
-                fallbackMessage={fallbackMessage}
-              />
+          <div className="mx-auto h-full max-w-[95vw] xl:max-w-[1400px] px-4 py-4 lg:px-8">
+            {/* Back Button - Positioned absolutely in top left */}
+            <div className="absolute top-4 left-4 lg:left-8 z-10">
+              <Button
+                asChild
+                className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-transparent px-6 py-2.5 text-sm font-semibold text-muted-foreground shadow-none transition-smooth hover:bg-gradient-to-r hover:from-primary hover:via-primary/90 hover:to-accent hover:text-primary-foreground hover:shadow-xl hover:shadow-primary/40"
+              >
+                <Link href="/" className="flex items-center gap-2">
+                  <ArrowLeft
+                    size={16}
+                    className="transition-transform group-hover:-translate-x-1"
+                  />
+                  Back to Home
+                </Link>
+              </Button>
+            </div>
+            <div className="flex h-full items-center justify-center py-4">
+              <div className="w-full max-w-7xl">
+                <ProjectMetadataForm
+                  onSubmit={handleSubmit}
+                  isGenerating={isGenerating}
+                  generationMessage={generationMessage}
+                  serverErrors={serverErrors}
+                  fallbackMessage={fallbackMessage}
+                />
+              </div>
             </div>
           </div>
         </div>
       </main>
     </div>
   );
-};
+}
