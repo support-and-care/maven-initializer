@@ -19,7 +19,6 @@
 package com.openelements.maven.initializer.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -311,56 +310,20 @@ class ProjectGeneratorServiceTest {
   }
 
   @Test
-  void testReadmeContentWithoutMavenWrapper() throws IOException {
-    ProjectRequestDTO validRequest = createValidRequest();
-    validRequest.setIncludeMavenWrapper(false);
-
-    String readmeContent = generateProjectReadme(validRequest);
-
-    assertTrue(readmeContent.contains("# " + validRequest.getName()));
-    assertTrue(readmeContent.contains("**Java SDK**: Version " + validRequest.getJavaVersion()));
-    assertTrue(readmeContent.contains("**Maven**: Version 3.9.x or higher"));
-    assertTrue(readmeContent.contains("mvn verify"));
-    assertFalse(readmeContent.contains("./mvnw"));
-  }
-
-  @Test
-  void testReadmeContentWithMavenWrapper() throws IOException {
-    ProjectRequestDTO validRequest = createValidRequest();
-    validRequest.setIncludeMavenWrapper(true);
-
-    String readmeContent = generateProjectReadme(validRequest);
-
-    assertTrue(readmeContent.contains("# " + validRequest.getName()));
-    assertTrue(readmeContent.contains("**Java SDK**: Version " + validRequest.getJavaVersion()));
-    assertFalse(readmeContent.contains("**Maven**: Version"));
-    assertTrue(readmeContent.contains(".\\mvnw.cmd verify"));
-    assertTrue(readmeContent.contains("./mvnw verify"));
-  }
-
-  /** Helper method to generate project, call actual createReadmeFile, and return README content */
-  private String generateProjectReadme(ProjectRequestDTO request) throws IOException {
-    Mockito.doCallRealMethod()
-        .when(projectStructureServiceMock)
-        .createReadmeFile(Mockito.any(), Mockito.any());
-
-    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
-    String projectPath = projectGeneratorServiceUnderTest.generateProject(request).projectPath();
-
-    Path readmeFile = Path.of(projectPath, "README.md");
-    assertTrue(Files.exists(readmeFile), "README.md should exist");
-    return Files.readString(readmeFile);
-  }
-
-  @Test
   void testPomContainsSpotlessPluginConfiguration() throws Exception {
     // Given
-    Mockito.doCallRealMethod()
-        .when(projectStructureServiceMock)
-        .createReadmeFile(Mockito.any(), Mockito.any());
+    ResourceTemplateEngine resourceTemplateEngine = new ResourceTemplateEngine();
+    ProjectStructureService realProjectStructureService =
+        new ProjectStructureService(resourceTemplateEngine);
+
+    MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
+    var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
+    projectGeneratorServiceUnderTest =
+        new ProjectGeneratorService(
+            toolbox, realProjectStructureService, artifactVersionService, mavenWrapperService);
+
     ProjectRequestDTO validRequest = createValidRequest();
     validRequest.setIncludeSpotless(true);
-    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
 
     // When
     String projectPath =
@@ -413,12 +376,18 @@ class ProjectGeneratorServiceTest {
   @Test
   void testPomContainsCheckstylePluginConfiguration() throws Exception {
     // Given
-    Mockito.doCallRealMethod()
-        .when(projectStructureServiceMock)
-        .createReadmeFile(Mockito.any(), Mockito.any());
+    ResourceTemplateEngine resourceTemplateEngine = new ResourceTemplateEngine();
+    ProjectStructureService realProjectStructureService =
+        new ProjectStructureService(resourceTemplateEngine);
+
+    MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
+    var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
+    projectGeneratorServiceUnderTest =
+        new ProjectGeneratorService(
+            toolbox, realProjectStructureService, artifactVersionService, mavenWrapperService);
+
     ProjectRequestDTO validRequest = createValidRequest();
     validRequest.setIncludeCheckstyle(true);
-    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
 
     // When
     String projectPath =

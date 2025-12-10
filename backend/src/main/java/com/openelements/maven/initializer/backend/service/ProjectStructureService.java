@@ -31,6 +31,11 @@ import org.springframework.stereotype.Service;
 public class ProjectStructureService {
 
   private static final Logger logger = LoggerFactory.getLogger(ProjectStructureService.class);
+  private final ResourceTemplateEngine resourceTemplateEngine;
+
+  public ProjectStructureService(ResourceTemplateEngine resourceTemplateEngine) {
+    this.resourceTemplateEngine = resourceTemplateEngine;
+  }
 
   public void createStructure(Path projectRoot, ProjectRequestDTO request) {
     logger.info("Creating project structure for: {}", request.getArtifactId());
@@ -49,145 +54,16 @@ public class ProjectStructureService {
 
   public void createReadmeFile(Path projectRoot, ProjectRequestDTO request) {
     try {
-      String projectName =
-          request.getName() != null && !request.getName().isEmpty()
-              ? request.getName()
-              : request.getArtifactId();
-      String javaVersion = request.getJavaVersion();
-
-      String readmeContent;
-      if (request.isIncludeMavenWrapper()) {
-        readmeContent = generateReadmeWithWrapper(projectName, javaVersion, request);
-      } else {
-        readmeContent = generateReadmeWithoutWrapper(projectName, javaVersion, request);
+      if (request.getName() == null || request.getName().isEmpty()) {
+        request.setName(request.getArtifactId());
       }
 
-      Files.writeString(projectRoot.resolve("README.md"), readmeContent);
-      logger.debug("Created README.md file");
+      Path readmePath = projectRoot.resolve("README.md");
+      resourceTemplateEngine.createReadmeFile(request, readmePath);
+      logger.debug("Created README.md file using jte template");
     } catch (IOException e) {
       throw new ProjectServiceException("Failed to create README.md file", e);
     }
-  }
-
-  private String generateReadmeWithWrapper(
-      String projectName, String javaVersion, ProjectRequestDTO request) {
-    StringBuilder readme = new StringBuilder();
-    readme.append(
-        String.format(
-            """
-        # %s
-
-        ## Prerequisites
-
-        *   **Java SDK**: Version %s or higher
-
-        ## Build Instructions
-
-        This project uses Maven for dependency management and building.
-
-        To build the project and run tests, use the following command:
-
-        On Windows:
-
-        ```shell
-        .\\mvnw.cmd verify
-        ```
-
-        On Mac/Linux:
-
-        ```shell
-        ./mvnw verify
-        ```
-        """,
-            projectName, javaVersion));
-
-    // Add code formatting plugin hints
-    if (request.isIncludeSpotless() || request.isIncludeCheckstyle()) {
-      readme.append("\n## Code Formatting Plugins\n\n");
-
-      if (request.isIncludeSpotless()) {
-        readme.append(
-            """
-            ### Spotless Maven Plugin
-
-            This project includes the [Spotless Maven Plugin](https://github.com/diffplug/spotless/tree/main/plugin-maven).
-            Please configure the plugin according to your code style preferences.
-            See the [Spotless documentation](https://github.com/diffplug/spotless/tree/main/plugin-maven) for configuration options.
-
-            """);
-      }
-
-      if (request.isIncludeCheckstyle()) {
-        readme.append(
-            """
-            ### Maven Checkstyle Plugin
-
-            This project includes the [Maven Checkstyle Plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/).
-            Please configure the plugin according to your coding standards.
-            See the [Maven Checkstyle Plugin documentation](https://maven.apache.org/plugins/maven-checkstyle-plugin/) for configuration options.
-
-            """);
-      }
-    }
-
-    return readme.toString();
-  }
-
-  private String generateReadmeWithoutWrapper(
-      String projectName, String javaVersion, ProjectRequestDTO request) {
-    StringBuilder readme = new StringBuilder();
-    readme.append(
-        String.format(
-            """
-        # %s
-
-        ## Prerequisites
-
-        *   **Java SDK**: Version %s or higher
-        *   **Maven**: Version 3.9.x or higher
-
-        ## Build Instructions
-
-        This project uses Maven for dependency management and building.
-
-        To build the project and run tests, use the following command:
-
-        ```shell
-        mvn verify
-        ```
-        """,
-            projectName, javaVersion));
-
-    // Add code formatting plugin hints
-    if (request.isIncludeSpotless() || request.isIncludeCheckstyle()) {
-      readme.append("\n## Code Formatting Plugins\n\n");
-
-      if (request.isIncludeSpotless()) {
-        readme.append(
-            """
-            ### Spotless Maven Plugin
-
-            This project includes the [Spotless Maven Plugin](https://github.com/diffplug/spotless/tree/main/plugin-maven).
-            Please configure the plugin according to your code style preferences.
-            See the [Spotless documentation](https://github.com/diffplug/spotless/tree/main/plugin-maven) for configuration options.
-
-            """);
-      }
-
-      if (request.isIncludeCheckstyle()) {
-        readme.append(
-            """
-            ### Maven Checkstyle Plugin
-
-            This project includes the [Maven Checkstyle Plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/).
-            Please configure the plugin according to your coding standards.
-            See the [Maven Checkstyle Plugin documentation](https://maven.apache.org/plugins/maven-checkstyle-plugin/) for configuration options.
-
-            """);
-      }
-    }
-
-    return readme.toString();
   }
 
   private void createDirectories(Path root, String groupId, String artifactId) throws IOException {
