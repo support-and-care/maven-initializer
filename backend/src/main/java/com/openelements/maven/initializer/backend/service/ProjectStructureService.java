@@ -52,6 +52,14 @@ public class ProjectStructureService {
     }
   }
 
+  /**
+   * Creates a README.md file for the project using the JTE template engine. This method handles
+   * business logic such as setting default values and path resolution, then delegates the actual
+   * template rendering to ResourceTemplateEngine.
+   *
+   * @param projectRoot the root directory of the project
+   * @param request the project request data
+   */
   public void createReadmeFile(Path projectRoot, ProjectRequestDTO request) {
     try {
       if (request.getName() == null || request.getName().isEmpty()) {
@@ -59,7 +67,7 @@ public class ProjectStructureService {
       }
 
       Path readmePath = projectRoot.resolve("README.md");
-      resourceTemplateEngine.createReadmeFile(request, readmePath);
+      resourceTemplateEngine.renderTemplate(request, readmePath);
       logger.debug("Created README.md file using jte template");
     } catch (IOException e) {
       throw new ProjectServiceException("Failed to create README.md file", e);

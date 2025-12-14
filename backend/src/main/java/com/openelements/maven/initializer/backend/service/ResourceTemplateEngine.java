@@ -27,17 +27,48 @@ import gg.jte.resolve.ResourceCodeResolver;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ResourceTemplateEngine {
 
-  public void createReadmeFile(ProjectRequestDTO data, Path filePath) throws IOException {
-    CodeResolver codeResolver = new ResourceCodeResolver("jte", getClass().getClassLoader());
-    TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Plain);
+  private static final Logger logger = LoggerFactory.getLogger(ResourceTemplateEngine.class);
+  private TemplateEngine templateEngine;
+  private final CodeResolver runtimeCodeResolver;
 
-    FileOutput output = new FileOutput(filePath, Charset.forName("UTF-8"));
-    templateEngine.render("README.md.jte", data, output);
-    output.close();
+  public ResourceTemplateEngine() {
+    this.runtimeCodeResolver = new ResourceCodeResolver("jte", getClass().getClassLoader());
+    // Try precompiled first, fallback handled in renderTemplate if needed
+    try {
+      this.templateEngine = TemplateEngine.createPrecompiled(ContentType.Plain);
+      logger.debug("Initialized JTE with precompiled templates");
+    } catch (Exception e) {
+      logger.debug(
+          "Precompiled templates not available, will use runtime compilation: {}", e.getMessage());
+      this.templateEngine = TemplateEngine.create(runtimeCodeResolver, ContentType.Plain);
+    }
+  }
+
+  /**
+   * Renders the README.md template to the specified file path. This is a low-level template
+   * rendering method that handles the technical aspects of template compilation and rendering.
+   *
+   * @param data the project data to render in the template
+   * @param filePath the target file path where the rendered content will be written
+   * @throws IOException if file writing fails
+   */
+  public void renderTemplate(ProjectRequestDTO data, Path filePath) throws IOException {
+    try (FileOutput output = new FileOutput(filePath, Charset.forName("UTF-8"))) {
+      try {
+        templateEngine.render("README.md.jte", data, output);
+      } catch (gg.jte.TemplateNotFoundException e) {
+        // Fallback to runtime compilation if precompiled template not found
+        logger.debug("Precompiled template not found, falling back to runtime compilation");
+        templateEngine = TemplateEngine.create(runtimeCodeResolver, ContentType.Plain);
+        templateEngine.render("README.md.jte", data, output);
+      }
+    }
   }
 }
