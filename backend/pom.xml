@@ -104,11 +104,6 @@
             <artifactId>jte</artifactId>
             <version>${jte.version}</version>
         </dependency>
-        <dependency>
-            <groupId>gg.jte</groupId>
-            <artifactId>jte-runtime</artifactId>
-            <version>${jte.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
