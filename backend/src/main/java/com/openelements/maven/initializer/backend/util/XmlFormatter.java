@@ -104,35 +104,4 @@ public class XmlFormatter {
 
     return xml;
   }
-
-  /**
-   * Adds a TODO comment to the configuration element of the specified plugin.
-   *
-   * @param xml the XML content
-   * @param pluginArtifactId the artifact ID of the plugin
-   * @return the XML content with the TODO comment added
-   */
-  public static String addFormatingConfigurationComment(String xml, String pluginArtifactId) {
-    // Pattern to match empty configuration element for the plugin
-    // This regex finds <configuration></configuration> or <configuration/> within the plugin block
-    // It handles both self-closing and separate opening/closing tags
-    String pattern =
-        "(<plugin>[\\s\\S]*?<artifactId>"
-            + pluginArtifactId
-            + "</artifactId>[\\s\\S]*?<configuration>)\\s*(</configuration>)";
-    String replacement =
-        "$1\n                    <!-- TODO please define your configuration -->\n                $2";
-    String result = xml.replaceAll(pattern, replacement);
-
-    // Also handle self-closing configuration tags
-    pattern =
-        "(<plugin>[\\s\\S]*?<artifactId>"
-            + pluginArtifactId
-            + "</artifactId>[\\s\\S]*?<configuration)\\s*/>";
-    replacement =
-        "$1>\n                    <!-- TODO please define your configuration -->\n                </configuration>";
-    result = result.replaceAll(pattern, replacement);
-
-    return result;
-  }
 }

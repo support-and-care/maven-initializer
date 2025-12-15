@@ -38,7 +38,7 @@ class ResourceTemplateEngineTest {
             "groupid", "artifactId", "Version", "description", "25", "my-project");
     data.setIncludeMavenWrapper(false);
     Path outputFilePath = Path.of("target/jteTest/withoutMvnWrapper.md");
-    engine.renderTemplate(data, outputFilePath);
+    engine.createReadmeFile(data, outputFilePath);
 
     assertThat(outputFilePath.toFile().exists()).isTrue();
     assertThat(outputFilePath.toFile())
@@ -53,7 +53,7 @@ class ResourceTemplateEngineTest {
             "groupid", "artifactId", "Version", "description", "25", "my-project");
     data.setIncludeSpotless(true);
     Path outputFilePath = tempDir.resolve("withSpotless.md");
-    engine.renderTemplate(data, outputFilePath);
+    engine.createReadmeFile(data, outputFilePath);
 
     assertThat(outputFilePath.toFile().exists()).isTrue();
     String content = Files.readString(outputFilePath);
@@ -69,7 +69,7 @@ class ResourceTemplateEngineTest {
             "groupid", "artifactId", "Version", "description", "25", "my-project");
     data.setIncludeCheckstyle(true);
     Path outputFilePath = Path.of("target/jteTest/withCheckstyle.md");
-    engine.renderTemplate(data, outputFilePath);
+    engine.createReadmeFile(data, outputFilePath);
 
     assertThat(outputFilePath.toFile().exists()).isTrue();
     assertThat(outputFilePath.toFile())
@@ -84,7 +84,7 @@ class ResourceTemplateEngineTest {
             "groupid", "artifactId", "Version", "description", "25", "my-project");
     data.setIncludeSpotless(true);
     Path outputFilePath = Path.of("target/jteTest/withSpotless.md");
-    engine.renderTemplate(data, outputFilePath);
+    engine.createReadmeFile(data, outputFilePath);
 
     assertThat(outputFilePath.toFile().exists()).isTrue();
     assertThat(outputFilePath.toFile())
@@ -99,7 +99,7 @@ class ResourceTemplateEngineTest {
             "groupid", "artifactId", "Version", "description", "25", "my-project");
     data.setIncludeMavenWrapper(true);
     Path outputFilePath = Path.of("target/jteTest/includeMvnWrapper.md");
-    engine.renderTemplate(data, outputFilePath);
+    engine.createReadmeFile(data, outputFilePath);
 
     assertThat(outputFilePath.toFile().exists()).isTrue();
     assertThat(outputFilePath.toFile())
@@ -116,7 +116,7 @@ class ResourceTemplateEngineTest {
     data.setIncludeSpotless(true);
     data.setIncludeCheckstyle(true);
     Path outputFilePath = Path.of("target/jteTest/generalReadme.md");
-    engine.renderTemplate(data, outputFilePath);
+    engine.createReadmeFile(data, outputFilePath);
 
     assertThat(outputFilePath.toFile().exists()).isTrue();
     assertThat(outputFilePath.toFile())

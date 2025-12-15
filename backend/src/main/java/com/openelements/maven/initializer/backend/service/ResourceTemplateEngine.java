@@ -59,7 +59,7 @@ public class ResourceTemplateEngine {
    * @param filePath the target file path where the rendered content will be written
    * @throws IOException if file writing fails
    */
-  public void renderTemplate(ProjectRequestDTO data, Path filePath) throws IOException {
+  public void createReadmeFile(ProjectRequestDTO data, Path filePath) throws IOException {
     try (FileOutput output = new FileOutput(filePath, Charset.forName("UTF-8"))) {
       try {
         templateEngine.render("README.md.jte", data, output);

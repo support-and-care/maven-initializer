@@ -242,17 +242,6 @@ public class ProjectGeneratorService {
 
       // Format the XML properly
       String formattedXml = XmlFormatter.formatXml(Files.readString(pomFile));
-
-      // Add TODO comments to code formatting plugin configurations
-      if (request.isIncludeSpotless()) {
-        formattedXml =
-            XmlFormatter.addFormatingConfigurationComment(formattedXml, "spotless-maven-plugin");
-      }
-      if (request.isIncludeCheckstyle()) {
-        formattedXml =
-            XmlFormatter.addFormatingConfigurationComment(formattedXml, "maven-checkstyle-plugin");
-      }
-
       Files.writeString(pomFile, formattedXml);
       return !formattedXml.contains("TODO");
     } catch (Exception e) {
@@ -357,7 +346,9 @@ public class ProjectGeneratorService {
 
     if (addEmptyConfiguration) {
       if (editor.findChildElement(plugin, MavenPomElements.Elements.CONFIGURATION) == null) {
-        editor.insertMavenElement(plugin, MavenPomElements.Elements.CONFIGURATION);
+        Element configurationElement =
+            editor.insertMavenElement(plugin, MavenPomElements.Elements.CONFIGURATION);
+        editor.addComment(configurationElement, "TODO: Please add a configuration");
       }
     }
   }

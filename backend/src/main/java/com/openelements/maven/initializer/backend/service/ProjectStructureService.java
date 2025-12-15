@@ -67,7 +67,7 @@ public class ProjectStructureService {
       }
 
       Path readmePath = projectRoot.resolve("README.md");
-      resourceTemplateEngine.renderTemplate(request, readmePath);
+      resourceTemplateEngine.createReadmeFile(request, readmePath);
       logger.debug("Created README.md file using jte template");
     } catch (IOException e) {
       throw new ProjectServiceException("Failed to create README.md file", e);

@@ -356,7 +356,7 @@ class ProjectGeneratorServiceTest {
         pomContent.contains("<configuration>"),
         "POM should contain configuration element for spotless plugin");
     assertTrue(
-        pomContent.contains("<!-- TODO please define your configuration -->"),
+        pomContent.contains("<!--TODO: Please add a configuration-->"),
         "POM should contain TODO comment in spotless plugin configuration");
 
     Path readmeFile = Path.of(projectPath, "README.md");
@@ -420,7 +420,7 @@ class ProjectGeneratorServiceTest {
         pomContent.contains("<configuration>"),
         "POM should contain configuration element for checkstyle plugin");
     assertTrue(
-        pomContent.contains("<!-- TODO please define your configuration -->"),
+        pomContent.contains("<!--TODO: Please add a configuration-->"),
         "POM should contain TODO comment in checkstyle plugin configuration");
 
     Path readmeFile = Path.of(projectPath, "README.md");
