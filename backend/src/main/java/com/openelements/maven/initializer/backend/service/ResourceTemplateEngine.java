@@ -19,11 +19,9 @@
 package com.openelements.maven.initializer.backend.service;
 
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
-import gg.jte.CodeResolver;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.output.FileOutput;
-import gg.jte.resolve.ResourceCodeResolver;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -35,20 +33,11 @@ import org.springframework.stereotype.Component;
 public class ResourceTemplateEngine {
 
   private static final Logger logger = LoggerFactory.getLogger(ResourceTemplateEngine.class);
-  private TemplateEngine templateEngine;
-  private final CodeResolver runtimeCodeResolver;
+  private final TemplateEngine templateEngine;
 
   public ResourceTemplateEngine() {
-    this.runtimeCodeResolver = new ResourceCodeResolver("jte", getClass().getClassLoader());
-    // Try precompiled first, fallback handled in renderTemplate if needed
-    try {
-      this.templateEngine = TemplateEngine.createPrecompiled(ContentType.Plain);
-      logger.debug("Initialized JTE with precompiled templates");
-    } catch (Exception e) {
-      logger.debug(
-          "Precompiled templates not available, will use runtime compilation: {}", e.getMessage());
-      this.templateEngine = TemplateEngine.create(runtimeCodeResolver, ContentType.Plain);
-    }
+    this.templateEngine = TemplateEngine.createPrecompiled(ContentType.Plain);
+    logger.debug("Initialized JTE with precompiled templates");
   }
 
   /**
@@ -61,14 +50,7 @@ public class ResourceTemplateEngine {
    */
   public void createReadmeFile(ProjectRequestDTO data, Path filePath) throws IOException {
     try (FileOutput output = new FileOutput(filePath, Charset.forName("UTF-8"))) {
-      try {
-        templateEngine.render("README.md.jte", data, output);
-      } catch (gg.jte.TemplateNotFoundException e) {
-        // Fallback to runtime compilation if precompiled template not found
-        logger.debug("Precompiled template not found, falling back to runtime compilation");
-        templateEngine = TemplateEngine.create(runtimeCodeResolver, ContentType.Plain);
-        templateEngine.render("README.md.jte", data, output);
-      }
+      templateEngine.render("README.md.jte", data, output);
     }
   }
 }

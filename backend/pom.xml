@@ -163,6 +163,9 @@
                         <goals>
                             <goal>precompile</goal>
                         </goals>
+                        <configuration>
+                            <targetDirectory>${project.build.directory}/classes</targetDirectory>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
