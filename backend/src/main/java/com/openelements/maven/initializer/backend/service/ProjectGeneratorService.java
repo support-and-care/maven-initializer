@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -49,6 +50,7 @@ public class ProjectGeneratorService {
   private final ToolboxCommando toolboxCommando;
   private final ProjectStructureService structureService;
   private final MavenWrapperService mavenWrapperService;
+  private final ArtifactVersionService artifactVersionService;
 
   private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
       List.of(
@@ -56,8 +58,6 @@ public class ProjectGeneratorService {
           new MavenDependency("org.junit.jupiter", "junit-jupiter"));
 
   private List<MavenDependency> dependencyManagement;
-
-  private List<MavenPlugin> plugins;
 
   public ProjectGeneratorService(
       ToolboxCommando toolboxCommando,
@@ -67,28 +67,44 @@ public class ProjectGeneratorService {
     this.toolboxCommando = toolboxCommando;
     this.structureService = structureService;
     this.mavenWrapperService = mavenWrapperService;
+    this.artifactVersionService = artifactVersionService;
 
     fillDependencyManagement(artifactVersionService);
-    fillPlugins(artifactVersionService);
   }
 
-  private void fillPlugins(ArtifactVersionService artifactVersionService) {
-    plugins =
-        List.of(
-            new MavenPlugin(
-                "org.apache.maven.plugins", "maven-clean-plugin", artifactVersionService),
-            new MavenPlugin(
-                "org.apache.maven.plugins", "maven-compiler-plugin", artifactVersionService),
-            new MavenPlugin(
-                "org.apache.maven.plugins", "maven-resources-plugin", artifactVersionService),
-            new MavenPlugin(
-                "org.apache.maven.plugins", "maven-surefire-plugin", artifactVersionService),
-            new MavenPlugin("org.apache.maven.plugins", "maven-jar-plugin", artifactVersionService),
-            new MavenPlugin(
-                "org.apache.maven.plugins", "maven-install-plugin", artifactVersionService),
-            new MavenPlugin(
-                "org.apache.maven.plugins", "maven-deploy-plugin", artifactVersionService),
-            new MavenPlugin("org.jacoco", "jacoco-maven-plugin", artifactVersionService));
+  private List<MavenPlugin> fillPlugins(ProjectRequestDTO request) {
+    List<MavenPlugin> pluginList =
+        new ArrayList<>(
+            List.of(
+                new MavenPlugin(
+                    "org.apache.maven.plugins", "maven-clean-plugin", artifactVersionService),
+                new MavenPlugin(
+                    "org.apache.maven.plugins", "maven-compiler-plugin", artifactVersionService),
+                new MavenPlugin(
+                    "org.apache.maven.plugins", "maven-resources-plugin", artifactVersionService),
+                new MavenPlugin(
+                    "org.apache.maven.plugins", "maven-surefire-plugin", artifactVersionService),
+                new MavenPlugin(
+                    "org.apache.maven.plugins", "maven-jar-plugin", artifactVersionService),
+                new MavenPlugin(
+                    "org.apache.maven.plugins", "maven-install-plugin", artifactVersionService),
+                new MavenPlugin(
+                    "org.apache.maven.plugins", "maven-deploy-plugin", artifactVersionService),
+                new MavenPlugin("org.jacoco", "jacoco-maven-plugin", artifactVersionService)));
+
+    // Add code formatting plugins if selected
+    if (request.isIncludeSpotless()) {
+      pluginList.add(
+          new MavenPlugin(
+              "com.diffplug.spotless", "spotless-maven-plugin", artifactVersionService));
+    }
+    if (request.isIncludeCheckstyle()) {
+      pluginList.add(
+          new MavenPlugin(
+              "org.apache.maven.plugins", "maven-checkstyle-plugin", artifactVersionService));
+    }
+
+    return pluginList;
   }
 
   private void fillDependencyManagement(ArtifactVersionService artifactVersionService) {
@@ -190,6 +206,8 @@ public class ProjectGeneratorService {
           createEmptyPom(request.getGroupId(), request.getArtifactId(), request.getVersion());
       Files.writeString(pomFile, pomContent);
 
+      List<MavenPlugin> plugins = fillPlugins(request);
+
       try (ToolboxCommando.EditSession editSession = toolboxCommando.createEditSession(pomFile)) {
         toolboxCommando.editPom(
             editSession,
@@ -212,6 +230,13 @@ public class ProjectGeneratorService {
 
                   // Add jacoco plugin configuration with executions
                   addJacocoPluginConfiguration(s);
+
+                  if (request.isIncludeSpotless()) {
+                    addSpotlessPluginConfiguration(s);
+                  }
+                  if (request.isIncludeCheckstyle()) {
+                    addCheckstylePluginConfiguration(s);
+                  }
                 }));
       }
 
@@ -274,58 +299,73 @@ public class ProjectGeneratorService {
         });
   }
 
-  private void addJacocoPluginConfiguration(PomEditor editor) {
+  private void configurePlugin(
+      PomEditor editor,
+      String groupId,
+      String artifactId,
+      List<String> goals,
+      boolean addEmptyConfiguration) {
+
     var root = editor.root();
     var build = editor.findChildElement(root, MavenPomElements.Elements.BUILD);
-    if (build == null) {
-      return;
-    }
+    if (build == null) return;
 
     var plugins = editor.findChildElement(build, MavenPomElements.Elements.PLUGINS);
-    if (plugins == null) {
-      return;
-    }
+    if (plugins == null) return;
 
-    // Find the jacoco plugin
-    var jacocoPlugin =
+    var plugin =
         plugins
             .children(MavenPomElements.Elements.PLUGIN)
             .filter(
-                plugin ->
-                    "org.jacoco"
-                            .equals(
-                                plugin
-                                    .child(MavenPomElements.Elements.GROUP_ID)
-                                    .map(Element::textContent)
-                                    .orElse(null))
-                        && "jacoco-maven-plugin"
-                            .equals(
-                                plugin
-                                    .child(MavenPomElements.Elements.ARTIFACT_ID)
-                                    .map(Element::textContent)
-                                    .orElse(null)))
+                p ->
+                    groupId.equals(
+                            p.child(MavenPomElements.Elements.GROUP_ID)
+                                .map(Element::textContent)
+                                .orElse(null))
+                        && artifactId.equals(
+                            p.child(MavenPomElements.Elements.ARTIFACT_ID)
+                                .map(Element::textContent)
+                                .orElse(null)))
             .findFirst()
             .orElse(null);
 
-    if (jacocoPlugin == null) {
-      return;
-    }
+    if (plugin == null) return;
 
-    // Add executions element if not present
-    var executions = editor.findChildElement(jacocoPlugin, MavenPomElements.Elements.EXECUTIONS);
+    var executions = editor.findChildElement(plugin, MavenPomElements.Elements.EXECUTIONS);
     if (executions == null) {
-      executions = editor.insertMavenElement(jacocoPlugin, MavenPomElements.Elements.EXECUTIONS);
+      executions = editor.insertMavenElement(plugin, MavenPomElements.Elements.EXECUTIONS);
     }
 
     var execution = editor.insertMavenElement(executions, "execution");
+    var goalsEl = editor.insertMavenElement(execution, MavenPomElements.Elements.GOALS);
+    goals.forEach(
+        goal -> {
+          var goalEl = editor.insertMavenElement(goalsEl, "goal");
+          goalEl.textContent(goal);
+        });
 
-    var goals = editor.insertMavenElement(execution, MavenPomElements.Elements.GOALS);
+    if (addEmptyConfiguration) {
+      if (editor.findChildElement(plugin, MavenPomElements.Elements.CONFIGURATION) == null) {
+        Element configurationElement =
+            editor.insertMavenElement(plugin, MavenPomElements.Elements.CONFIGURATION);
+        editor.addComment(configurationElement, "TODO: Please add a configuration");
+      }
+    }
+  }
 
-    var prepareAgentGoal = editor.insertMavenElement(goals, "goal");
-    prepareAgentGoal.textContent("prepare-agent");
+  private void addJacocoPluginConfiguration(PomEditor editor) {
+    configurePlugin(
+        editor, "org.jacoco", "jacoco-maven-plugin", List.of("prepare-agent", "report"), false);
+  }
 
-    var reportGoal = editor.insertMavenElement(goals, "goal");
-    reportGoal.textContent("report");
+  private void addSpotlessPluginConfiguration(PomEditor editor) {
+    configurePlugin(
+        editor, "com.diffplug.spotless", "spotless-maven-plugin", List.of("check"), true);
+  }
+
+  private void addCheckstylePluginConfiguration(PomEditor editor) {
+    configurePlugin(
+        editor, "org.apache.maven.plugins", "maven-checkstyle-plugin", List.of("check"), true);
   }
 
   private Path createTempDirectory(String artifactId) {

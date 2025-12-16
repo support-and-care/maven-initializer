@@ -19,7 +19,6 @@
 package com.openelements.maven.initializer.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -311,45 +310,131 @@ class ProjectGeneratorServiceTest {
   }
 
   @Test
-  void testReadmeContentWithoutMavenWrapper() throws IOException {
+  void testPomContainsSpotlessPluginConfiguration() throws Exception {
+    // Given
+    ResourceTemplateEngine resourceTemplateEngine = new ResourceTemplateEngine();
+    ProjectStructureService realProjectStructureService =
+        new ProjectStructureService(resourceTemplateEngine);
+
+    MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
+    var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
+    projectGeneratorServiceUnderTest =
+        new ProjectGeneratorService(
+            toolbox, realProjectStructureService, artifactVersionService, mavenWrapperService);
+
     ProjectRequestDTO validRequest = createValidRequest();
-    validRequest.setIncludeMavenWrapper(false);
+    validRequest.setIncludeSpotless(true);
 
-    String readmeContent = generateProjectReadme(validRequest);
+    // When
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
+    Path pomFile = Path.of(projectPath, "pom.xml");
 
-    assertTrue(readmeContent.contains("# " + validRequest.getName()));
-    assertTrue(readmeContent.contains("**Java SDK**: Version " + validRequest.getJavaVersion()));
-    assertTrue(readmeContent.contains("**Maven**: Version 3.9.x or higher"));
-    assertTrue(readmeContent.contains("mvn verify"));
-    assertFalse(readmeContent.contains("./mvnw"));
-  }
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+    String pomContent = Files.readString(pomFile);
 
-  @Test
-  void testReadmeContentWithMavenWrapper() throws IOException {
-    ProjectRequestDTO validRequest = createValidRequest();
-    validRequest.setIncludeMavenWrapper(true);
+    assertTrue(
+        pomContent.contains("<groupId>com.diffplug.spotless</groupId>"),
+        "POM should contain spotless plugin groupId");
+    assertTrue(
+        pomContent.contains("<artifactId>spotless-maven-plugin</artifactId>"),
+        "POM should contain spotless-maven-plugin artifactId");
 
-    String readmeContent = generateProjectReadme(validRequest);
+    assertTrue(
+        pomContent.contains("<executions>"),
+        "POM should contain executions element for spotless plugin");
+    assertTrue(
+        pomContent.contains("<execution>"),
+        "POM should contain execution element for spotless plugin");
 
-    assertTrue(readmeContent.contains("# " + validRequest.getName()));
-    assertTrue(readmeContent.contains("**Java SDK**: Version " + validRequest.getJavaVersion()));
-    assertFalse(readmeContent.contains("**Maven**: Version"));
-    assertTrue(readmeContent.contains(".\\mvnw.cmd verify"));
-    assertTrue(readmeContent.contains("./mvnw verify"));
-  }
+    assertTrue(
+        pomContent.contains("<goal>check</goal>"),
+        "POM should contain check goal for spotless plugin");
 
-  /** Helper method to generate project, call actual createReadmeFile, and return README content */
-  private String generateProjectReadme(ProjectRequestDTO request) throws IOException {
-    Mockito.doCallRealMethod()
-        .when(projectStructureServiceMock)
-        .createReadmeFile(Mockito.any(), Mockito.any());
-
-    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
-    String projectPath = projectGeneratorServiceUnderTest.generateProject(request).projectPath();
+    assertTrue(
+        pomContent.contains("<configuration>"),
+        "POM should contain configuration element for spotless plugin");
+    assertTrue(
+        pomContent.contains("<!--TODO: Please add a configuration-->"),
+        "POM should contain TODO comment in spotless plugin configuration");
 
     Path readmeFile = Path.of(projectPath, "README.md");
     assertTrue(Files.exists(readmeFile), "README.md should exist");
-    return Files.readString(readmeFile);
+    String readmeContent = Files.readString(readmeFile);
+    assertTrue(
+        readmeContent.contains("Spotless Maven Plugin"),
+        "README should contain Spotless Maven Plugin section");
+    assertTrue(
+        readmeContent.contains("Code Formatting Plugins"),
+        "README should contain Code Formatting Plugins section");
+    assertTrue(
+        readmeContent.contains("github.com/diffplug/spotless"),
+        "README should contain Spotless documentation link");
+  }
+
+  @Test
+  void testPomContainsCheckstylePluginConfiguration() throws Exception {
+    // Given
+    ResourceTemplateEngine resourceTemplateEngine = new ResourceTemplateEngine();
+    ProjectStructureService realProjectStructureService =
+        new ProjectStructureService(resourceTemplateEngine);
+
+    MavenToolboxConfig mavenToolboxConfig = new MavenToolboxConfig();
+    var toolbox = mavenToolboxConfig.toolboxCommando(mavenToolboxConfig.mavenContext());
+    projectGeneratorServiceUnderTest =
+        new ProjectGeneratorService(
+            toolbox, realProjectStructureService, artifactVersionService, mavenWrapperService);
+
+    ProjectRequestDTO validRequest = createValidRequest();
+    validRequest.setIncludeCheckstyle(true);
+
+    // When
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+    String pomContent = Files.readString(pomFile);
+
+    assertTrue(
+        pomContent.contains("<groupId>org.apache.maven.plugins</groupId>"),
+        "POM should contain checkstyle plugin groupId");
+    assertTrue(
+        pomContent.contains("<artifactId>maven-checkstyle-plugin</artifactId>"),
+        "POM should contain maven-checkstyle-plugin artifactId");
+
+    assertTrue(
+        pomContent.contains("<executions>"),
+        "POM should contain executions element for checkstyle plugin");
+    assertTrue(
+        pomContent.contains("<execution>"),
+        "POM should contain execution element for checkstyle plugin");
+
+    assertTrue(
+        pomContent.contains("<goal>check</goal>"),
+        "POM should contain check goal for checkstyle plugin");
+
+    assertTrue(
+        pomContent.contains("<configuration>"),
+        "POM should contain configuration element for checkstyle plugin");
+    assertTrue(
+        pomContent.contains("<!--TODO: Please add a configuration-->"),
+        "POM should contain TODO comment in checkstyle plugin configuration");
+
+    Path readmeFile = Path.of(projectPath, "README.md");
+    assertTrue(Files.exists(readmeFile), "README.md should exist");
+    String readmeContent = Files.readString(readmeFile);
+    assertTrue(
+        readmeContent.contains("Maven Checkstyle Plugin"),
+        "README should contain Maven Checkstyle Plugin section");
+    assertTrue(
+        readmeContent.contains("Code Formatting Plugins"),
+        "README should contain Code Formatting Plugins section");
+    assertTrue(
+        readmeContent.contains("maven.apache.org/plugins/maven-checkstyle-plugin"),
+        "README should contain Checkstyle documentation link");
   }
 
   private ProjectRequestDTO createValidRequest() {

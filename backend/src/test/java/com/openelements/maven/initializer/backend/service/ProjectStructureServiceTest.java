@@ -42,7 +42,8 @@ class ProjectStructureServiceTest {
 
   @BeforeEach
   void setUp() {
-    projectStructureService = new ProjectStructureService();
+    ResourceTemplateEngine resourceTemplateEngine = new ResourceTemplateEngine();
+    projectStructureService = new ProjectStructureService(resourceTemplateEngine);
     validRequest = createValidRequest();
   }
 

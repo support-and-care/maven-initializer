@@ -9,14 +9,6 @@ describe("Home Page", () => {
     expect(screen.getByText("Initializer")).toBeInTheDocument();
   });
 
-  it("renders the project configuration form", () => {
-    render(<Home />);
-    expect(screen.getByText("Project Configuration")).toBeInTheDocument();
-    expect(
-      screen.getByText("Configure Your Maven Project"),
-    ).toBeInTheDocument();
-  });
-
   it("renders the hero section", () => {
     render(<Home />);
     expect(screen.getByText("Build Better Java Projects")).toBeInTheDocument();
@@ -27,25 +19,15 @@ describe("Home Page", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders the generate button", () => {
+  it("renders the get started button", () => {
     render(<Home />);
-    expect(screen.getByText("Generate Project")).toBeInTheDocument();
+    expect(screen.getByText("Get Started")).toBeInTheDocument();
   });
 
-  it("renders form fields", () => {
+  it("renders hero section features", () => {
     render(<Home />);
-    expect(screen.getByPlaceholderText("com.example")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("my-awesome-project"),
-    ).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("1.0.0-SNAPSHOT")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("My Awesome Project"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText(
-        "Describe your project's purpose and functionality...",
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Lightning fast")).toBeInTheDocument();
+    expect(screen.getByText("Enterprise-ready")).toBeInTheDocument();
+    expect(screen.getByText("Best practices")).toBeInTheDocument();
   });
 });

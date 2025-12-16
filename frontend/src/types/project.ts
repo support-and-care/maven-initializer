@@ -6,6 +6,8 @@ export interface ProjectConfig {
   description?: string;
   javaVersion: string;
   includeMavenWrapper?: boolean;
+  includeSpotless?: boolean;
+  includeCheckstyle?: boolean;
 }
 
 export interface ValidationErrors {

@@ -31,6 +31,11 @@ import org.springframework.stereotype.Service;
 public class ProjectStructureService {
 
   private static final Logger logger = LoggerFactory.getLogger(ProjectStructureService.class);
+  private final ResourceTemplateEngine resourceTemplateEngine;
+
+  public ProjectStructureService(ResourceTemplateEngine resourceTemplateEngine) {
+    this.resourceTemplateEngine = resourceTemplateEngine;
+  }
 
   public void createStructure(Path projectRoot, ProjectRequestDTO request) {
     logger.info("Creating project structure for: {}", request.getArtifactId());
@@ -47,79 +52,26 @@ public class ProjectStructureService {
     }
   }
 
+  /**
+   * Creates a README.md file for the project using the JTE template engine. This method handles
+   * business logic such as setting default values and path resolution, then delegates the actual
+   * template rendering to ResourceTemplateEngine.
+   *
+   * @param projectRoot the root directory of the project
+   * @param request the project request data
+   */
   public void createReadmeFile(Path projectRoot, ProjectRequestDTO request) {
     try {
-      String projectName =
-          request.getName() != null && !request.getName().isEmpty()
-              ? request.getName()
-              : request.getArtifactId();
-      String javaVersion = request.getJavaVersion();
-
-      String readmeContent;
-      if (request.isIncludeMavenWrapper()) {
-        readmeContent = generateReadmeWithWrapper(projectName, javaVersion);
-      } else {
-        readmeContent = generateReadmeWithoutWrapper(projectName, javaVersion);
+      if (request.getName() == null || request.getName().isEmpty()) {
+        request.setName(request.getArtifactId());
       }
 
-      Files.writeString(projectRoot.resolve("README.md"), readmeContent);
-      logger.debug("Created README.md file");
+      Path readmePath = projectRoot.resolve("README.md");
+      resourceTemplateEngine.createReadmeFile(request, readmePath);
+      logger.debug("Created README.md file using jte template");
     } catch (IOException e) {
       throw new ProjectServiceException("Failed to create README.md file", e);
     }
-  }
-
-  private String generateReadmeWithWrapper(String projectName, String javaVersion) {
-    return String.format(
-        """
-        # %s
-
-        ## Prerequisites
-
-        *   **Java SDK**: Version %s or higher
-
-        ## Build Instructions
-
-        This project uses Maven for dependency management and building.
-
-        To build the project and run tests, use the following command:
-
-        On Windows:
-
-        ```shell
-        .\\mvnw.cmd verify
-        ```
-
-        On Mac/Linux:
-
-        ```shell
-        ./mvnw verify
-        ```
-        """,
-        projectName, javaVersion);
-  }
-
-  private String generateReadmeWithoutWrapper(String projectName, String javaVersion) {
-    return String.format(
-        """
-        # %s
-
-        ## Prerequisites
-
-        *   **Java SDK**: Version %s or higher
-        *   **Maven**: Version 3.9.x or higher
-
-        ## Build Instructions
-
-        This project uses Maven for dependency management and building.
-
-        To build the project and run tests, use the following command:
-
-        ```shell
-        mvn verify
-        ```
-        """,
-        projectName, javaVersion);
   }
 
   private void createDirectories(Path root, String groupId, String artifactId) throws IOException {
