@@ -151,6 +151,12 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/resources/jte</sourceDirectory>
+                            <targetDirectory>${project.build.directory}/generated-sources/jte</targetDirectory>
+                            <contentType>Plain</contentType>
+                            <packageName>gg.jte.generated.precompiled</packageName>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>precompile</id>
@@ -159,16 +165,13 @@
                             <goal>precompile</goal>
                         </goals>
                         <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/resources/jte</sourceDirectory>
                             <targetDirectory>${project.build.directory}/classes</targetDirectory>
+                            <contentType>Plain</contentType>
+                            <packageName>gg.jte.generated.precompiled</packageName>
                         </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <sourceDirectory>${project.basedir}/src/main/resources/jte</sourceDirectory>
-                    <targetDirectory>${project.build.directory}/generated-sources/jte</targetDirectory>
-                    <contentType>Plain</contentType>
-                    <packageName>gg.jte.generated.precompiled</packageName>
-                </configuration>
             </plugin>
         </plugins>
     </build>
