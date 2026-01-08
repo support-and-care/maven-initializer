@@ -58,7 +58,7 @@
     </scm>
     <properties>
         <java.version>25</java.version>
-        <mima.version>2.4.37</mima.version>
+        <mima.version>2.4.39</mima.version>
         <jte.version>3.2.1</jte.version>
     </properties>
 
