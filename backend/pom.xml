@@ -58,7 +58,7 @@
     </scm>
     <properties>
         <java.version>25</java.version>
-        <mima.version>2.4.37</mima.version>
+        <mima.version>2.4.39</mima.version>
         <jte.version>3.2.1</jte.version>
     </properties>
 
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>eu.maveniverse.maven.toolbox</groupId>
             <artifactId>shared</artifactId>
-            <version>0.14.7</version>
+            <version>0.15.0</version>
         </dependency>
         <dependency>
             <groupId>eu.maveniverse.maven.mima.runtime</groupId>
