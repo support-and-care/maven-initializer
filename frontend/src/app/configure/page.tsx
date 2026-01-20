@@ -97,7 +97,10 @@ export default function ConfigurePage() {
   return (
     <div className="relative flex h-screen flex-col overflow-hidden">
       <Header />
-      <main className="flex-1 overflow-y-auto" style={{ scrollPaddingTop: '6rem' }}>
+      <main
+        className="flex-1 overflow-y-auto"
+        style={{ scrollPaddingTop: "6rem" }}
+      >
         <div className="relative min-h-full">
           {/* Spacer to prevent content from going behind sticky navbar */}
           <div className="h-20 lg:h-24 flex-shrink-0 relative">
