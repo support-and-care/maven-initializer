@@ -9,13 +9,6 @@ describe("Header component", () => {
     expect(screen.getByText("Initializer")).toBeInTheDocument();
   });
 
-  it("renders the Documentation link", () => {
-    render(<Header />);
-    const docLink = screen.getByText("Documentation");
-    expect(docLink).toBeInTheDocument();
-    expect(docLink.closest("a")).toHaveAttribute("href", "#");
-  });
-
   it("renders the GitHub link", () => {
     render(<Header />);
     const githubLink = screen.getByText("GitHub");
@@ -31,6 +24,6 @@ describe("Header component", () => {
     const buttons = screen.getAllByRole("button");
     const links = screen.getAllByRole("link");
     expect(buttons.length).toBeGreaterThanOrEqual(1);
-    expect(links.length).toBe(2);
+    expect(links.length).toBe(1);
   });
 });
