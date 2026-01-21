@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Maven Initializer - Full Stack Demo",
+  title: "Maven Initializer - The Maven Starter Tool",
   description: "A full-stack application with Next.js and Spring Boot",
   icons: {
     icon: "/favicon.ico",
