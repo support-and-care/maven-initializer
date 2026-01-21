@@ -97,22 +97,15 @@ export default function ConfigurePage() {
   return (
     <div className="relative flex h-screen flex-col overflow-hidden">
       <Header />
-      <main className="flex-1 overflow-y-auto">
-        <div className="relative h-full">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-secondary via-secondary/90 to-background" />
-          <div className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(circle_at_20%_20%,rgba(157,213,253,0.28),transparent_55%)]" />
-          <div className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(circle_at_80%_10%,rgba(93,186,159,0.28),transparent_60%)]" />
-          <div
-            className="absolute inset-0 -z-10 opacity-40 mix-blend-overlay"
-            style={{
-              backgroundImage:
-                'url(\'data:image/svg+xml,%3Csvg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cg opacity="0.4"%3E%3Cpath d="M400 0H0V400" stroke="rgba(255,255,255,0.08)"/%3E%3Cpath d="M0 0L400 400" stroke="rgba(255,255,255,0.05)"/%3E%3C/g%3E%3C/svg%3E\')',
-            }}
-          />
-
-          <div className="mx-auto h-full max-w-[95vw] xl:max-w-[1400px] px-4 py-4 lg:px-8">
-            {/* Back Button - Positioned absolutely in top left */}
-            <div className="absolute top-4 left-4 lg:left-8 z-10">
+      <main
+        className="flex-1 overflow-y-auto"
+        style={{ scrollPaddingTop: "6rem" }}
+      >
+        <div className="relative min-h-full">
+          {/* Spacer to prevent content from going behind sticky navbar */}
+          <div className="h-20 lg:h-24 flex-shrink-0 relative">
+            {/* Back Button - Positioned in spacer area */}
+            <div className="absolute bottom-4 left-4 lg:left-8 z-10">
               <Button
                 asChild
                 className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-transparent px-6 py-2.5 text-sm font-semibold text-muted-foreground shadow-none transition-smooth hover:bg-gradient-to-r hover:from-primary hover:via-primary/90 hover:to-accent hover:text-primary-foreground hover:shadow-xl hover:shadow-primary/40"
@@ -126,6 +119,20 @@ export default function ConfigurePage() {
                 </Link>
               </Button>
             </div>
+          </div>
+
+          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-secondary via-secondary/90 to-background" />
+          <div className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(circle_at_20%_20%,rgba(157,213,253,0.28),transparent_55%)]" />
+          <div className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(circle_at_80%_10%,rgba(93,186,159,0.28),transparent_60%)]" />
+          <div
+            className="absolute inset-0 -z-10 opacity-40 mix-blend-overlay"
+            style={{
+              backgroundImage:
+                'url(\'data:image/svg+xml,%3Csvg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cg opacity="0.4"%3E%3Cpath d="M400 0H0V400" stroke="rgba(255,255,255,0.08)"/%3E%3Cpath d="M0 0L400 400" stroke="rgba(255,255,255,0.05)"/%3E%3C/g%3E%3C/svg%3E\')',
+            }}
+          />
+
+          <div className="mx-auto max-w-[95vw] xl:max-w-[1400px] px-4 pb-4 lg:px-8">
             <div className="flex h-full items-center justify-center py-4">
               <div className="w-full max-w-7xl">
                 <ProjectMetadataForm

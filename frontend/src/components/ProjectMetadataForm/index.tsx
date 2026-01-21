@@ -25,8 +25,8 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
   fallbackMessage,
 }) => {
   return (
-    <section className="flex h-full items-center justify-center">
-      <div className="w-full rounded-3xl border border-border/60 bg-card/70 p-6 lg:p-8 shadow-[0_25px_60px_-30px_rgba(7,8,45,0.35)] backdrop-blur-xl">
+    <section className="flex h-full items-center justify-center mt-4">
+      <div className="relative z-10 w-full rounded-3xl border border-border/60 bg-card/70 p-6 lg:p-8 shadow-[0_25px_60px_-30px_rgba(7,8,45,0.35)] backdrop-blur-xl">
         <div className="flex justify-center mb-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-transparent px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.35em] text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
             Project Configuration
