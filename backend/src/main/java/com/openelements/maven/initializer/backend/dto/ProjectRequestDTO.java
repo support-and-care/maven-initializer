@@ -47,6 +47,8 @@ public class ProjectRequestDTO {
 
   private boolean includeCheckstyle = false;
 
+  private String assertionLibrary = "none";
+
   // Default constructor
   public ProjectRequestDTO() {}
 
@@ -139,6 +141,14 @@ public class ProjectRequestDTO {
     this.includeCheckstyle = includeCheckstyle;
   }
 
+  public String getAssertionLibrary() {
+    return assertionLibrary;
+  }
+
+  public void setAssertionLibrary(String assertionLibrary) {
+    this.assertionLibrary = assertionLibrary;
+  }
+
   @Override
   public String toString() {
     return "ProjectRequestDTO{"
@@ -166,6 +176,9 @@ public class ProjectRequestDTO {
         + includeSpotless
         + ", includeCheckstyle="
         + includeCheckstyle
+        + ", assertionLibrary='"
+        + assertionLibrary
+        + '\''
         + '}';
   }
 }

@@ -181,6 +181,22 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                   </div>
                 </div>
 
+                {/* Assertion Library Selection */}
+                <FormField
+                  label="Assertion Library"
+                  helperText="Choose which assertion library to use in tests"
+                >
+                  <select
+                    name="assertionLibrary"
+                    defaultValue="none"
+                    className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex h-9 w-full items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="none">None (JUnit only)</option>
+                    <option value="assertj">AssertJ</option>
+                    <option value="hamcrest">Hamcrest</option>
+                  </select>
+                </FormField>
+
                 {/* Code Formatting Plugins Section */}
                 <div className="space-y-3">
                   <div className="text-sm font-medium text-foreground">

@@ -52,11 +52,6 @@ public class ProjectGeneratorService {
   private final MavenWrapperService mavenWrapperService;
   private final ArtifactVersionService artifactVersionService;
 
-  private static final List<MavenDependency> DEFAULT_DEPENDENCIES =
-      List.of(
-          new MavenDependency("org.assertj", "assertj-core"),
-          new MavenDependency("org.junit.jupiter", "junit-jupiter"));
-
   private List<MavenDependency> dependencyManagement;
 
   public ProjectGeneratorService(
@@ -68,8 +63,6 @@ public class ProjectGeneratorService {
     this.structureService = structureService;
     this.mavenWrapperService = mavenWrapperService;
     this.artifactVersionService = artifactVersionService;
-
-    fillDependencyManagement(artifactVersionService);
   }
 
   private List<MavenPlugin> fillPlugins(ProjectRequestDTO request) {
@@ -107,11 +100,17 @@ public class ProjectGeneratorService {
     return pluginList;
   }
 
-  private void fillDependencyManagement(ArtifactVersionService artifactVersionService) {
-    dependencyManagement =
-        List.of(
-            new MavenDependency("org.junit", "junit-bom", artifactVersionService),
-            new MavenDependency("org.assertj", "assertj-bom", artifactVersionService));
+  private void fillDependencyManagement(
+      ArtifactVersionService artifactVersionService, ProjectRequestDTO request) {
+    List<MavenDependency> deps = new ArrayList<>();
+    deps.add(new MavenDependency("org.junit", "junit-bom", artifactVersionService));
+
+    String assertionLib = request.getAssertionLibrary();
+    if ("assertj".equals(assertionLib)) {
+      deps.add(new MavenDependency("org.assertj", "assertj-bom", artifactVersionService));
+    }
+
+    dependencyManagement = deps;
   }
 
   public ProjectGenerationResult generateProject(ProjectRequestDTO request) {
@@ -220,11 +219,12 @@ public class ProjectGeneratorService {
                   s.insertMavenElement(s.root(), "description", request.getDescription());
                   s.insertMavenElement(s.root(), "name", request.getName());
 
-                  // Add default dependencies
-                  addDefaultDependencies(s);
-
                   // Add dependency management
+                  fillDependencyManagement(artifactVersionService, request);
                   addDefaultDependencyManagement(s);
+
+                  // Add default dependencies
+                  addDefaultDependencies(s, request);
 
                   plugins.forEach(plugin -> s.plugins().updatePlugin(true, toCoordinates(plugin)));
 
@@ -254,7 +254,7 @@ public class ProjectGeneratorService {
         plugin.groupId(), plugin.artifactId(), plugin.version(), "", "maven-plugin");
   }
 
-  private void addDefaultDependencies(PomEditor editor) {
+  private void addDefaultDependencies(PomEditor editor, ProjectRequestDTO request) {
     var root = editor.root();
     var depsTmp = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCIES);
 
@@ -263,6 +263,21 @@ public class ProjectGeneratorService {
     }
 
     final var deps = depsTmp;
+
+    List<MavenDependency> DEFAULT_DEPENDENCIES = new ArrayList<>();
+
+    // Default deps
+    DEFAULT_DEPENDENCIES.add(new MavenDependency("org.junit.jupiter", "junit-jupiter"));
+
+    // Add assertion library based on selection
+    String assertionLib = request.getAssertionLibrary();
+    if ("assertj".equals(assertionLib)) {
+      DEFAULT_DEPENDENCIES.add(new MavenDependency("org.assertj", "assertj-core"));
+    } else if ("hamcrest".equals(assertionLib)) {
+      DEFAULT_DEPENDENCIES.add(new MavenDependency("org.hamcrest", "hamcrest"));
+    }
+    // If "none", only JUnit is added (no assertion library)
+
     DEFAULT_DEPENDENCIES.forEach(
         dependency -> {
           var depEl = editor.insertMavenElement(deps, MavenPomElements.Elements.DEPENDENCY);
@@ -271,6 +286,15 @@ public class ProjectGeneratorService {
           editor.insertMavenElement(
               depEl, MavenPomElements.Elements.ARTIFACT_ID, dependency.artifactId());
           editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
+
+          // Hamcrest needs explicit version (not managed by BOM)
+          if ("org.hamcrest".equals(dependency.groupId())
+              && "hamcrest".equals(dependency.artifactId())) {
+            String hamcrestVersion =
+                artifactVersionService.resolveLatestDependencyVersion(
+                    dependency.groupId(), dependency.artifactId());
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, hamcrestVersion);
+          }
         });
   }
 

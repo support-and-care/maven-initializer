@@ -19,6 +19,7 @@
 package com.openelements.maven.initializer.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -215,6 +216,7 @@ class ProjectGeneratorServiceTest {
         .thenReturn("TODO");
     projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     ProjectRequestDTO validRequest = createValidRequest();
+    validRequest.setAssertionLibrary("assertj");
 
     // When
     String projectPath =
@@ -237,6 +239,75 @@ class ProjectGeneratorServiceTest {
     assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
     assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
     assertTrue(pomContent.contains("<scope>test</scope>"));
+  }
+
+  @Test
+  void testPomContainsHamcrestDependency() throws Exception {
+    // Given
+    Mockito.when(
+            artifactVersionService.resolveLatestDependencyBomVersion(
+                Mockito.anyString(), Mockito.anyString()))
+        .thenReturn("TODO");
+    Mockito.when(
+            artifactVersionService.resolveLatestDependencyVersion(
+                Mockito.eq("org.hamcrest"), Mockito.eq("hamcrest")))
+        .thenReturn("3.0");
+    Mockito.when(
+            artifactVersionService.resolveLatestPluginVersion(
+                Mockito.anyString(), Mockito.anyString()))
+        .thenReturn("TODO");
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
+    ProjectRequestDTO validRequest = createValidRequest();
+    validRequest.setAssertionLibrary("hamcrest");
+
+    // When
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+    String pomContent = Files.readString(pomFile);
+
+    assertTrue(pomContent.contains("<groupId>org.hamcrest</groupId>"));
+    assertTrue(pomContent.contains("<artifactId>hamcrest</artifactId>"));
+    assertTrue(
+        pomContent.contains("<version>3.0</version>"), "Should contain resolved Hamcrest version");
+    assertFalse(pomContent.contains("<artifactId>assertj-core</artifactId>"));
+    assertFalse(pomContent.contains("<artifactId>assertj-bom</artifactId>"));
+    assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
+    assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
+  }
+
+  @Test
+  void testPomContainsNoAssertionLibraryDependency() throws Exception {
+    // Given
+    Mockito.when(
+            artifactVersionService.resolveLatestDependencyBomVersion(
+                Mockito.anyString(), Mockito.anyString()))
+        .thenReturn("TODO");
+    Mockito.when(
+            artifactVersionService.resolveLatestPluginVersion(
+                Mockito.anyString(), Mockito.anyString()))
+        .thenReturn("TODO");
+    projectGeneratorServiceUnderTest = configureProjectGeneratorService();
+    ProjectRequestDTO validRequest = createValidRequest();
+    validRequest.setAssertionLibrary("none");
+
+    // When
+    String projectPath =
+        projectGeneratorServiceUnderTest.generateProject(validRequest).projectPath();
+    Path pomFile = Path.of(projectPath, "pom.xml");
+
+    // Then
+    assertTrue(Files.exists(pomFile), "POM file should exist");
+    String pomContent = Files.readString(pomFile);
+
+    assertFalse(pomContent.contains("<artifactId>assertj-core</artifactId>"));
+    assertFalse(pomContent.contains("<artifactId>assertj-bom</artifactId>"));
+    assertFalse(pomContent.contains("<artifactId>hamcrest</artifactId>"));
+    assertTrue(pomContent.contains("<groupId>org.junit.jupiter</groupId>"));
+    assertTrue(pomContent.contains("<artifactId>junit-jupiter</artifactId>"));
   }
 
   @Test
