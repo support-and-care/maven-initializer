@@ -16,4 +16,3 @@ export const GitHubRibbon: React.FC = () => {
     </div>
   );
 };
-
