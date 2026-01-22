@@ -1,7 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import React from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { GitHubRibbon } from "@/components/GitHubRibbon";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -41,6 +43,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="relative min-h-screen bg-background">
+            <GitHubRibbon />
             <div className="pointer-events-none fixed inset-0 -z-10">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(157,213,253,0.16),_transparent_55%)]"></div>
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(93,186,159,0.12),_transparent_60%)]"></div>
