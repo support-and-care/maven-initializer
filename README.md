@@ -68,3 +68,24 @@ docker compose up --build -d
 - Logs are automatically sent to: `https://loki.open-elements.cloud`
 - App name: `maven-initializer-backend`
 - Query in Grafana: `{app="maven-initializer-backend"}`
+
+## How to contribute
+
+We welcome contributions from the community! 
+
+If you'd like to give feedback, please open an issue on our [GitHub discussion](https://github.com/support-and-care/maven-initializer/discussions).
+
+If you'd like to contribute code, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and ensure all tests pass.
+4. Submit a pull request with a clear description of your changes.
+
+Thank you for considering contributing to our project!
+
+## Outlook
+
+We created a mindmap with possible feature for the future:
+
+<img width="1307" height="959" alt="Image" src="https://github.com/user-attachments/assets/7517a1c2-ec37-496d-89bc-b760b5039d8f" />
