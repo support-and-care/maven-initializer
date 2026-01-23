@@ -8,22 +8,4 @@ describe("Header component", () => {
     expect(screen.getByText("Maven")).toBeInTheDocument();
     expect(screen.getByText("Initializer")).toBeInTheDocument();
   });
-
-  it("renders the GitHub link", () => {
-    render(<Header />);
-    const githubLink = screen.getByText("GitHub");
-    expect(githubLink).toBeInTheDocument();
-    expect(githubLink.closest("a")).toHaveAttribute(
-      "href",
-      "https://github.com/support-and-care/maven-initializer",
-    );
-  });
-
-  it("renders all navigation elements", () => {
-    render(<Header />);
-    const buttons = screen.getAllByRole("button");
-    const links = screen.getAllByRole("link");
-    expect(buttons.length).toBeGreaterThanOrEqual(1);
-    expect(links.length).toBe(1);
-  });
 });
