@@ -52,14 +52,6 @@ export const Header: React.FC = () => {
             >
               Documentation
             </a> */}
-            <a
-              href="https://github.com/support-and-care/maven-initializer"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative rounded-2xl px-4 py-2 text-sm font-medium text-muted-foreground transition-smooth hover:text-foreground"
-            >
-              GitHub
-            </a>
           </div>
 
           <div className="hidden items-center gap-3 lg:flex">

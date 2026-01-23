@@ -388,3 +388,60 @@
     box-shadow: 0 22px 55px rgba(7, 19, 58, 0.08);
   }
 }
+
+/* GitHub Fork Ribbon Styles */
+.github-fork-ribbon {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.github-fork-ribbon a {
+  pointer-events: auto;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.github-fork-ribbon__text {
+  position: absolute;
+  top: 40px;
+  right: -40px;
+  width: 200px;
+  padding: 4px 0;
+  background-color: #24292e;
+  color: #fff;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease;
+}
+
+.github-fork-ribbon a:hover .github-fork-ribbon__text {
+  background-color: #2f363d;
+}
+
+/* Dark mode support */
+.dark .github-fork-ribbon__text {
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .github-fork-ribbon a:hover .github-fork-ribbon__text {
+  background-color: #2a2a2a;
+}
+
+/* Responsive: Hide on small screens */
+@media (max-width: 768px) {
+  .github-fork-ribbon {
+    display: none;
+  }
+}
