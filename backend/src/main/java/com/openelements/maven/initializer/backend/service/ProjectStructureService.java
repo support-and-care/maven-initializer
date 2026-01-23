@@ -140,74 +140,16 @@ public class ProjectStructureService {
     Path testDir = root.resolve("src/test/java/" + packagePath);
     Path testClassFile = testDir.resolve(className + "Test.java");
 
-    String assertionLib = request.getAssertionLibrary();
-    if (assertionLib == null || assertionLib.isEmpty()) {
-      assertionLib = "none";
+    // Ensure default assertion library is set
+    if (request.getAssertionLibrary() == null || request.getAssertionLibrary().isEmpty()) {
+      request.setAssertionLibrary("none");
     }
 
-    String content;
-    switch (assertionLib) {
-      case "hamcrest":
-        content =
-            String.format(
-                """
-            package %s;
-
-            import org.junit.jupiter.api.Test;
-            import static org.hamcrest.MatcherAssert.assertThat;
-            import static org.hamcrest.Matchers.is;
-
-            class %sTest {
-                @Test
-                void contextLoads() {
-                    assertThat(true, is(true));
-                }
-            }
-            """,
-                pkg, className);
-        break;
-      case "assertj":
-        content =
-            String.format(
-                """
-            package %s;
-
-            import org.junit.jupiter.api.Test;
-            import static org.assertj.core.api.Assertions.assertThat;
-
-            class %sTest {
-                @Test
-                void contextLoads() {
-                    assertThat(true).isTrue();
-                }
-            }
-            """,
-                pkg, className);
-        break;
-      case "none":
-      default:
-        content =
-            String.format(
-                """
-            package %s;
-
-            import org.junit.jupiter.api.Test;
-            import static org.junit.jupiter.api.Assertions.assertTrue;
-
-            class %sTest {
-                @Test
-                void contextLoads() {
-                    assertTrue(true);
-                }
-            }
-            """,
-                pkg, className);
-        break;
-    }
-
-    Files.writeString(testClassFile, content);
+    resourceTemplateEngine.createTestClass(request, className, testClassFile);
     logger.debug(
-        "Created sample test class: {}Test with assertion library: {}", className, assertionLib);
+        "Created sample test class: {}Test with assertion library: {}",
+        className,
+        request.getAssertionLibrary());
   }
 
   private String convertToJavaClassName(String artifactId) {
