@@ -40,6 +40,11 @@ export const MavenInitializerPage: React.FC = () => {
         includeMavenWrapper: includeMavenWrapper,
         includeSpotless: includeSpotless,
         includeCheckstyle: includeCheckstyle,
+        assertionLibrary:
+          (formData.get("assertionLibrary") as
+            | "assertj"
+            | "hamcrest"
+            | "none") || "none",
       };
 
       const response = await fetch("/api/projects/generate", {

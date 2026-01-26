@@ -25,6 +25,7 @@ import gg.jte.output.FileOutput;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,22 @@ public class ResourceTemplateEngine {
   public void createReadmeFile(ProjectRequestDTO data, Path filePath) throws IOException {
     try (FileOutput output = new FileOutput(filePath, Charset.forName("UTF-8"))) {
       templateEngine.render("README.md.jte", data, output);
+    }
+  }
+
+  /**
+   * Renders the test class template to the specified file path.
+   *
+   * @param data the project data to render in the template
+   * @param className the class name for the test class
+   * @param filePath the target file path where the rendered content will be written
+   * @throws IOException if file writing fails
+   */
+  public void createTestClass(ProjectRequestDTO data, String className, Path filePath)
+      throws IOException {
+    try (FileOutput output = new FileOutput(filePath, Charset.forName("UTF-8"))) {
+      templateEngine.render(
+          "TestClass.java.jte", Map.of("data", data, "className", className), output);
     }
   }
 }

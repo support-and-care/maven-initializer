@@ -49,6 +49,10 @@ public class ArtifactVersionService {
     return resolveLatestVersion(groupId, artifactId, "", "pom");
   }
 
+  public String resolveLatestDependencyVersion(String groupId, String artifactId) {
+    return resolveLatestVersion(groupId, artifactId, "", "jar");
+  }
+
   private String resolveLatestVersion(
       String groupId, String artifactId, String classifier, String extension) {
     String fallback = "TODO";

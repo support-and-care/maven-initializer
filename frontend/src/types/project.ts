@@ -8,6 +8,7 @@ export interface ProjectConfig {
   includeMavenWrapper?: boolean;
   includeSpotless?: boolean;
   includeCheckstyle?: boolean;
+  assertionLibrary?: "assertj" | "hamcrest" | "none";
 }
 
 export interface ValidationErrors {

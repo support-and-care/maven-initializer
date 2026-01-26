@@ -140,25 +140,16 @@ public class ProjectStructureService {
     Path testDir = root.resolve("src/test/java/" + packagePath);
     Path testClassFile = testDir.resolve(className + "Test.java");
 
-    String content =
-        String.format(
-            """
-        package %s;
+    // Ensure default assertion library is set
+    if (request.getAssertionLibrary() == null || request.getAssertionLibrary().isEmpty()) {
+      request.setAssertionLibrary("none");
+    }
 
-        import org.junit.jupiter.api.Test;
-        import static org.junit.jupiter.api.Assertions.assertTrue;
-
-        class %sTest {
-            @Test
-            void contextLoads() {
-                assertTrue(true);
-            }
-        }
-        """,
-            pkg, className);
-
-    Files.writeString(testClassFile, content);
-    logger.debug("Created sample test class: {}Test", className);
+    resourceTemplateEngine.createTestClass(request, className, testClassFile);
+    logger.debug(
+        "Created sample test class: {}Test with assertion library: {}",
+        className,
+        request.getAssertionLibrary());
   }
 
   private String convertToJavaClassName(String artifactId) {
