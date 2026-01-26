@@ -153,24 +153,25 @@ public class ProjectGeneratorService {
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
-        Files.walk(projectDir)
-            .filter(Files::isRegularFile)
-            .forEach(
-                path -> {
-                  try {
-                    Path rel = projectDir.relativize(path);
-                    ZipArchiveEntry entry = new ZipArchiveEntry(rel.toString());
+        try (var fileStream = Files.walk(projectDir)) {
+          fileStream.filter(Files::isRegularFile)
+              .forEach(
+                  path -> {
+                    try {
+                      Path rel = projectDir.relativize(path);
+                      ZipArchiveEntry entry = new ZipArchiveEntry(rel.toString());
 
-                    setZipEntryPermissions(entry, path);
+                      setZipEntryPermissions(entry, path);
 
-                    zos.putArchiveEntry(entry);
-                    Files.copy(path, zos);
-                    zos.closeArchiveEntry();
-                  } catch (IOException e) {
-                    logger.error("Failed to add file to ZIP: {}", path, e);
-                    throw new ProjectServiceException("Failed to add file to ZIP: " + path, e);
-                  }
-                });
+                      zos.putArchiveEntry(entry);
+                      Files.copy(path, zos);
+                      zos.closeArchiveEntry();
+                    } catch (IOException e) {
+                      logger.error("Failed to add file to ZIP: {}", path, e);
+                      throw new ProjectServiceException("Failed to add file to ZIP: " + path, e);
+                    }
+                  });
+        }
       }
 
       logger.info("Created ZIP for project: {} ({} bytes)", projectPath, baos.size());
