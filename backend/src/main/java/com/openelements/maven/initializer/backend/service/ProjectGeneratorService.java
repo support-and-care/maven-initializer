@@ -154,7 +154,8 @@ public class ProjectGeneratorService {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
         try (var fileStream = Files.walk(projectDir)) {
-          fileStream.filter(Files::isRegularFile)
+          fileStream
+              .filter(Files::isRegularFile)
               .forEach(
                   path -> {
                     try {
