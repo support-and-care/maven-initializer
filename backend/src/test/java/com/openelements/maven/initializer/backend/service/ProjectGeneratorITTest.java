@@ -116,11 +116,12 @@ class ProjectGeneratorITTest {
     // Then
     int exitCode = process.waitFor();
     if (exitCode != 0) {
-      System.err.println("Maven build failed with exit code: " + exitCode);
+      System.err.println("Apache Maven build failed with exit code: " + exitCode);
       System.err.println("Build output:\n" + output);
     }
 
-    assertEquals(0, exitCode, "Maven build should succeed with exit code 0. Output: " + output);
+    assertEquals(
+        0, exitCode, "Apache Maven build should succeed with exit code 0. Output: " + output);
   }
 
   private ProjectRequestDTO createValidRequest() {

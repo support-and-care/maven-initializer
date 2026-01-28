@@ -124,7 +124,9 @@ public class ProjectStructureService {
         }
         """,
             pkg,
-            request.getDescription() != null ? request.getDescription() : "Generated Maven Project",
+            request.getDescription() != null
+                ? request.getDescription()
+                : "Generated project for Apache Maven",
             className,
             className);
 
