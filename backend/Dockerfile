@@ -1,4 +1,4 @@
-# Maven Build stage
+# Apache Maven build stage
 
 FROM eclipse-temurin:25 AS maven-build
 
