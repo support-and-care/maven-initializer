@@ -7,7 +7,7 @@
 
 ## Build Instructions
 
-This project uses Maven for dependency management and building.
+This project uses Apache Maven for dependency management and building.
 
 To build the project and run tests, use the following command:
 

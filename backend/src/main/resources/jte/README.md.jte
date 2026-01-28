@@ -6,12 +6,12 @@
 
 *   **Java SDK**: Version ${data.getJavaVersion()} or higher
 @if(!data.isIncludeMavenWrapper())
-*   **Maven**: Version 3.9.x or higher
+*   **Apache Maven**: Version 3.9.x or higher
 @endif
 
 ## Build Instructions
 
-This project uses Maven for dependency management and building.
+This project uses Apache Maven for dependency management and building.
 
 To build the project and run tests, use the following command:
 @if(data.isIncludeMavenWrapper())
