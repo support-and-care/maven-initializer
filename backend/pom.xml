@@ -13,8 +13,8 @@
     <artifactId>backend</artifactId>
     <version>1.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Initializer for Apache Maven - Backend</name>
-    <description>Backend service for Initializer for Apache Maven</description>
+    <name> Apache Maven Initializer - Backend</name>
+    <description>Backend service for Apache Maven Initializer</description>
     <url/>
 	<licenses>
         <license>
