@@ -1,9 +1,7 @@
 # Initializer for Apache Maven
 
-Initializer for Apache Maven is a modern, user-friendly web application designed to simplify the process of
-creating new Java projects for Apache Maven. Its primary goal is to provide developers with a fast,
-intuitive, and reliable way to bootstrap new projects with all the necessary configurations,
-dependencies, and best practices, without the need to manually set up complex project structures.
+Initializer for Apache Maven is a modern, user-friendly web application designed to simplify the process of creating new Apache Maven projects.
+Its primary goal is to provide developers with a fast, intuitive, and reliable way to bootstrap new projects with all the necessary configurations, dependencies, and best practices, without the need to manually set up complex project structures.
 
 ## Prerequisites
 

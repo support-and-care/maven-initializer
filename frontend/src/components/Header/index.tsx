@@ -37,7 +37,7 @@ export const Header: React.FC = () => {
             </div>
             <div className="hidden flex-col leading-tight sm:flex">
               <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                for Apache Maven
+                Apache Maven
               </span>
               <span className="text-sm font-semibold text-foreground">
                 Initializer

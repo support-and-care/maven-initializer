@@ -36,16 +36,15 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-            {/* Left Section: Configure Your Project for Apache Maven */}
+            {/* Left Section: Configure Your Apache Maven Project */}
             <div className="rounded-2xl border border-border/50 bg-card/50 p-5 lg:p-6">
               <div className="flex justify-center mb-4">
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-transparent px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
-                  Configure Your Project for Apache Maven
+                  Configure Your Apache Maven Project
                 </div>
               </div>
               <p className="text-sm text-muted-foreground sm:text-base mb-6 text-center">
-                Fill in the details below to generate your production-ready
-                project structure for Apache Maven.
+                Fill in the details below to generate your production-ready Apache Maven project structure.
               </p>
 
               {/* Form Grid */}
