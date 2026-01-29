@@ -44,7 +44,8 @@ export const ProjectMetadataForm: React.FC<ProjectMetadataFormProps> = ({
                 </div>
               </div>
               <p className="text-sm text-muted-foreground sm:text-base mb-6 text-center">
-                Fill in the details below to generate your production-ready Apache Maven project structure.
+                Fill in the details below to generate your production-ready
+                Apache Maven project structure.
               </p>
 
               {/* Form Grid */}
