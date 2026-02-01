@@ -18,6 +18,7 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
+import com.openelements.maven.initializer.backend.domain.DependencyType;
 import com.openelements.maven.initializer.backend.domain.MavenDependency;
 import com.openelements.maven.initializer.backend.domain.MavenPlugin;
 import com.openelements.maven.initializer.backend.domain.ProjectGenerationResult;
@@ -100,11 +101,14 @@ public class ProjectGeneratorService {
 
   private List<MavenDependency> fillDependencyManagement(ProjectRequestDTO request) {
     List<MavenDependency> deps = new ArrayList<>();
-    deps.add(new MavenDependency("org.junit", "junit-bom", artifactVersionService));
+    deps.add(
+        new MavenDependency("org.junit", "junit-bom", DependencyType.BOM, artifactVersionService));
 
     String assertionLib = request.getAssertionLibrary();
     if ("assertj".equals(assertionLib)) {
-      deps.add(new MavenDependency("org.assertj", "assertj-bom", artifactVersionService));
+      deps.add(
+          new MavenDependency(
+              "org.assertj", "assertj-bom", DependencyType.BOM, artifactVersionService));
     }
 
     return deps;
@@ -221,7 +225,7 @@ public class ProjectGeneratorService {
                   addDependencyManagement(s, dependencyManagement);
 
                   // Add dependencies
-                  addDependencies(s, request);
+                  addDependencies(s, request, dependencyManagement);
 
                   plugins.forEach(plugin -> s.plugins().updatePlugin(true, toCoordinates(plugin)));
 
@@ -251,7 +255,8 @@ public class ProjectGeneratorService {
         plugin.groupId(), plugin.artifactId(), plugin.version(), "", "maven-plugin");
   }
 
-  private void addDependencies(PomEditor editor, ProjectRequestDTO request) {
+  private void addDependencies(
+      PomEditor editor, ProjectRequestDTO request, List<MavenDependency> dependencyManagement) {
     var root = editor.root();
     var depsTmp = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCIES);
 
@@ -264,14 +269,20 @@ public class ProjectGeneratorService {
     List<MavenDependency> dependencies = new ArrayList<>();
 
     // Always add JUnit
-    dependencies.add(new MavenDependency("org.junit.jupiter", "junit-jupiter"));
+    dependencies.add(
+        new MavenDependency(
+            "org.junit.jupiter", "junit-jupiter", DependencyType.NORMAL, artifactVersionService));
 
     // Add assertion library based on selection
     String assertionLib = request.getAssertionLibrary();
     if ("assertj".equals(assertionLib)) {
-      dependencies.add(new MavenDependency("org.assertj", "assertj-core"));
+      dependencies.add(
+          new MavenDependency(
+              "org.assertj", "assertj-core", DependencyType.NORMAL, artifactVersionService));
     } else if ("hamcrest".equals(assertionLib)) {
-      dependencies.add(new MavenDependency("org.hamcrest", "hamcrest"));
+      dependencies.add(
+          new MavenDependency(
+              "org.hamcrest", "hamcrest", DependencyType.NORMAL, artifactVersionService));
     }
     // If "none", only JUnit is added (no assertion library)
 
@@ -284,13 +295,10 @@ public class ProjectGeneratorService {
               depEl, MavenPomElements.Elements.ARTIFACT_ID, dependency.artifactId());
           editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
 
-          // Hamcrest needs explicit version (not managed by BOM)
-          if ("org.hamcrest".equals(dependency.groupId())
-              && "hamcrest".equals(dependency.artifactId())) {
-            String hamcrestVersion =
-                artifactVersionService.resolveLatestDependencyVersion(
-                    dependency.groupId(), dependency.artifactId());
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, hamcrestVersion);
+          // Add version if the dependency should include one
+          String version = dependency.getVersionToInclude(dependencyManagement);
+          if (version != null) {
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, version);
           }
         });
   }
