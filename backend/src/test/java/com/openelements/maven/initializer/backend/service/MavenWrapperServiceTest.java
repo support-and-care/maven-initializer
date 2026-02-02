@@ -64,7 +64,7 @@ class MavenWrapperServiceTest {
                 Files.isDirectory(tempDir.resolve(".mvn/wrapper")),
                 ".mvn/wrapper directory should exist"));
 
-    // The jar file may or may not exist depending on Maven Wrapper plugin version
+    // The jar file may or may not exist depending on Apache Maven™ Wrapper plugin version
     // Newer versions may download it on-demand
     Path jarPath = tempDir.resolve(".mvn/wrapper/maven-wrapper.jar");
     if (Files.exists(jarPath)) {

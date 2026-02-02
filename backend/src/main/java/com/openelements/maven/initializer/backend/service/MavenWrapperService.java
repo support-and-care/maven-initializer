@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-/** Service responsible for adding Maven Wrapper (mvnw) files to a generated project. */
+/** Service responsible for adding Apache Maven™ Wrapper (mvnw) files to a generated project. */
 @Service
 public class MavenWrapperService {
 
@@ -58,7 +58,7 @@ public class MavenWrapperService {
           + "-bin.zip";
 
   /**
-   * Adds Maven Wrapper files to the specified project directory.
+   * Adds Apache Maven™ Wrapper files to the specified project directory.
    *
    * <p>This includes:
    *
@@ -72,14 +72,15 @@ public class MavenWrapperService {
    * and downloads Maven directly on first use.
    *
    * @param projectRoot the root directory of the generated project
-   * @throws MavenWrapperException if adding the Maven Wrapper fails due to I/O or network issues
+   * @throws MavenWrapperException if adding the Apache Maven™ Wrapper fails due to I/O or network
+   *     issues
    * @throws IllegalArgumentException if projectRoot is null
    */
   public void addMavenWrapper(Path projectRoot) {
     if (projectRoot == null) {
       throw new IllegalArgumentException("Project root cannot be null");
     }
-    logger.info("Adding Maven Wrapper to project at: {}", projectRoot);
+    logger.info("Adding Apache Maven™ Wrapper to project at: {}", projectRoot);
 
     try {
       Path wrapperDir = projectRoot.resolve(".mvn/wrapper");
@@ -88,15 +89,15 @@ public class MavenWrapperService {
       downloadAndExtractWrapper(projectRoot);
       createWrapperProperties(wrapperDir);
 
-      logger.info("Maven Wrapper added successfully");
+      logger.info("Apache Maven™ Wrapper added successfully");
     } catch (IOException e) {
-      logger.error("Failed to add Maven Wrapper", e);
-      throw new MavenWrapperException("Failed to add Maven Wrapper: " + e.getMessage(), e);
+      logger.error("Failed to add Apache Maven™ Wrapper", e);
+      throw new MavenWrapperException("Failed to add Apache Maven™ Wrapper: " + e.getMessage(), e);
     }
   }
 
   /**
-   * Downloads the Maven Wrapper "only-script" distribution and extracts only the necessary
+   * Downloads the Apache Maven™ Wrapper "only-script" distribution and extracts only the necessary
    * executable scripts ({@code mvnw} and {@code mvnw.cmd}).
    *
    * <p>Debug variants ({@code mvnwDebug}, {@code mvnwDebug.cmd}) are intentionally excluded.
@@ -105,7 +106,8 @@ public class MavenWrapperService {
    * @throws IOException if download or extraction fails
    */
   private void downloadAndExtractWrapper(Path projectRoot) throws IOException {
-    logger.debug("Downloading Maven Wrapper distribution from: {}", MAVEN_WRAPPER_DISTRIBUTION_URL);
+    logger.debug(
+        "Downloading Apache Maven™ Wrapper distribution from: {}", MAVEN_WRAPPER_DISTRIBUTION_URL);
 
     Path tempZip = Files.createTempFile("maven-wrapper-", ".zip");
 
@@ -140,7 +142,7 @@ public class MavenWrapperService {
    * Creates the {@code maven-wrapper.properties} file in the {@code .mvn/wrapper} directory.
    *
    * <p>Configures the wrapper to use the "only-script" distribution type and points to the official
-   * Apache Maven binary distribution.
+   * Apache Maven™ binary distribution.
    *
    * @param wrapperDir the {@code .mvn/wrapper} directory
    * @throws IOException if writing the properties file fails

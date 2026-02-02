@@ -159,7 +159,7 @@ class ProjectGeneratorITTest {
 
     int exitCode = process.waitFor();
     if (exitCode != 0) {
-      System.err.println("Apache Maven build failed with exit code: " + exitCode);
+      System.err.println("Apache Maven™ build failed with exit code: " + exitCode);
       System.err.println("Build output:\n" + output);
     }
 

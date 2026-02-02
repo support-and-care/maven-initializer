@@ -1,1 +1,8 @@
-{"name":"Apache Maven Initializer","short_name":"Init for Apache Maven","icons":[],"theme_color":"#6366f1","background_color":"#ffffff","display":"standalone"}
+{
+  "name": "Apache Maven™ Initializer",
+  "short_name": "Init for Apache Maven™",
+  "icons": [],
+  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

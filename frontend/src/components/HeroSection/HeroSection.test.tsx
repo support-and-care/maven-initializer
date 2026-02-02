@@ -6,7 +6,7 @@ describe("HeroSection component", () => {
   it("renders the tagline text", () => {
     render(<HeroSection />);
     expect(
-      screen.getByText("Generate Apache Maven projects in seconds"),
+      screen.getByText("Generate Apache Maven™ projects in seconds"),
     ).toBeInTheDocument();
   });
 
@@ -22,7 +22,7 @@ describe("HeroSection component", () => {
     render(<HeroSection />);
     expect(
       screen.getByText(
-        /Create production-ready Apache Maven projects with the perfect dependencies/i,
+        /Create production-ready Apache Maven™ projects with the perfect dependencies/i,
       ),
     ).toBeInTheDocument();
   });

@@ -5,7 +5,7 @@ import Home from "@/app/page";
 describe("Home Page", () => {
   it("renders the main heading", () => {
     render(<Home />);
-    expect(screen.getByText("Apache Maven")).toBeInTheDocument();
+    expect(screen.getByText("Apache Maven™")).toBeInTheDocument();
     expect(screen.getByText("Initializer")).toBeInTheDocument();
   });
 
@@ -14,7 +14,7 @@ describe("Home Page", () => {
     expect(screen.getByText("Build Better Java Projects")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Create production-ready Apache Maven projects with the perfect dependencies, configuration, and structure. No more manual setup.",
+        "Create production-ready Apache Maven™ projects with the perfect dependencies, configuration, and structure. No more manual setup.",
       ),
     ).toBeInTheDocument();
   });
