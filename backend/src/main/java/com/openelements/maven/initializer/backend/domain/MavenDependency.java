@@ -29,13 +29,8 @@ public final class MavenDependency {
   private final DependencyType dependencyType;
   private final ArtifactVersionService artifactVersionService;
 
-  public MavenDependency(String groupId, String artifactId) {
-    this(groupId, artifactId, DependencyType.NORMAL, null);
-  }
-
-  public MavenDependency(
-      String groupId, String artifactId, ArtifactVersionService artifactVersionService) {
-    this(groupId, artifactId, DependencyType.BOM, artifactVersionService);
+  public MavenDependency(String groupId, String artifactId, DependencyType dependencyType) {
+    this(groupId, artifactId, dependencyType, null);
   }
 
   public MavenDependency(
