@@ -225,7 +225,7 @@ public class ProjectGeneratorService {
                   addDependencyManagement(s, dependencyManagement);
 
                   // Add dependencies
-                  addDependencies(s, request, dependencyManagement);
+                  addDependencies(s, request);
 
                   plugins.forEach(plugin -> s.plugins().updatePlugin(true, toCoordinates(plugin)));
 
@@ -256,7 +256,7 @@ public class ProjectGeneratorService {
   }
 
   private void addDependencies(
-      PomEditor editor, ProjectRequestDTO request, List<MavenDependency> dependencyManagement) {
+      PomEditor editor, ProjectRequestDTO request) {
     var root = editor.root();
     var depsTmp = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCIES);
 
@@ -295,10 +295,8 @@ public class ProjectGeneratorService {
               depEl, MavenPomElements.Elements.ARTIFACT_ID, dependency.artifactId());
           editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
 
-          // Add version if the dependency should include one
-          String version = dependency.version();
-          if (!"".equals(version)) {
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, version);
+          if (!dependency.isManagedByBom()) {
+            editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, dependency.version());
           }
         });
   }

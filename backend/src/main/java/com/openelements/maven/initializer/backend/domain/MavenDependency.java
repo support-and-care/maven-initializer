@@ -19,7 +19,7 @@
 package com.openelements.maven.initializer.backend.domain;
 
 import com.openelements.maven.initializer.backend.service.ArtifactVersionService;
-import java.util.List;
+
 import java.util.Objects;
 
 /** Represents a Maven dependency with groupId, artifactId, and version. */
@@ -67,60 +67,8 @@ public final class MavenDependency {
     return "";
   }
 
-  /**
-   * Determines if this dependency should include a version element in the POM. Versions are only
-   * included for normal dependencies that are not managed by any BOM.
-   *
-   * @param dependencyManagement the list of BOMs in dependency management
-   * @return true if a version should be included, false otherwise
-   */
-  public boolean shouldIncludeVersion(List<MavenDependency> dependencyManagement) {
-    if (dependencyType != DependencyType.NORMAL) {
-      return false; // BOMs don't need versions in dependencies section
-    }
-    return !isManagedByBom(dependencyManagement);
-  }
-
-  /**
-   * Returns the version string to include in the POM, or null if no version should be included.
-   * This method encapsulates all the logic for determining whether and what version to include: -
-   * Only normal dependencies that are not managed by BOMs should include versions - The version
-   * must be non-null, non-empty, and not "TODO"
-   *
-   * @param dependencyManagement the list of BOMs in dependency management
-   * @return the version string to include, or null if no version should be included
-   */
-  public String getVersionToInclude(List<MavenDependency> dependencyManagement) {
-    if (!shouldIncludeVersion(dependencyManagement)) {
-      return null;
-    }
-    String version = version();
-    if (version != null && !version.isEmpty() && !version.equals("TODO")) {
-      return version;
-    }
-    return null;
-  }
-
-  /**
-   * Checks if this dependency is managed by any BOM in the dependency management list.
-   *
-   * @param dependencyManagement the list of BOMs in dependency management
-   * @return true if the dependency is managed by a BOM, false otherwise
-   */
-  private boolean isManagedByBom(List<MavenDependency> dependencyManagement) {
-    return dependencyManagement.stream()
-        .filter(bom -> bom.dependencyType() == DependencyType.BOM)
-        .anyMatch(
-            bom -> {
-              String bomGroupId = bom.groupId();
-
-              // Special case: junit-bom (org.junit) manages org.junit.jupiter dependencies
-              if ("org.junit".equals(bomGroupId) && groupId.startsWith("org.junit")) {
-                return true;
-              }
-
-              return bomGroupId.equals(groupId);
-            });
+  public boolean isManagedByBom() {
+    return artifactVersionService == null;
   }
 
   @Override
