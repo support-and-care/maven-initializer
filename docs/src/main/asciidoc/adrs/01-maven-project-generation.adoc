@@ -7,7 +7,7 @@
 
 
 === Context and Problem Description
-Apache Maven™ Initializer should help to generate a ready-to-use project structure for Apache Maven™.
+Initializer For Apache Maven™ should help to generate a ready-to-use project structure for Apache Maven™.
 The core of the application is to generate the necessary project files.
 In the past, others already solved this problem.
 Therefore, there is a chance to reuse their solution.

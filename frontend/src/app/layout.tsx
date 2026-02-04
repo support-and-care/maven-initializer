@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Apache Maven™ Initializer - Starter Tool",
+  title: "Initializer For Apache Maven™ - Starter Tool",
   description:
     "Generate production-ready Java project structures for Apache Maven™.",
   icons: {

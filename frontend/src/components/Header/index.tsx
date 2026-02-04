@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
             <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 via-primary/30 to-accent/30 shadow-inner overflow-hidden">
               <Image
                 src="/logo.svg"
-                alt="Apache Maven™ Initializer Logo"
+                alt="Initializer For Apache Maven™ Logo"
                 width={32}
                 height={32}
                 className="h-8 w-8 object-contain relative z-10"
@@ -37,10 +37,10 @@ export const Header: React.FC = () => {
             </div>
             <div className="hidden flex-col leading-tight sm:flex">
               <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                Apache Maven™
+                Initializer For
               </span>
               <span className="text-sm font-semibold text-foreground">
-                Initializer
+                Apache Maven™
               </span>
             </div>
           </div>
