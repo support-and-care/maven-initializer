@@ -212,14 +212,6 @@ class ProjectGeneratorServiceTest {
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
     Mockito.when(
-            artifactVersionService.resolveLatestDependencyVersion(
-                Mockito.eq("org.junit.jupiter"), Mockito.eq("junit-jupiter")))
-        .thenReturn("5.10.0");
-    Mockito.when(
-            artifactVersionService.resolveLatestDependencyVersion(
-                Mockito.eq("org.assertj"), Mockito.eq("assertj-core")))
-        .thenReturn("3.27.5");
-    Mockito.when(
             artifactVersionService.resolveLatestPluginVersion(
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
@@ -259,10 +251,6 @@ class ProjectGeneratorServiceTest {
         .thenReturn("TODO");
     Mockito.when(
             artifactVersionService.resolveLatestDependencyVersion(
-                Mockito.eq("org.junit.jupiter"), Mockito.eq("junit-jupiter")))
-        .thenReturn("5.10.0");
-    Mockito.when(
-            artifactVersionService.resolveLatestDependencyVersion(
                 Mockito.eq("org.hamcrest"), Mockito.eq("hamcrest")))
         .thenReturn("3.0");
     Mockito.when(
@@ -299,10 +287,6 @@ class ProjectGeneratorServiceTest {
             artifactVersionService.resolveLatestDependencyBomVersion(
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
-    Mockito.when(
-            artifactVersionService.resolveLatestDependencyVersion(
-                Mockito.eq("org.junit.jupiter"), Mockito.eq("junit-jupiter")))
-        .thenReturn("5.10.0");
     Mockito.when(
             artifactVersionService.resolveLatestPluginVersion(
                 Mockito.anyString(), Mockito.anyString()))

@@ -270,15 +270,13 @@ public class ProjectGeneratorService {
 
     // Always add JUnit
     dependencies.add(
-        new MavenDependency(
-            "org.junit.jupiter", "junit-jupiter", DependencyType.JAR, artifactVersionService));
+        new MavenDependency("org.junit.jupiter", "junit-jupiter", DependencyType.JAR, null));
 
     // Add assertion library based on selection
     AssertionLibrary assertionLib = request.getAssertionLibrary();
     if (assertionLib == AssertionLibrary.ASSERTJ) {
       dependencies.add(
-          new MavenDependency(
-              "org.assertj", "assertj-core", DependencyType.JAR, artifactVersionService));
+          new MavenDependency("org.assertj", "assertj-core", DependencyType.JAR, null));
     } else if (assertionLib == AssertionLibrary.HAMCREST) {
       dependencies.add(
           new MavenDependency(
