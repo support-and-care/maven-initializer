@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
+import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -45,6 +46,7 @@ export default function Home() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

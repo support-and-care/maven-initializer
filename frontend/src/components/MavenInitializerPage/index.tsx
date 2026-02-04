@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ProjectConfig, ValidationErrors } from "@/types/project";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
+import { Footer } from "@/components/Footer";
 import { ProjectMetadataForm } from "@/components/ProjectMetadataForm";
 
 export const MavenInitializerPage: React.FC = () => {
@@ -127,6 +128,7 @@ export const MavenInitializerPage: React.FC = () => {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

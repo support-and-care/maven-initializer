@@ -126,7 +126,7 @@ public class ProjectGeneratorService {
     structureService.createStructure(projectDir, request);
     boolean hasResolvedVersion = generatePomFile(projectDir, request);
 
-    // Add Maven Wrapper if requested
+    // Add Apache Maven™ Wrapper if requested
     if (request.isIncludeMavenWrapper()) {
       mavenWrapperService.addMavenWrapper(projectDir);
     }

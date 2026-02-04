@@ -1,4 +1,4 @@
-= 001 - Maven Project Generation
+= 001 - Project Generation for Apache Maven™
 
 * Status: accepted
 * Decision makers: Support and Care Dev Team
@@ -7,7 +7,7 @@
 
 
 === Context and Problem Description
-The Maven Initializer should help to generate a ready-to-use Maven project structure.
+Initializer For Apache Maven™ should help to generate a ready-to-use project structure for Apache Maven™.
 The core of the application is to generate the necessary project files.
 In the past, others already solved this problem.
 Therefore, there is a chance to reuse their solution.
@@ -16,7 +16,7 @@ We want to take a look at an existing solution and compare it with a custom solu
 
 === Considered Options
 
-* Reuse Maven Archetype Components
+* Reuse Apache Maven™ Archetype Components
 * Mavenizerve Toolbox
 * Custom solution based on a template engine
 
@@ -26,22 +26,22 @@ We want to take a look at an existing solution and compare it with a custom solu
 
 We like the Java-DSL approach, making it straightforward to use programmatically.
 It has already methods like `addDependencies` that can help to realize our requirements very easily.
-It is also implemented by a Maven maintainer, and it is an active project.
+It is also implemented by an Apache Maven™ maintainer, and it is an active project.
 
 ==== Positive Consequences
 
-* Toolbox is a library coming from the Maven community.
+* Toolbox is a library coming from the Apache Maven™ community.
 * Java DSL approach simplifies the programmatical way of configuration.
 * It is actively maintained.
 
 
 === Pros and Cons of the Options
 
-==== Reuse Maven Archetype Components
+==== Reuse Apache Maven™ Archetype Components
 
-Apache Maven has its own mechanism for generating new projects, which is realized as a Maven Plugin.
+Apache Maven™ has its own mechanism for generating new projects, which is realized as an Apache Maven™ plugin.
 This plugin has common components that are responsible for the generation part.
-The integration of the common components is tricky because they depend on Maven Core infrastructure.
+The integration of the common components is tricky because they depend on Apache Maven™ Core infrastructure.
 Nevertheless, we have to add some custom implementation for matching our requirements (for example, add dependencies)
 
 * *Good*: Many ready-to-use templates exist.
@@ -53,11 +53,11 @@ Nevertheless, we have to add some custom implementation for matching our require
 ==== Mavenizerve Toolbox
 
 Toolbox has started as a showcase for https://github.com/maveniverse/mima[MIMA Resolver], but has a ready-to-use Java DSL for POM generation.
-This Java DSL is demonstrated in own Maven plugin / CLI tool, but it can be used as library.
+This Java DSL is demonstrated in own Apache Maven™ plugin / CLI tool, but it can be used as library.
 
 * *Good*: DSL-based
 * *Good*: Good integration
-* *Good*: Good abstraction of the Maven infrastructure
+* *Good*: Good abstraction of the Apache Maven™ infrastructure
 
 ==== Custom solution based on a template engine
 
@@ -73,4 +73,4 @@ We can start from scratch based on a known template engine that is well-integrat
 - https://github.com/sparsick/embedded-maven-shared-toolbox[PoC with shared Mavenizerve Toolbox]
 - https://github.com/sparsick/embedded-maven-archetype[PoC with Maven Archetype]
 - https://www.baeldung.com/spring-template-engines[List of template engine] that have good integration in Spring
-- https://github.com/support-and-care/maven-initializer/issues/3#issuecomment-3324185347[Result of the Kickoff Meeting for Maven initializer]
+- https://github.com/support-and-care/maven-initializer/issues/3#issuecomment-3324185347[Result of the Kickoff Meeting for Apache Maven™ initializer]
