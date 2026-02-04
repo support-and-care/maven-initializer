@@ -18,6 +18,7 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
+import com.openelements.maven.initializer.backend.domain.AssertionLibrary;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import java.io.IOException;
@@ -141,8 +142,8 @@ public class ProjectStructureService {
     Path testClassFile = testDir.resolve(className + "Test.java");
 
     // Ensure default assertion library is set
-    if (request.getAssertionLibrary() == null || request.getAssertionLibrary().isEmpty()) {
-      request.setAssertionLibrary("none");
+    if (request.getAssertionLibrary() == null) {
+      request.setAssertionLibrary(AssertionLibrary.NONE);
     }
 
     resourceTemplateEngine.createTestClass(request, className, testClassFile);

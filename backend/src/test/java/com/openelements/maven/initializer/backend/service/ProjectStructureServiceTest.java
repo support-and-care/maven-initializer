@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.openelements.maven.initializer.backend.domain.AssertionLibrary;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -124,7 +125,7 @@ class ProjectStructureServiceTest {
   @Test
   void testTestClassContentWithHamcrest() throws IOException {
     // Given
-    validRequest.setAssertionLibrary("hamcrest");
+    validRequest.setAssertionLibrary(AssertionLibrary.HAMCREST);
 
     // When
     projectStructureService.createStructure(tempDir, validRequest);
@@ -154,7 +155,7 @@ class ProjectStructureServiceTest {
   @Test
   void testTestClassContentWithNoAssertionLibrary() throws IOException {
     // Given
-    validRequest.setAssertionLibrary("none");
+    validRequest.setAssertionLibrary(AssertionLibrary.NONE);
 
     // When
     projectStructureService.createStructure(tempDir, validRequest);

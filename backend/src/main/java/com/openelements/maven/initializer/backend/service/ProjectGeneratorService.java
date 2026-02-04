@@ -18,6 +18,7 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
+import com.openelements.maven.initializer.backend.domain.AssertionLibrary;
 import com.openelements.maven.initializer.backend.domain.DependencyType;
 import com.openelements.maven.initializer.backend.domain.MavenDependency;
 import com.openelements.maven.initializer.backend.domain.MavenPlugin;
@@ -104,8 +105,8 @@ public class ProjectGeneratorService {
     deps.add(
         new MavenDependency("org.junit", "junit-bom", DependencyType.BOM, artifactVersionService));
 
-    String assertionLib = request.getAssertionLibrary();
-    if ("assertj".equals(assertionLib)) {
+    AssertionLibrary assertionLib = request.getAssertionLibrary();
+    if (assertionLib == AssertionLibrary.ASSERTJ) {
       deps.add(
           new MavenDependency(
               "org.assertj", "assertj-bom", DependencyType.BOM, artifactVersionService));
@@ -225,7 +226,7 @@ public class ProjectGeneratorService {
                   addDependencyManagement(s, dependencyManagement);
 
                   // Add dependencies
-                  addDependencies(s, request, dependencyManagement);
+                  addDependencies(s, request);
 
                   plugins.forEach(plugin -> s.plugins().updatePlugin(true, toCoordinates(plugin)));
 
@@ -255,8 +256,7 @@ public class ProjectGeneratorService {
         plugin.groupId(), plugin.artifactId(), plugin.version(), "", "maven-plugin");
   }
 
-  private void addDependencies(
-      PomEditor editor, ProjectRequestDTO request, List<MavenDependency> dependencyManagement) {
+  private void addDependencies(PomEditor editor, ProjectRequestDTO request) {
     var root = editor.root();
     var depsTmp = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCIES);
 
@@ -271,20 +271,20 @@ public class ProjectGeneratorService {
     // Always add JUnit
     dependencies.add(
         new MavenDependency(
-            "org.junit.jupiter", "junit-jupiter", DependencyType.NORMAL, artifactVersionService));
+            "org.junit.jupiter", "junit-jupiter", DependencyType.JAR, artifactVersionService));
 
     // Add assertion library based on selection
-    String assertionLib = request.getAssertionLibrary();
-    if ("assertj".equals(assertionLib)) {
+    AssertionLibrary assertionLib = request.getAssertionLibrary();
+    if (assertionLib == AssertionLibrary.ASSERTJ) {
       dependencies.add(
           new MavenDependency(
-              "org.assertj", "assertj-core", DependencyType.NORMAL, artifactVersionService));
-    } else if ("hamcrest".equals(assertionLib)) {
+              "org.assertj", "assertj-core", DependencyType.JAR, artifactVersionService));
+    } else if (assertionLib == AssertionLibrary.HAMCREST) {
       dependencies.add(
           new MavenDependency(
-              "org.hamcrest", "hamcrest", DependencyType.NORMAL, artifactVersionService));
+              "org.hamcrest", "hamcrest", DependencyType.JAR, artifactVersionService));
     }
-    // If "none", only JUnit is added (no assertion library)
+    // If NONE, only JUnit is added (no assertion library)
 
     dependencies.forEach(
         dependency -> {
@@ -295,10 +295,9 @@ public class ProjectGeneratorService {
               depEl, MavenPomElements.Elements.ARTIFACT_ID, dependency.artifactId());
           editor.insertMavenElement(depEl, MavenPomElements.Elements.SCOPE, "test");
 
-          // Add version if the dependency should include one
-          String version = dependency.getVersionToInclude(dependencyManagement);
-          if (version != null) {
-            editor.insertMavenElement(depEl, MavenPomElements.Elements.VERSION, version);
+          if (!dependency.isManagedByBom()) {
+            editor.insertMavenElement(
+                depEl, MavenPomElements.Elements.VERSION, dependency.version());
           }
         });
   }

@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.openelements.maven.initializer.backend.config.MavenToolboxConfig;
+import com.openelements.maven.initializer.backend.domain.AssertionLibrary;
 import com.openelements.maven.initializer.backend.domain.ProjectGenerationResult;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
@@ -211,12 +212,20 @@ class ProjectGeneratorServiceTest {
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
     Mockito.when(
+            artifactVersionService.resolveLatestDependencyVersion(
+                Mockito.eq("org.junit.jupiter"), Mockito.eq("junit-jupiter")))
+        .thenReturn("5.10.0");
+    Mockito.when(
+            artifactVersionService.resolveLatestDependencyVersion(
+                Mockito.eq("org.assertj"), Mockito.eq("assertj-core")))
+        .thenReturn("3.27.5");
+    Mockito.when(
             artifactVersionService.resolveLatestPluginVersion(
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
     projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     ProjectRequestDTO validRequest = createValidRequest();
-    validRequest.setAssertionLibrary("assertj");
+    validRequest.setAssertionLibrary(AssertionLibrary.ASSERTJ);
 
     // When
     String projectPath =
@@ -250,6 +259,10 @@ class ProjectGeneratorServiceTest {
         .thenReturn("TODO");
     Mockito.when(
             artifactVersionService.resolveLatestDependencyVersion(
+                Mockito.eq("org.junit.jupiter"), Mockito.eq("junit-jupiter")))
+        .thenReturn("5.10.0");
+    Mockito.when(
+            artifactVersionService.resolveLatestDependencyVersion(
                 Mockito.eq("org.hamcrest"), Mockito.eq("hamcrest")))
         .thenReturn("3.0");
     Mockito.when(
@@ -258,7 +271,7 @@ class ProjectGeneratorServiceTest {
         .thenReturn("TODO");
     projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     ProjectRequestDTO validRequest = createValidRequest();
-    validRequest.setAssertionLibrary("hamcrest");
+    validRequest.setAssertionLibrary(AssertionLibrary.HAMCREST);
 
     // When
     String projectPath =
@@ -287,12 +300,16 @@ class ProjectGeneratorServiceTest {
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
     Mockito.when(
+            artifactVersionService.resolveLatestDependencyVersion(
+                Mockito.eq("org.junit.jupiter"), Mockito.eq("junit-jupiter")))
+        .thenReturn("5.10.0");
+    Mockito.when(
             artifactVersionService.resolveLatestPluginVersion(
                 Mockito.anyString(), Mockito.anyString()))
         .thenReturn("TODO");
     projectGeneratorServiceUnderTest = configureProjectGeneratorService();
     ProjectRequestDTO validRequest = createValidRequest();
-    validRequest.setAssertionLibrary("none");
+    validRequest.setAssertionLibrary(AssertionLibrary.NONE);
 
     // When
     String projectPath =

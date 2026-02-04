@@ -18,6 +18,7 @@
  */
 package com.openelements.maven.initializer.backend.dto;
 
+import com.openelements.maven.initializer.backend.domain.AssertionLibrary;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -47,7 +48,7 @@ public class ProjectRequestDTO {
 
   private boolean includeCheckstyle = false;
 
-  private String assertionLibrary = "none";
+  private AssertionLibrary assertionLibrary = AssertionLibrary.NONE;
 
   // Default constructor
   public ProjectRequestDTO() {}
@@ -141,11 +142,11 @@ public class ProjectRequestDTO {
     this.includeCheckstyle = includeCheckstyle;
   }
 
-  public String getAssertionLibrary() {
+  public AssertionLibrary getAssertionLibrary() {
     return assertionLibrary;
   }
 
-  public void setAssertionLibrary(String assertionLibrary) {
+  public void setAssertionLibrary(AssertionLibrary assertionLibrary) {
     this.assertionLibrary = assertionLibrary;
   }
 
@@ -176,9 +177,8 @@ public class ProjectRequestDTO {
         + includeSpotless
         + ", includeCheckstyle="
         + includeCheckstyle
-        + ", assertionLibrary='"
+        + ", assertionLibrary="
         + assertionLibrary
-        + '\''
         + '}';
   }
 }

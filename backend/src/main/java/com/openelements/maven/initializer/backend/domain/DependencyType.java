@@ -21,6 +21,6 @@ package com.openelements.maven.initializer.backend.domain;
 public enum DependencyType {
   /** Bill of Materials (BOM) - used in dependency management with type "pom" and scope "import". */
   BOM,
-  /** Normal dependency - regular jar dependency. */
-  NORMAL
+  /** JAR dependency - regular jar dependency. */
+  JAR
 }
