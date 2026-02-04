@@ -222,8 +222,7 @@ public class ProjectGeneratorService {
                   s.insertMavenElement(s.root(), "name", request.getName());
 
                   // Add dependency management
-                  List<MavenDependency> dependencyManagement = fillDependencyManagement(request);
-                  addDependencyManagement(s, dependencyManagement);
+                  addDependencyManagement(s, request);
 
                   // Add dependencies
                   addDependencies(s, request);
@@ -300,8 +299,8 @@ public class ProjectGeneratorService {
         });
   }
 
-  private void addDependencyManagement(
-      PomEditor editor, List<MavenDependency> dependencyManagement) {
+  private void addDependencyManagement(PomEditor editor, ProjectRequestDTO request) {
+    List<MavenDependency> dependencyManagement = fillDependencyManagement(request);
     var root = editor.root();
     var dm = editor.findChildElement(root, MavenPomElements.Elements.DEPENDENCY_MANAGEMENT);
 
