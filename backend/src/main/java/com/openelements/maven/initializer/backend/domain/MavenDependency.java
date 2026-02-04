@@ -25,17 +25,17 @@ import java.util.Objects;
 public final class MavenDependency {
   private final String groupId;
   private final String artifactId;
-  private ArtifactVersionService artifactVersionService;
-
-  public MavenDependency(String groupId, String artifactId) {
-    this.groupId = groupId;
-    this.artifactId = artifactId;
-  }
+  private final DependencyType dependencyType;
+  private final ArtifactVersionService artifactVersionService;
 
   public MavenDependency(
-      String groupId, String artifactId, ArtifactVersionService artifactVersionService) {
+      String groupId,
+      String artifactId,
+      DependencyType dependencyType,
+      ArtifactVersionService artifactVersionService) {
     this.groupId = groupId;
     this.artifactId = artifactId;
+    this.dependencyType = dependencyType;
     this.artifactVersionService = artifactVersionService;
   }
 
@@ -47,11 +47,23 @@ public final class MavenDependency {
     return artifactId;
   }
 
+  public DependencyType dependencyType() {
+    return dependencyType;
+  }
+
   public String version() {
     if (artifactVersionService != null) {
-      return artifactVersionService.resolveLatestDependencyBomVersion(groupId, artifactId);
+      if (dependencyType == DependencyType.BOM) {
+        return artifactVersionService.resolveLatestDependencyBomVersion(groupId, artifactId);
+      } else {
+        return artifactVersionService.resolveLatestDependencyVersion(groupId, artifactId);
+      }
     }
     return "";
+  }
+
+  public boolean isManagedByBom() {
+    return artifactVersionService == null;
   }
 
   @Override

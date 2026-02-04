@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.openelements.maven.initializer.backend.domain.AssertionLibrary;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -116,8 +117,68 @@ class ProjectStructureServiceTest {
                 "Class name should match main class + 'Test'"),
         () ->
             assertTrue(
-                content.contains("assertTrue(true)"), "Test should contain sample assertion"),
+                content.contains("assertTrue(true)"),
+                "Test should contain JUnit assertion (default is none)"),
         () -> assertTrue(content.contains("@Test"), "Should include @Test annotation"));
+  }
+
+  @Test
+  void testTestClassContentWithHamcrest() throws IOException {
+    // Given
+    validRequest.setAssertionLibrary(AssertionLibrary.HAMCREST);
+
+    // When
+    projectStructureService.createStructure(tempDir, validRequest);
+
+    Path testClassFile = tempDir.resolve("src/test/java/com/example/TestprojectTest.java");
+    assertTrue(Files.exists(testClassFile), "Test class file should exist");
+
+    String content = Files.readString(testClassFile);
+
+    // Then
+    assertAll(
+        () -> assertTrue(content.contains("package com.example;"), "Package should match group ID"),
+        () ->
+            assertTrue(
+                content.contains("import org.junit.jupiter.api.Test;"),
+                "Should import JUnit test annotation"),
+        () ->
+            assertTrue(
+                content.contains("import static org.hamcrest.MatcherAssert.assertThat;"),
+                "Should import Hamcrest MatcherAssert"),
+        () ->
+            assertTrue(
+                content.contains("assertThat(true, is(true))"),
+                "Test should contain Hamcrest assertion"));
+  }
+
+  @Test
+  void testTestClassContentWithNoAssertionLibrary() throws IOException {
+    // Given
+    validRequest.setAssertionLibrary(AssertionLibrary.NONE);
+
+    // When
+    projectStructureService.createStructure(tempDir, validRequest);
+
+    Path testClassFile = tempDir.resolve("src/test/java/com/example/TestprojectTest.java");
+    assertTrue(Files.exists(testClassFile), "Test class file should exist");
+
+    String content = Files.readString(testClassFile);
+
+    // Then
+    assertAll(
+        () -> assertTrue(content.contains("package com.example;"), "Package should match group ID"),
+        () ->
+            assertTrue(
+                content.contains("import org.junit.jupiter.api.Test;"),
+                "Should import JUnit test annotation"),
+        () ->
+            assertTrue(
+                content.contains("import static org.junit.jupiter.api.Assertions.assertTrue;"),
+                "Should import JUnit Assertions"),
+        () ->
+            assertTrue(
+                content.contains("assertTrue(true)"), "Test should contain JUnit assertion"));
   }
 
   @Test

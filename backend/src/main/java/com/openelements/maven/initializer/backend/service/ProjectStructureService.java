@@ -18,6 +18,7 @@
  */
 package com.openelements.maven.initializer.backend.service;
 
+import com.openelements.maven.initializer.backend.domain.AssertionLibrary;
 import com.openelements.maven.initializer.backend.dto.ProjectRequestDTO;
 import com.openelements.maven.initializer.backend.exception.ProjectServiceException;
 import java.io.IOException;
@@ -140,25 +141,16 @@ public class ProjectStructureService {
     Path testDir = root.resolve("src/test/java/" + packagePath);
     Path testClassFile = testDir.resolve(className + "Test.java");
 
-    String content =
-        String.format(
-            """
-        package %s;
+    // Ensure default assertion library is set
+    if (request.getAssertionLibrary() == null) {
+      request.setAssertionLibrary(AssertionLibrary.NONE);
+    }
 
-        import org.junit.jupiter.api.Test;
-        import static org.junit.jupiter.api.Assertions.assertTrue;
-
-        class %sTest {
-            @Test
-            void contextLoads() {
-                assertTrue(true);
-            }
-        }
-        """,
-            pkg, className);
-
-    Files.writeString(testClassFile, content);
-    logger.debug("Created sample test class: {}Test", className);
+    resourceTemplateEngine.createTestClass(request, className, testClassFile);
+    logger.debug(
+        "Created sample test class: {}Test with assertion library: {}",
+        className,
+        request.getAssertionLibrary());
   }
 
   private String convertToJavaClassName(String artifactId) {
