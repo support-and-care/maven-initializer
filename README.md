@@ -3,6 +3,8 @@
 Initializer For Apache Maven™ is a modern, user-friendly web application designed to simplify the process of creating new Apache Maven™ projects.
 Its primary goal is to provide developers with a fast, intuitive, and reliable way to bootstrap new projects with all the necessary configurations, dependencies, and best practices, without the need to manually set up complex project structures.
 
+**Try it:** [maven-starter.io](https://maven-starter.io/)
+
 ## Prerequisites
 
 - Java 25
@@ -66,6 +68,10 @@ docker compose up --build -d
 - Logs are automatically sent to: `https://loki.open-elements.cloud`
 - App name: `maven-initializer-backend`
 - Query in Grafana: `{app="maven-initializer-backend"}`
+
+## Technical documentation
+
+Technical documentation (architecture overview, ADRs) is in the **[docs](docs/)** folder and is published as [GitHub Pages](https://support-and-care.github.io/maven-initializer/). Pull requests that change the docs get a preview at `…/pr/<number>/`. Set **Settings → Pages → Deploy from a branch** → branch: `gh-pages`, folder: `/ (root)`.
 
 ## How to contribute
 

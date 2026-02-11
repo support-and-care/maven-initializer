@@ -1,0 +1,48 @@
+# Technical documentation for Maven Initializer
+# Rendered as GitHub Pages via .github/workflows/docs.yml
+
+site_name: Maven Initializer — Technical Documentation
+site_description: Technical documentation for Initializer for Apache Maven™
+site_url: https://support-and-care.github.io/maven-initializer/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: light blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: light blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  # Navbar uses primary; overridden in extra_css to match screenshot (#67c2a7)
+  features:
+    - content.tabs.link
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - ADRs:
+    - ADR 001 — Project Generation: adr/01-maven-project-generation.md
+  - Contributing to the docs: contributing.md
