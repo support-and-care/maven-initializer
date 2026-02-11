@@ -72,6 +72,7 @@ jobs:
     needs: build
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Download site artifact
         uses: actions/download-artifact@v4
