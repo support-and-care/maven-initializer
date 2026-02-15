@@ -4,18 +4,21 @@ This document describes the **high-level architecture** of the Maven Initializer
 
 ## High-Level Structure
 
-The Maven Initializer follows a layered architecture with a clear separation between the user interface, orchestration, and Maven-specific logic.
+The Maven Initializer follows a layered architecture with a clear separation between the **frontend** and the **backend**. The diagram below shows the frontend at the top and all other components grouped inside the backend.
 
 ```mermaid
 flowchart TB
-    UI[Frontend]
-    API[REST API]
-    PG[ProjectGeneratorService]
-    AV[ArtifactVersionService]
-    CFG[MavenToolboxConfig]
-    TB[Maveniverse Toolbox]
+    FE[Frontend]
 
-    UI --> API
+    subgraph Backend["Backend"]
+        API[REST API]
+        PG[ProjectGeneratorService]
+        AV[ArtifactVersionService]
+        CFG[MavenToolboxConfig]
+        TB[Maveniverse Toolbox]
+    end
+
+    FE --> API
     API --> PG
     PG --> AV
     PG --> TB
@@ -28,28 +31,32 @@ flowchart TB
 | Layer | Technology | Responsibility |
 |-------|------------|----------------|
 | **Frontend** | Next.js | Collects user input (project options, dependencies, plugins) and submits a project generation request. Provides the download of the generated project (ZIP). |
+| **Backend** | Spring Boot + Maveniverse Toolbox | All components below (REST API, services, toolbox) run in the backend. |
 | **REST API** | Spring Boot | Exposes the project generation endpoint, validates input, and returns the generated project or error information. |
 | **Orchestration** | Backend services | Coordinates the generation flow: directory layout, POM generation, Maven Wrapper, README, and packaging. |
 | **Maven logic** | Maveniverse Toolbox | Handles all Maven-specific concerns: POM structure, dependency and plugin versions, and editing of the project file. |
 
 ## Main Components
 
-- **Frontend (Next.js)**  
-  Single-page application that guides the user through project configuration and triggers generation.
+- **Frontend (Next.js)**
+  Single-page application that guides the user through project configuration and triggers generation. It is the only part that runs in the browser.
 
-- **ProjectController / REST API**  
-  Entry point for the backend. Receives the project request DTO and delegates to the project generation service.
+- **Backend**
+  All of the following components run in the backend (Spring Boot application):
 
-- **ProjectGeneratorService**  
+- **ProjectController / REST API**
+  Entry point of the backend. Receives the project request DTO and delegates to the project generation service.
+
+- **ProjectGeneratorService**
   Orchestrates the full generation pipeline: creates the directory structure, resolves versions, generates and edits the POM, adds Maven Wrapper and README, and builds the ZIP.
 
-- **ArtifactVersionService**  
+- **ArtifactVersionService**
   Resolves the latest (or requested) versions for dependencies and plugins from Maven repositories.
 
-- **MavenToolboxConfig**  
+- **MavenToolboxConfig**
   Configures the Maveniverse Toolbox context (e.g. settings, local repository) used by the backend.
 
-- **Maveniverse Toolbox**  
+- **Maveniverse Toolbox**
   Library used for programmatic POM creation and editing, and for version resolution. All Maven-specific logic is encapsulated here.
 
 ## End-to-End Generation Flow
@@ -57,7 +64,7 @@ flowchart TB
 The full lifecycle of a project request is:
 
 ```mermaid
-flowchart LR
+flowchart TB
     A[User submits form]
     B[Backend receives request]
     C[Create directory structure]

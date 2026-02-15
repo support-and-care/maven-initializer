@@ -25,6 +25,7 @@ theme:
     - content.tabs.link
     - navigation.tabs
     - navigation.sections
+    - navigation.indexes
     - toc.integrate
 
 extra_css:
@@ -44,5 +45,6 @@ nav:
   - Home: index.md
   - Architecture: architecture.md
   - ADRs:
+    - adr/index.md
     - ADR 001 — Project Generation: adr/01-maven-project-generation.md
   - Contributing to the docs: contributing.md
