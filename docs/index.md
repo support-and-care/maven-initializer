@@ -1,4 +1,4 @@
-# Maven Initializer — Technical Documentation
+# Initializer for Apache Maven™ — Technical Documentation
 
 Welcome to the technical documentation for **Initializer for Apache Maven™**.
 
@@ -7,7 +7,7 @@ This site contains:
 - **[Architecture overview](architecture.md)** — High-level structure of the application and its main components.
 - **[Architecture Decision Records (ADRs)](adr/index.md)** — List of ADRs with links to each decision record.
 
-The Maven Initializer is a web application that helps you bootstrap production-ready Maven-based Java projects with a well-structured `pom.xml`, sensible defaults, and up-to-date dependencies.
+Initializer for Apache Maven™ is a web application that helps you bootstrap production-ready Maven-based Java projects with a well-structured `pom.xml`, sensible defaults, and up-to-date dependencies.
 
 ## Links
 

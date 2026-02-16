@@ -1,10 +1,10 @@
 # Architecture Overview
 
-This document describes the **high-level architecture** of the Maven Initializer: how the system is structured and the role of each main part. It does not go into implementation details; those are covered in the codebase and in blog posts (e.g. the toolbox integration).
+This document describes the **high-level architecture** of Initializer for Apache Maven™: how the system is structured and the role of each main part. It does not go into implementation details; those are covered in the codebase and in blog posts (e.g. the toolbox integration).
 
 ## High-Level Structure
 
-The Maven Initializer follows a layered architecture with a clear separation between the **frontend** and the **backend**. The diagram below shows the frontend at the top and all other components grouped inside the backend.
+Initializer for Apache Maven™ follows a layered architecture with a clear separation between the **Frontend** and the **Backend**. The diagram below shows the Frontend at the top and all other components grouped inside the Backend.
 
 ```mermaid
 flowchart TB
@@ -31,10 +31,12 @@ flowchart TB
 | Layer | Technology | Responsibility |
 |-------|------------|----------------|
 | **Frontend** | Next.js | Collects user input (project options, dependencies, plugins) and submits a project generation request. Provides the download of the generated project (ZIP). |
-| **Backend** | Spring Boot + Maveniverse Toolbox | All components below (REST API, services, toolbox) run in the backend. |
+| **Backend** | Spring Boot + Maveniverse Toolbox | All components below run in the backend. |
 | **REST API** | Spring Boot | Exposes the project generation endpoint, validates input, and returns the generated project or error information. |
-| **Orchestration** | Backend services | Coordinates the generation flow: directory layout, POM generation, Maven Wrapper, README, and packaging. |
-| **Maven logic** | Maveniverse Toolbox | Handles all Maven-specific concerns: POM structure, dependency and plugin versions, and editing of the project file. |
+| **ProjectGeneratorService** | Spring Boot | Orchestrates the generation flow: directory layout, POM generation, Maven Wrapper, README, and packaging. |
+| **ArtifactVersionService** | Spring Boot | Resolves the latest (or requested) versions for dependencies and plugins from Maven repositories. |
+| **MavenToolboxConfig** | Spring Boot | Configures the Maveniverse Toolbox context (e.g. settings, local repository) used by the backend. |
+| **Maveniverse Toolbox** | Library | Handles all Maven-specific concerns: POM structure, dependency and plugin versions, and editing of the project file. |
 
 ## Main Components
 
@@ -44,20 +46,20 @@ flowchart TB
 - **Backend**
   All of the following components run in the backend (Spring Boot application):
 
-- **ProjectController / REST API**
-  Entry point of the backend. Receives the project request DTO and delegates to the project generation service.
+      - **ProjectController / REST API**
+      Entry point of the backend. Receives the project request DTO and delegates to the project generation service.
 
-- **ProjectGeneratorService**
-  Orchestrates the full generation pipeline: creates the directory structure, resolves versions, generates and edits the POM, adds Maven Wrapper and README, and builds the ZIP.
+      - **ProjectGeneratorService**
+      Orchestrates the full generation pipeline: creates the directory structure, resolves versions, generates and edits the POM, adds Maven Wrapper and README, and builds the ZIP.
 
-- **ArtifactVersionService**
-  Resolves the latest (or requested) versions for dependencies and plugins from Maven repositories.
+      - **ArtifactVersionService**
+      Resolves the latest (or requested) versions for dependencies and plugins from Maven repositories.
 
-- **MavenToolboxConfig**
-  Configures the Maveniverse Toolbox context (e.g. settings, local repository) used by the backend.
+      - **MavenToolboxConfig**
+      Configures the Maveniverse Toolbox context (e.g. settings, local repository) used by the backend.
 
-- **Maveniverse Toolbox**
-  Library used for programmatic POM creation and editing, and for version resolution. All Maven-specific logic is encapsulated here.
+      - **Maveniverse Toolbox**
+      Library used for programmatic POM creation and editing, and for version resolution. All Maven-specific logic is encapsulated here.
 
 ## End-to-End Generation Flow
 

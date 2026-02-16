@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-This section lists the Architecture Decision Records (ADRs) for the Maven Initializer. Each ADR documents a significant design decision and its context.
+This section lists the Architecture Decision Records (ADRs) for Initializer for Apache Maven™. Each ADR documents a significant design decision and its context.
 
 ## List of ADRs
 

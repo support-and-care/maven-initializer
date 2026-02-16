@@ -1,7 +1,7 @@
-# Technical documentation for Maven Initializer
+# Technical documentation for Initializer for Apache Maven™
 # Rendered as GitHub Pages via .github/workflows/docs.yml
 
-site_name: Maven Initializer — Technical Documentation
+site_name: Initializer for Apache Maven™ — Technical Documentation
 site_description: Technical documentation for Initializer for Apache Maven™
 site_url: https://support-and-care.github.io/maven-initializer/
 

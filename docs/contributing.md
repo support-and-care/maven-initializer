@@ -1,6 +1,6 @@
 # Contributing to the docs
 
-This folder contains the source for the [Maven Initializer technical documentation](https://support-and-care.github.io/maven-initializer/) (GitHub Pages).
+This folder contains the source for the [Initializer for Apache Maven™ technical documentation](https://support-and-care.github.io/maven-initializer/) (GitHub Pages).
 
 ## Structure
 
