@@ -46,12 +46,14 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="hidden items-center gap-2 lg:flex">
-            {/* <a
-              href="#"
+            <a
+              href="https://support-and-care.github.io/maven-initializer/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="relative rounded-2xl px-4 py-2 text-sm font-medium text-muted-foreground transition-smooth hover:text-foreground"
             >
               Documentation
-            </a> */}
+            </a>
           </div>
 
           <div className="hidden items-center gap-3 lg:flex">
@@ -87,15 +89,17 @@ export const Header: React.FC = () => {
 
         {isMenuOpen && (
           <div className="mt-4 flex flex-col gap-2 rounded-3xl border border-border/60 bg-background/95 p-4 shadow-2xl backdrop-blur-xl lg:hidden">
-            {/* <a
-              href="#"
+            <a
+              href="https://support-and-care.github.io/maven-initializer/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-medium transition-smooth text-muted-foreground hover:bg-muted/40 hover:text-foreground"
             >
               Documentation
               <span className="text-xs uppercase tracking-[0.3em] text-primary/70">
                 Explore
               </span>
-            </a> */}
+            </a>
             <a
               href="https://github.com/support-and-care/maven-initializer"
               target="_blank"
