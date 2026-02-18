@@ -26,18 +26,6 @@ flowchart TB
     CFG --> TB
 ```
 
-## Architectural Layers
-
-| Layer | Technology | Responsibility |
-|-------|------------|----------------|
-| **Frontend** | Next.js | Collects user input (project options, dependencies, plugins) and submits a project generation request. Provides the download of the generated project (ZIP). |
-| **Backend** | Spring Boot + Maveniverse Toolbox | All components below run in the backend. |
-| **REST API** | Spring Boot | Exposes the project generation endpoint, validates input, and returns the generated project or error information. |
-| **ProjectGeneratorService** | Spring Boot | Orchestrates the generation flow: directory layout, POM generation, Maven Wrapper, README, and packaging. |
-| **ArtifactVersionService** | Spring Boot | Resolves the latest (or requested) versions for dependencies and plugins from Maven repositories. |
-| **MavenToolboxConfig** | Spring Boot | Configures the Maveniverse Toolbox context (e.g. settings, local repository) used by the backend. |
-| **Maveniverse Toolbox** | Library | Handles all Maven-specific concerns: POM structure, dependency and plugin versions, and editing of the project file. |
-
 ## Main Components
 
 - **Frontend (Next.js)**
