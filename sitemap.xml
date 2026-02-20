@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://support-and-care.github.io/maven-initializer/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://support-and-care.github.io/maven-initializer/architecture/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://support-and-care.github.io/maven-initializer/contributing/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://support-and-care.github.io/maven-initializer/adr/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://support-and-care.github.io/maven-initializer/adr/01-maven-project-generation/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+</urlset>
