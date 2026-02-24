@@ -97,7 +97,7 @@
         <dependency>
             <groupId>eu.maveniverse.maven.toolbox</groupId>
             <artifactId>shared</artifactId>
-            <version>0.15.2</version>
+            <version>0.15.4</version>
         </dependency>
         <dependency>
             <groupId>eu.maveniverse.maven.domtrip</groupId>
