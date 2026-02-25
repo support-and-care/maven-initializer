@@ -11,7 +11,7 @@
 
     <groupId>com.openelements.maven.initializer</groupId>
     <artifactId>backend</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name> Initializer For Apache Maven™ - Backend</name>
     <description>Backend service for Initializer For Apache Maven™</description>
