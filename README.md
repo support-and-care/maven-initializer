@@ -8,7 +8,7 @@ Its primary goal is to provide developers with a fast, intuitive, and reliable w
 ## Prerequisites
 
 - Java 25
-- Node.js 22+
+- Node.js 24+
 - pnpm
 
 ### For Docker Setup
