@@ -38,7 +38,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <PlausibleProvider domain="maven-initializer">
+        <PlausibleProvider domain="maven-starter.io">
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
