@@ -38,7 +38,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <PlausibleProvider domain="ww0k808wgos408k8044w00gg.playground.open-elements.cloud/">
+        <PlausibleProvider domain="ww0k808wgos408k8044w00gg.playground.open-elements.cloud">
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
