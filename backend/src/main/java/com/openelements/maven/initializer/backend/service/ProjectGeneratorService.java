@@ -343,15 +343,15 @@ public class ProjectGeneratorService {
 
     var plugin =
         plugins
-            .children(MavenPomElements.Elements.PLUGIN)
+            .childElements(MavenPomElements.Elements.PLUGIN)
             .filter(
                 p ->
                     groupId.equals(
-                            p.child(MavenPomElements.Elements.GROUP_ID)
+                            p.childElement(MavenPomElements.Elements.GROUP_ID)
                                 .map(Element::textContent)
                                 .orElse(null))
                         && artifactId.equals(
-                            p.child(MavenPomElements.Elements.ARTIFACT_ID)
+                            p.childElement(MavenPomElements.Elements.ARTIFACT_ID)
                                 .map(Element::textContent)
                                 .orElse(null)))
             .findFirst()
