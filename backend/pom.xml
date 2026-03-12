@@ -62,6 +62,17 @@
         <jte.version>3.2.3</jte.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Keep MiMa artifacts in sync (toolbox pulls older context transitively) -->
+            <dependency>
+                <groupId>eu.maveniverse.maven.mima</groupId>
+                <artifactId>context</artifactId>
+                <version>${mima.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
