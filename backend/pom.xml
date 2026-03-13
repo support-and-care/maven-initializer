@@ -64,11 +64,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.maveniverse.maven.mima</groupId>
-            <artifactId>context</artifactId>
-            <version>${mima.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -108,6 +103,11 @@
             <groupId>eu.maveniverse.maven.domtrip</groupId>
             <artifactId>domtrip-maven</artifactId>
             <version>0.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.maveniverse.maven.mima</groupId>
+            <artifactId>context</artifactId>
+            <version>${mima.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.maveniverse.maven.mima.runtime</groupId>
