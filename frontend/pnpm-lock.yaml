@@ -48,10 +48,10 @@ importers:
         specifier: ^8.5.8
         version: 8.5.8
       react:
-        specifier: ^19.2.5
+        specifier: ^19.1.1
         version: 19.2.5
       react-dom:
-        specifier: ^19.2.5
+        specifier: ^19.1.1
         version: 19.2.5(react@19.2.5)
       tailwind-merge:
         specifier: ^3.3.1
