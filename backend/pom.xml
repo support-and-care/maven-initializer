@@ -59,7 +59,7 @@
     <properties>
         <java.version>25</java.version>
         <mima.version>2.4.43</mima.version>
-        <jte.version>3.2.3</jte.version>
+        <jte.version>3.2.4</jte.version>
     </properties>
 
     <dependencies>
