@@ -109,7 +109,7 @@ importers:
         specifier: ^29.4.5
         version: 29.4.9(@babel/core@7.29.0)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.0))(jest-util@30.4.1)(jest@30.4.2(@types/node@24.12.3))(typescript@6.0.3)
       typescript:
-        specifier: ^6.0.0
+        specifier: ^6.0.3
         version: 6.0.3
 
 packages:
