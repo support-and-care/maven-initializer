@@ -1,0 +1,12 @@
+/* Navbar/header primary color to match screenshot (teal #67c2a7) */
+:root {
+  --md-primary-fg-color: #67c2a7;
+  --md-primary-fg-color--light: #67c2a794;
+  --md-primary-fg-color--dark: #5ab395;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #67c2a7;
+  --md-primary-fg-color--light: #67c2a794;
+  --md-primary-fg-color--dark: #5ab395;
+}
